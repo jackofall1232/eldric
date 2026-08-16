@@ -101,6 +101,23 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Keep DOM APIs in declared seams only.
 - **Lock:** `codex-eldric-20260816T015338Z` active.
 
+### Run 2026-08-16T02:06:02Z — Codex (Execution Mode, iteration 4)
+- **Goal:** Establish a layered Canvas2D renderer and soft camera without leaking canvas context
+  access into gameplay.
+- **Decision:** Normal work; renderer, camera, sprites, and draw layers are one rendering unit.
+- **Completed work:** Added sorted draw-command renderer, Canvas2D backend, camera follow/bounds/
+  shake/transforms, render layers, sprite animation helpers, and public exports.
+- **Changed files:** `packages/engine/src/render/{renderer,canvas2d-backend,camera,layer,sprite,spritesheet}.js`,
+  public barrel, memory.
+- **Tests run / Verification:** engine purity test, standalone build, and WordPress build all exited
+  `0` at 2026-08-16T02:05:43Z.
+- **Failures:** none.
+- **Decisions:** Context access stays in `canvas2d-backend.js`; gameplay submits typed draw commands.
+- **Confidence:** High — both bundle targets compile and purity enforcement passes.
+- **Next action:** Commit, then add abstract keyboard/touch/gamepad input.
+- **Do-not-retry notes:** Do not draw directly from game scenes via a 2D context.
+- **Lock:** `codex-eldric-20260816T015338Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

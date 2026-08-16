@@ -17,9 +17,9 @@ implement and verify in a single loop.
       content must be deterministic).
 - [x] `packages/engine/src/core/entity.js` and `scene/` scene stack (world / dialogue / menu /
       chronicle push and pop).
-- [ ] `packages/engine/src/render/renderer.js` + `canvas2d-backend.js` — the only files allowed to
+- [x] `packages/engine/src/render/renderer.js` + `canvas2d-backend.js` — the only files allowed to
       touch a 2D context.
-- [ ] `packages/engine/src/render/camera.js`, `sprite.js`, `spritesheet.js` and the asset loader.
+- [x] `packages/engine/src/render/camera.js`, `sprite.js`, `spritesheet.js` and the asset loader.
 - [ ] `packages/engine/src/input/input.js` — abstract action map, with `keyboard.js`, `pointer.js`,
       `touch.js` sources behind it. Gameplay reads actions, never key codes.
 - [ ] `packages/engine/src/platform/platform.js` — the seam object bundling input sources, audio
