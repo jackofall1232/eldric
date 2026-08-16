@@ -1,1 +1,1 @@
-// How Millhaven's people and factions read each of the seven traits.
+export const FACTION_REPUTATION_WEIGHTS = Object.freeze({ villagers: { honor: 1, mercy: 1.2, courage: .5, greed: -.7, infamy: -1 }, river_wardens: { honor: .8, loyalty: 1.3, courage: .7, mercy: -.2, infamy: -.4 }, fen_coven: { mystery: 1.4, mercy: .5, loyalty: -.2, infamy: .3 }, road_bandits: { infamy: 1.2, courage: .7, greed: .8, mercy: -.6 } });

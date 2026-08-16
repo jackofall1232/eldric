@@ -47,7 +47,7 @@ implement and verify in a single loop.
 
 ### M4 — Content systems
 - [x] Inventory: weapons, armor, consumables, keys, artifacts, quest items; equipment slots.
-- [ ] Dialogue system with authored trees for background NPCs.
+- [x] Dialogue system with authored trees for background NPCs.
 - [x] Quest system: the nine objectives (`GO_TO`, `TALK_TO`, `FIND`, `COLLECT`, `DELIVER`,
       `DEFEAT`, `PROTECT`, `EXPLORE`, `CHOOSE`) and the compiler that every quest resolves through.
 - [ ] Encounter templates (e.g. `TRAVELER_IN_TROUBLE`) with narrative variables game code fills.
@@ -67,9 +67,9 @@ implement and verify in a single loop.
 - [x] Context builder: compact structured facts about what the player did, plus relevant Chronicle
       entries.
 - [ ] Chronicle: event-key log, generated chapters, the illustrated in-game book that pauses play.
-- [ ] Reputation: seven traits (Honor, Mercy, Greed, Courage, Loyalty, Infamy, Mystery), read
+- [x] Reputation: seven traits (Honor, Mercy, Greed, Courage, Loyalty, Infamy, Mystery), read
       differently by different NPCs and factions.
-- [ ] NPC memory: promises, insults, gifts, debts, betrayals, rescues, prior conversations —
+- [x] NPC memory: promises, insults, gifts, debts, betrayals, rescues, prior conversations —
       dialogue evolves instead of resetting.
 - [ ] Rumor system generating true, exaggerated and false variants from real world state.
 - [x] Story beat triggers: new region, campfire rest, important NPC, dungeon cleared, major

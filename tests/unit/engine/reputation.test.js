@@ -1,1 +1,3 @@
-// Unit test: reputation. Stub.
+import assert from 'node:assert/strict'; import test from 'node:test'; import { Reputation, REPUTATION_TRAITS } from '../../../packages/engine/src/index.js'; import { FACTION_REPUTATION_WEIGHTS } from '../../../packages/game/src/content/reputation/traits.js';
+test('reputation has seven independent traits and no morality aggregate', () => { const reputation = new Reputation(); reputation.adjust({ mercy: 20, infamy: 12, good: 100 }); assert.equal(REPUTATION_TRAITS.length, 7); assert.equal('good' in reputation.snapshot(), false); assert.equal(reputation.snapshot().mercy, 20); });
+test('factions interpret the same traits differently', () => { const reputation = new Reputation({ mercy: 20, infamy: 10 }); assert.ok(reputation.interpret(FACTION_REPUTATION_WEIGHTS.villagers) > reputation.interpret(FACTION_REPUTATION_WEIGHTS.road_bandits)); });

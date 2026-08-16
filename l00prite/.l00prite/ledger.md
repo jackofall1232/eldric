@@ -286,6 +286,18 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement reputation/NPC memory.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:40:44Z — Codex (authorized story run, iteration 6)
+- **Goal:** Implement world memory without a simplistic morality score.
+- **Completed work:** Seven bounded independent reputation traits, faction-specific interpretation,
+  typed/bounded per-NPC memories, relationship derivation, and authored dialogue-tree variants.
+- **Tests run / Verification:** reputation/NPC memory tests and standalone build exit `0`, 2026-08-16T02:40:28Z.
+- **Failures:** none.
+- **Decisions:** Unknown traits are ignored; no good/evil aggregate exists; relationships derive
+  from durable typed memories plus faction-specific reputation interpretation.
+- **Confidence:** High — opposite faction readings and lasting rescue/betrayal effects are tested.
+- **Next action:** Commit, then implement rumors/encounters.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

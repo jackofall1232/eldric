@@ -1,1 +1,3 @@
-// Unit test: npc-memory. Stub.
+import assert from 'node:assert/strict'; import test from 'node:test'; import { NpcMemory, relationshipBand, relationshipScore } from '../../../packages/engine/src/index.js';
+test('important NPCs retain typed interactions and relationship consequences', () => { const memory = new NpcMemory(); memory.remember('elara', { type: 'promise', value: 'Find Corven.', sentiment: 1 }); memory.remember('elara', { type: 'rescue', value: 'Freed Corven.', sentiment: 3 }); assert.deepEqual(memory.compact('elara'), ['promise:Find Corven.', 'rescue:Freed Corven.']); assert.equal(relationshipBand(relationshipScore(memory.recall('elara'))), 'warm'); });
+test('betrayal is remembered instead of reset', () => { const memory = new NpcMemory(); memory.remember('rowan', { type: 'betrayal', value: 'Broke the river seal.', sentiment: -3 }); assert.equal(relationshipBand(relationshipScore(memory.recall('rowan'))), 'wary'); });
