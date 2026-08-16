@@ -28,6 +28,7 @@ require_once LC_PATH . 'includes/providers/class-lc-provider-local.php';
 require_once LC_PATH . 'includes/providers/class-lc-provider-wp-ai.php';
 require_once LC_PATH . 'includes/class-lc-rest.php';
 require_once LC_PATH . 'includes/class-lc-settings.php';
+require_once LC_PATH . 'includes/class-lc-admin.php';
 require_once LC_PATH . 'includes/class-lc-plugin.php';
 
 LC_Plugin::instance()->boot();

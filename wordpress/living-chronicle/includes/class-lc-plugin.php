@@ -23,7 +23,7 @@ final class LC_Plugin {
             $rest = new LC_REST( new LC_Story_Controller( $provider, new LC_Rate_Limiter() ), $provider->id() );
             $rest->register();
         } );
-        add_action( 'admin_menu', array( $settings, 'add_page' ) );
+        ( new LC_Admin( $settings ) )->register();
         add_action( 'admin_init', array( $settings, 'register_setting' ) );
     }
 }
