@@ -1,4 +1,5 @@
 import { resolveConfig } from './config.js';
+import { createGameRuntime } from '../runtime/game-runtime.js';
 
 export function bootstrapGame(root, overrides = {}) {
   if (!root || typeof root.append !== 'function') {
@@ -21,7 +22,10 @@ export function bootstrapGame(root, overrides = {}) {
 
   root.classList.add('lc-mounted');
   root.replaceChildren(canvas, status);
-  drawBootPlate(canvas, config);
+  const openingPlate = new root.ownerDocument.defaultView.Image();
+  openingPlate.decoding = 'async';
+  openingPlate.src = `${config.assetBase.replace(/\/$/, '')}/opening/millhaven-book-source.png`;
+  const runtime = createGameRuntime(canvas, { ...config, openingPlate }, (message) => { status.textContent = message; });
 
   const abortController = new AbortController();
   const resize = () => resizeCanvasDisplay(root, canvas, config);
@@ -30,12 +34,15 @@ export function bootstrapGame(root, overrides = {}) {
   });
   resize();
   canvas.focus({ preventScroll: true });
+  runtime.start();
 
   return {
     root,
     canvas,
     config,
+    runtime,
     destroy() {
+      runtime.stop();
       abortController.abort();
       root.classList.remove('lc-mounted');
       root.replaceChildren();
@@ -52,34 +59,4 @@ function resizeCanvasDisplay(root, canvas, config) {
   )));
   canvas.style.width = `${config.logicalWidth * scale}px`;
   canvas.style.height = `${config.logicalHeight * scale}px`;
-}
-
-function drawBootPlate(canvas, config) {
-  const context = canvas.getContext('2d');
-  if (!context) return;
-
-  context.imageSmoothingEnabled = false;
-  context.fillStyle = '#111817';
-  context.fillRect(0, 0, config.logicalWidth, config.logicalHeight);
-
-  const glow = context.createRadialGradient(
-    config.logicalWidth / 2,
-    config.logicalHeight * 0.72,
-    2,
-    config.logicalWidth / 2,
-    config.logicalHeight * 0.72,
-    config.logicalHeight * 0.5,
-  );
-  glow.addColorStop(0, 'rgba(227, 139, 69, 0.42)');
-  glow.addColorStop(1, 'rgba(17, 24, 23, 0)');
-  context.fillStyle = glow;
-  context.fillRect(0, 0, config.logicalWidth, config.logicalHeight);
-
-  context.textAlign = 'center';
-  context.fillStyle = '#e8d2a2';
-  context.font = '600 12px Georgia, serif';
-  context.fillText('ELDRIC', config.logicalWidth / 2, config.logicalHeight * 0.43);
-  context.fillStyle = '#b6a580';
-  context.font = 'italic 7px Georgia, serif';
-  context.fillText('The Living Chronicle', config.logicalWidth / 2, config.logicalHeight * 0.53);
 }

@@ -29,16 +29,16 @@ implement and verify in a single loop.
 
 ### M2 — Player and world
 - [ ] Tilemap loading and rendering; layered draw order.
-- [ ] Collision and spatial lookup.
-- [ ] Player entity with a state machine: idle, walk, run, dodge, block, attack, hurt.
+- [x] Collision and spatial lookup.
+- [x] Player entity with a state machine: idle, walk, run, dodge, block, attack, hurt.
 - [ ] Camera follow with soft bounds; screen transitions between areas.
-- [ ] Interaction system (objects, doors, chests, NPCs) and building interiors.
+- [x] Interaction system (objects, doors, chests, NPCs); building interiors remain for a later pass.
 
 ### M3 — Combat (must feel good before anything else is added)
-- [ ] Light attack, heavy attack, hitboxes, damage application.
-- [ ] Health and stamina economy; block and dodge costs.
-- [ ] Hit feedback: flash, freeze frames, knockback, particles, sound hooks.
-- [ ] Enemy attack telegraphs and recovery windows.
+- [x] Light attack, heavy attack, hitboxes, damage application.
+- [x] Health and stamina economy; block and dodge costs.
+- [x] Hit feedback: flash, camera shake, knockback, particles; sound hooks remain.
+- [x] Enemy attack telegraphs and recovery windows.
 - [ ] Six behaviour-distinct enemies: wolf (pack, circling), bandit (feints, flees at low health),
       skeleton (reassembles), forest creature (ambush), armored knight (guard break required),
       dungeon creature (ranged/area).
@@ -93,7 +93,7 @@ implement and verify in a single loop.
 - [ ] Original art pass: player, NPCs, enemies, bosses, terrain, trees, buildings, water, roads,
       bridges, caves, dungeon tiles, weapons, items, chests, UI, Chronicle book, portraits,
       effects, title screen. One coherent hand-painted storybook direction.
-- [ ] The opening: black screen, fire, "Gather close, and heed my tale.", the book, the camera
+- [x] The opening: black screen, fire, "Gather close, and heed my tale.", the book, the camera
       descending into a moving illustration, control within seconds.
 - [ ] Audio: ambience, wind, rain, birds, footsteps, impacts, fire, village chatter, dungeon
       echoes, water, doors, treasure — with graceful fallbacks when assets are missing.

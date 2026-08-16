@@ -23,10 +23,10 @@
     "preflight_confirmed_at": "2026-08-16T01:53:38Z",
     "preflight_confirmed_by": "user (EXECUTE)",
     "max_iterations": 25,
-    "current_iteration": 5,
+    "current_iteration": 6,
     "last_run_boundary": null,
     "iterations_since_progress": 0,
-    "last_progress_iteration": 5,
+    "last_progress_iteration": 6,
     "no_progress_threshold": 3,
     "run_boundaries": [
       "definition_of_done_met",

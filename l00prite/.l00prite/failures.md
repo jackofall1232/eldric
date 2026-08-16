@@ -26,6 +26,10 @@ Record failed approaches and why they should not be retried unless conditions ch
 - 2026-08-16: The scaffold's `node --test tests/unit tests/integration` command is incompatible
   with Node 24 because the paths are treated as modules. Replaced it with Node's recursive
   `node --test` discovery; do not restore the directory-argument form.
+- 2026-08-16: The repository's recommended `agent-browser` verification CLI is not installed in
+  this environment. The Vite server was started successfully after port-listen approval, but the
+  visual screenshot/console automation could not run. Do not claim a completed browser visual
+  check until the CLI or another browser harness is available.
 
 ## Blockers
 - None yet.

@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  publicDir: 'assets',
   build: {
     outDir: 'wordpress/living-chronicle/assets/build',
     emptyOutDir: true,

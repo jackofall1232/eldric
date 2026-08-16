@@ -5,6 +5,8 @@ export const DEFAULT_CONFIG = Object.freeze({
   saveKey: 'eldric.living-chronicle.save',
   storyProvider: 'local',
   reducedMotion: false,
+  openingSeen: false,
+  assetBase: '.',
 });
 
 export function resolveConfig(overrides = {}) {
@@ -12,6 +14,7 @@ export function resolveConfig(overrides = {}) {
   config.logicalWidth = clampDimension(config.logicalWidth, 320, 640);
   config.logicalHeight = clampDimension(config.logicalHeight, 180, 360);
   config.pixelRatioCap = Math.max(1, Math.min(3, Number(config.pixelRatioCap) || 1));
+  config.assetBase = typeof config.assetBase === 'string' && config.assetBase ? config.assetBase : '.';
   return config;
 }
 

@@ -1,0 +1,3 @@
+# Chronicle illustration plates
+
+Stub.

@@ -133,6 +133,31 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not route touch buttons directly into player code.
 - **Lock:** `codex-eldric-20260816T015338Z` active.
 
+### Run 2026-08-16T02:12:44Z — Codex (Execution Mode, iteration 6)
+- **Goal:** Replace the boot plate with a substantial offline-playable Millhaven action-adventure.
+- **Decision:** Normal work; the authored world runtime is the smallest player-visible vertical
+  slice unit connecting the completed engine seams.
+- **Completed work:** Added the skippable narrated opening; dense Millhaven/forest/road/river/
+  bridge/ruin/cave world; collision, NPCs, clues, secret, campfire, quest progression, combat,
+  enemy telegraphs, mini-boss, gated boss, ambiguous ending, rumors, and Chronicle pages. Added an
+  original generated illuminated-book opening plate plus manifest/license provenance.
+- **Changed files:** game runtime/world content/bootstrap/config, asset manifest/licenses/opening
+  art, Vite public-asset handling, region/content tests, generated WordPress assets, memory.
+- **Tests run / Verification:** standalone and WordPress builds exited `0`; full `npm test` passed
+  25 files; focused real content tests passed 2 files; secret grep found no client key pattern;
+  2026-08-16T02:12:44Z.
+- **Failures:** Dev server initially needed port approval and then started; visual automation was
+  unavailable because `agent-browser` is not installed. This remains unverified, not claimed.
+- **Decisions:** Opening asset was generated with the built-in image tool from the original
+  Millhaven prompt and saved at `assets/opening/millhaven-book-source.png`; deterministic code
+  constructs all combat and world state.
+- **Confidence:** Medium-high — build/data/runtime integration is strong, but browser visual
+  automation is still outstanding.
+- **Next action:** Commit, then add mobile touch controls and persistence.
+- **Do-not-retry notes:** Do not inline the 2.8 MB opening image into the IIFE; library-mode asset
+  imports do that, so it is shipped via the public asset base.
+- **Lock:** `codex-eldric-20260816T015338Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
