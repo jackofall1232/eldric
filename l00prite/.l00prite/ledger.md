@@ -334,6 +334,19 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement audio/music fallback.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:51:39Z — Codex (authorized story run, iteration 10)
+- **Goal:** Add contextual sound/music without making missing audio a gameplay failure.
+- **Completed work:** Null and WebAudio synthesis backends, bus mixer, six-state music director,
+  audio facade with failure fallback, lazy user-gesture initialization, zone music, and sword/hurt/
+  fire sound hooks.
+- **Tests run / Verification:** audio/fallback/smoke/purity tests and both builds exit `0`, 2026-08-16T02:51:23Z.
+- **Failures:** none.
+- **Decisions:** Browser audio starts only after user gesture; missing/unavailable WebAudio falls back
+  to silence; core gameplay never awaits audio.
+- **Confidence:** High for graceful behavior and state wiring; final music composition/assets remain future polish.
+- **Next action:** Commit, then implement reusable combat/enemy modules and offline playthrough test.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

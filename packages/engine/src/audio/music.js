@@ -1,1 +1,2 @@
-// Music state machine: exploration, danger, combat, village, dungeon, story.
+export const MusicState = Object.freeze({ EXPLORATION: 'exploration', DANGER: 'danger', COMBAT: 'combat', VILLAGE: 'village', DUNGEON: 'dungeon', STORY: 'story' });
+export class MusicDirector { constructor(audio) { this.audio = audio; this.current = null; } set(state) { if (!Object.values(MusicState).includes(state) || state === this.current) return false; this.current = state; this.audio.play(`music_${state}`, { bus: 'music', volume: .18 }); return true; } }

@@ -11,7 +11,7 @@ const PALETTE = Object.freeze({
 });
 
 export function createGameRuntime(canvas, config, onStatus = () => {}) {
-  const platform = createWebPlatform(canvas, { storage: config.storage });
+  const platform = createWebPlatform(canvas, { storage: config.storage, audio: config.audio });
   const renderer = new Renderer(new Canvas2DBackend(canvas));
   const camera = new Camera({ width: canvas.width, height: canvas.height, x: 270, y: 375, smoothing: 9 });
   camera.setBounds({ x: 0, y: 0, ...WORLD });
@@ -125,6 +125,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   }
 
   function startAttack(kind, duration, cost, damage, reach) {
+    platform.audio?.play?.('sword', { bus: 'sfx', volume: kind === 'heavy' ? .48 : .32 });
     player.state = kind; player.timer = duration; player.stamina -= cost; player.attackId += 1;
     const cx = player.x + player.facingX * reach * 0.65;
     const cy = player.y + player.facingY * reach * 0.65;
@@ -161,6 +162,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     if (player.invulnerable > 0) return;
     if (player.state === 'block') { player.stamina = Math.max(0, player.stamina - damage); damage *= 0.22; }
     player.health = Math.max(0, player.health - damage); player.state = 'hurt'; player.timer = 0.28;
+    platform.audio?.play?.('danger', { bus: 'sfx', volume: .28 });
     player.x -= dx * 16; player.y -= dy * 16; camera.shake(5, 0.16);
     if (player.health <= 0) {
       player.health = player.maxHealth; player.x = 258; player.y = 390; state.zone = 'millhaven';
@@ -210,6 +212,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     if (!target) return;
     if (target.type === 'npc') { state.dialogue = target.id; state.dialogueIndex = 0; return; }
     if (target.id === 'campfire') {
+      platform.audio?.play?.('fire', { bus: 'ambience', volume: .2 });
       player.health = player.maxHealth; player.stamina = player.maxStamina;
       const summary = state.discoveries.size
         ? `At Millhaven’s fire, the storyteller recalled ${[...state.discoveries].length} signs Eldric had uncovered along Blackwater Road.`
@@ -244,7 +247,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
 
   function updateZone() {
     const zone = ZONES.find((candidate) => inside(player, candidate));
-    if (zone && state.zone !== zone.id) { state.zone = zone.id; toast(zone.name); }
+    if (zone && state.zone !== zone.id) { state.zone = zone.id; toast(zone.name); platform.audio?.setMusic?.(zone.id === 'millhaven' ? 'village' : zone.id === 'gloam-cave' || zone.id === 'sunken-ruin' ? 'dungeon' : 'exploration'); }
   }
 
   function render(alpha) {

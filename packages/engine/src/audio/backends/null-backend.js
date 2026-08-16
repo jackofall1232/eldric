@@ -1,1 +1,1 @@
-// PLATFORM SEAM — silent backend for tests and asset-less runs.
+export class NullAudioBackend { async init() { return true; } play() { return null; } stop() {} setBusVolume() {} async dispose() {} }

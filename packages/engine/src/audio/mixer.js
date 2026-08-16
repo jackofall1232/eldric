@@ -1,1 +1,1 @@
-// Bus mixing for music, sfx and ambience.
+export class AudioMixer { constructor(backend) { this.backend = backend; this.volumes = { music: .55, sfx: .8, ambience: .65 }; } set(bus, value) { if (!(bus in this.volumes)) throw new RangeError('Unknown audio bus.'); this.volumes[bus] = Math.max(0, Math.min(1, Number(value) || 0)); this.backend.setBusVolume(bus, this.volumes[bus]); } get(bus) { return this.volumes[bus]; } }

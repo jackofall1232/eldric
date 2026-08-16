@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "complete deterministic audio/music subsystem with graceful fallback",
+  "current_goal": "replace remaining combat/entity system stubs and strengthen the offline playthrough verification",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T02:48:47Z",
+  "last_updated": "2026-08-16T02:51:39Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit environment simulation, then implement audio mixer/music/null/WebAudio backends"
+  "next_recommended_action": "commit audio, then implement/test reusable combat and enemy behavior modules"
 }

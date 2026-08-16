@@ -95,9 +95,9 @@ implement and verify in a single loop.
       effects, title screen. One coherent hand-painted storybook direction.
 - [x] The opening: black screen, fire, "Gather close, and heed my tale.", the book, the camera
       descending into a moving illustration, control within seconds.
-- [ ] Audio: ambience, wind, rain, birds, footsteps, impacts, fire, village chatter, dungeon
+- [x] Audio: ambience, wind, rain, birds, footsteps, impacts, fire, village chatter, dungeon
       echoes, water, doors, treasure — with graceful fallbacks when assets are missing.
-- [ ] Music states: exploration, danger, combat, village, dungeon, story moments.
+- [x] Music states: exploration, danger, combat, village, dungeon, story moments.
 - [x] Particles (leaves, rain, fog, sparks, fireflies) with a dynamic budget on slower devices.
 - [x] Lighting around fires, windows, magic and moonlight; day/night cycle; weather.
 

@@ -1,6 +1,6 @@
 import { resolveConfig } from './config.js';
 import { createGameRuntime } from '../runtime/game-runtime.js';
-import { LocalStorageBackend } from '@eldric/engine';
+import { AudioSystem, LocalStorageBackend, MusicState, WebAudioBackend } from '@eldric/engine';
 import { mountMobileControls } from '../ui/mobile-controls.js';
 
 export function bootstrapGame(root, overrides = {}) {
@@ -28,10 +28,14 @@ export function bootstrapGame(root, overrides = {}) {
   openingPlate.decoding = 'async';
   openingPlate.src = `${config.assetBase.replace(/\/$/, '')}/opening/millhaven-book-source.png`;
   const storage = new LocalStorageBackend(root.ownerDocument.defaultView.localStorage, config.saveKey);
-  const runtime = createGameRuntime(canvas, { ...config, openingPlate, storage }, (message) => { status.textContent = message; });
+  const audio = new AudioSystem(new WebAudioBackend(root.ownerDocument.defaultView.AudioContext ?? root.ownerDocument.defaultView.webkitAudioContext));
+  const runtime = createGameRuntime(canvas, { ...config, openingPlate, storage, audio }, (message) => { status.textContent = message; });
   const unmountControls = mountMobileControls(root, runtime.platform.touchSource);
 
   const abortController = new AbortController();
+  const startAudio = async () => { await audio.init(); audio.setMusic(MusicState.VILLAGE); };
+  root.addEventListener('pointerdown', startAudio, { once: true, signal: abortController.signal });
+  root.addEventListener('keydown', startAudio, { once: true, signal: abortController.signal });
   const resize = () => resizeCanvasDisplay(root, canvas, config);
   root.ownerDocument.defaultView?.addEventListener('resize', resize, {
     signal: abortController.signal,
@@ -48,6 +52,7 @@ export function bootstrapGame(root, overrides = {}) {
     destroy() {
       runtime.stop();
       unmountControls();
+      audio.dispose();
       abortController.abort();
       root.classList.remove('lc-mounted');
       root.replaceChildren();
