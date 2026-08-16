@@ -20,7 +20,12 @@ Record failed approaches and why they should not be retried unless conditions ch
 | Stale Arming (crashed run left `enabled: true`) | S2 | Pre-flight stale-run recovery; persisted flags never authorize a run. |
 
 ## Failed Approaches
-- None yet.
+- 2026-08-16: Initial sandboxed `npm install` could not resolve `registry.npmjs.org`
+  (`EAI_AGAIN`). Retrying with the required network approval succeeded; do not diagnose this as
+  a package defect while sandbox networking remains restricted.
+- 2026-08-16: The scaffold's `node --test tests/unit tests/integration` command is incompatible
+  with Node 24 because the paths are treated as modules. Replaced it with Node's recursive
+  `node --test` discovery; do not restore the directory-argument form.
 
 ## Blockers
 - None yet.

@@ -1,2 +1,13 @@
-// Dev server and standalone web build config. Stub — real config is the first M1 item.
-export default {};
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 4173,
+  },
+  build: {
+    outDir: 'build/web',
+    emptyOutDir: true,
+    sourcemap: true,
+  },
+});

@@ -26,6 +26,41 @@ Append one entry per agent run. Do not overwrite prior runs.
 
 ---
 
+### Run 2026-08-16T01:58:07Z — Codex (Execution Mode, iteration 1)
+- **Goal:** Make Eldric boot as a real standalone and WordPress-targeted canvas application.
+- **Triggering event:** none — confirmed roadmap execution.
+- **Reviewer/comment reference:** user confirmed `EXECUTE`; canonical title corrected to
+  "Eldric: The Living Chronicle."
+- **Decision:** Normal work; completed the first M1 build-and-canvas unit before deeper systems.
+- **Completed work:** Added real Vite standalone and IIFE WordPress builds, responsive scoped
+  canvas mounting/unmounting, validated boot configuration, initial storybook boot plate, and a
+  non-stub smoke test. Installed the already-declared Vite dependency and corrected Node 24 test
+  discovery.
+- **Fix implemented:** Build output now targets `build/web/` and
+  `wordpress/living-chronicle/assets/build/`; the WordPress bundle exposes the single
+  `EldricLivingChronicle` namespace.
+- **Changed files:** `.gitignore`, `package.json`, `package-lock.json`, `vite.config.js`,
+  `vite.config.wp.js`, `index.html`, `packages/game/src/{main.js,embed.js,boot/bootstrap.js,boot/config.js,ui/game.css}`,
+  `tests/integration/smoke-boot.test.js`, generated WordPress build assets, and l00prite memory.
+- **Tests run / Verification:**
+  - `npm run build`, exit_code `0`, standalone production build completed, 2026-08-16T01:57:35Z.
+  - `npm run build:wp`, exit_code `0`, IIFE JS and scoped CSS emitted under plugin `assets/build/`,
+    2026-08-16T01:57:35Z.
+  - `npm test`, exit_code `0`, 25 test files passed including the real smoke boot assertions,
+    2026-08-16T01:57:35Z.
+  - `npm run doctor`, exit_code `0`, 24 checks OK and HEALTHY, 2026-08-16T01:55:38Z.
+- **Response drafted/sent:** Progress update sent; no external publish action taken.
+- **Event status:** not applicable.
+- **Failures:** Sandboxed dependency fetch failed with `EAI_AGAIN`; approved network retry
+  succeeded. Initial test command used incompatible directory arguments; corrected and rerun.
+- **Decisions:** Fixed logical canvas is 384×216; WordPress output is an IIFE with one public
+  namespace; all player-facing branding uses "Eldric: The Living Chronicle."
+- **Confidence:** High — both build targets and the full discovered test set pass.
+- **Next action:** Commit this unit, then implement the deterministic fixed-step loop.
+- **Do-not-retry notes:** Do not restore directory arguments to `node --test`; do not emit plugin
+  bundles to `dist/`.
+- **Lock:** `codex-eldric-20260816T015338Z` active for the confirmed execute-loop run.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

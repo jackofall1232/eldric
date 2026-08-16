@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "lock_id": null,
-  "owner_agent": null,
-  "owner_session": null,
-  "acquired_at": null,
-  "expires_at": null,
+  "lock_id": "codex-eldric-20260816T015338Z",
+  "owner_agent": "codex",
+  "owner_session": "eldric-vertical-slice",
+  "acquired_at": "2026-08-16T01:53:38Z",
+  "expires_at": "2026-08-16T02:23:38Z",
   "ttl_seconds": 1800,
-  "purpose": null,
+  "purpose": "execute-loop run",
   "protected_paths": [
     "ledger.md",
     "memory.md",
@@ -18,5 +18,5 @@
     "reviews/",
     "sessions/"
   ],
-  "status": "unlocked"
+  "status": "active"
 }

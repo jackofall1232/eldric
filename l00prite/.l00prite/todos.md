@@ -7,7 +7,7 @@ implement and verify in a single loop.
 ## Next
 
 ### M1 — Engine skeleton (first playable: a grey box that moves)
-- [ ] Real build config: `package.json`, `vite.config.js`, `vite.config.wp.js` and `index.html`
+- [x] Real build config: `package.json`, `vite.config.js`, `vite.config.wp.js` and `index.html`
       exist as stubs — fill them in, install dependencies, and get `npm run dev` serving a blank
       canvas (smallest useful step; nothing else runs until this does). The WordPress config must
       emit an IIFE bundle into `wordpress/living-chronicle/assets/build/`, never `dist/`.
