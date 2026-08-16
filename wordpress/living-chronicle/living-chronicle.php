@@ -18,6 +18,15 @@ define( 'LC_URL', plugin_dir_url( __FILE__ ) );
 
 require_once LC_PATH . 'includes/class-lc-assets.php';
 require_once LC_PATH . 'includes/class-lc-shortcode.php';
+require_once LC_PATH . 'includes/class-lc-sanitizer.php';
+require_once LC_PATH . 'includes/class-lc-validator.php';
+require_once LC_PATH . 'includes/class-lc-rate-limiter.php';
+require_once LC_PATH . 'includes/class-lc-logger.php';
+require_once LC_PATH . 'includes/providers/class-lc-provider.php';
+require_once LC_PATH . 'includes/class-lc-story-controller.php';
+require_once LC_PATH . 'includes/providers/class-lc-provider-local.php';
+require_once LC_PATH . 'includes/class-lc-rest.php';
+require_once LC_PATH . 'includes/class-lc-settings.php';
 require_once LC_PATH . 'includes/class-lc-plugin.php';
 
 LC_Plugin::instance()->boot();

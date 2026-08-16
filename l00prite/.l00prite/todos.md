@@ -106,12 +106,12 @@ implement and verify in a single loop.
       on a data attribute (multiple shortcodes on one page must not collide).
 - [x] Scoped asset enqueue inside the render callback, `lc-` prefixed handles, CSS scoped under a
       single root, one global exposing `mount`/`unmount`.
-- [ ] REST proxy (`lc/v1/story`, `lc/v1/health`): nonce and permission checks, request validation,
+- [x] REST proxy (`lc/v1/story`, `lc/v1/health`): nonce and permission checks, request validation,
       per-user and per-IP rate limiting, timeouts, maximum prompt and response sizes, PHP-side
       response validation, authored fallback on every failure path. **Human review gate.**
-- [ ] Settings page with the API key stored write-only server-side and masked on render.
+- [x] Settings page with the API key stored write-only server-side and masked on render.
       **Human review gate.**
-- [ ] PHP/JS schema parity test.
+- [x] PHP/JS schema parity test.
 - [ ] Nonce lifetime under page caching (a cached page serves a stale nonce and the proxy 403s).
 - [x] Build to `wordpress/living-chronicle/assets/build/` — never `dist/`, which `.gitignore`
       silently swallows, leaving the plugin 404ing in production.

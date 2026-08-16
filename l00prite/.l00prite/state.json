@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "mirror the frozen story contract in PHP and implement the hardened WordPress REST proxy",
+  "current_goal": "complete deterministic quest, reputation, memory, rumor, inventory, and Chronicle subsystems with real tests",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T02:27:32Z",
+  "last_updated": "2026-08-16T02:32:13Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit provider orchestration, then implement PHP schema parity, validation, rate limiting, controller, and REST routes"
+  "next_recommended_action": "commit the hardened PHP story pipeline, then replace remaining content-system test stubs with real implementations"
 }

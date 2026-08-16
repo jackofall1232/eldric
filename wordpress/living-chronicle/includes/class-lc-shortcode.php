@@ -18,6 +18,8 @@ final class LC_Shortcode {
             'assetBase' => untrailingslashit( LC_URL . 'assets/build' ),
             'saveKey' => sprintf( 'eldric.living-chronicle.%s.%d', $profile, $this->instance ),
             'storyProvider' => 'local',
+            'storyEndpoint' => esc_url_raw( rest_url( 'lc/v1/story' ) ),
+            'storyNonce' => wp_create_nonce( 'wp_rest' ),
         );
         $this->assets->enqueue();
         ob_start();

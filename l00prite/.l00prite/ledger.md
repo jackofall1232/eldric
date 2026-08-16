@@ -243,6 +243,24 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement PHP mirror and proxy security pipeline.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:32:13Z — Codex (authorized story run, iteration 3)
+- **Goal:** Implement the server-side story security pipeline under explicit authorization.
+- **Completed work:** Exact PHP schema mirror, strict context/output validator, dangerous-text
+  rejection, user/IP transient limiter, provider abstraction/local provider, no-secret logger,
+  fallback controller, nonce-protected story route, public minimal health route, write-only settings,
+  plugin wiring, uninstall cleanup, PHP fixture runner, and exact schema parity test.
+- **Tests run / Verification:** all PHP files lint clean; PHP malicious-fixture behavior test and
+  JS/PHP exact schema test pass; full 25-file Node run and WordPress build exit `0`; static scan
+  finds no `__return_true`, forwarded-IP trust, key, or secret in the client bundle, 2026-08-16T02:32:13Z.
+- **Failures:** none.
+- **Decisions:** Default server provider is local and makes no outbound request; story POST requires
+  `wp_rest` nonce; raw REMOTE_ADDR is HMAC-hashed for limits and never logged; settings blank preserves
+  a stored future key and explicit clear removes it; health exposes only provider id/schema.
+- **Confidence:** High for validation and static WordPress integration; clean-install runtime smoke
+  remains unavailable without a WordPress test host.
+- **Next action:** Commit, then build/test remaining deterministic content systems.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
