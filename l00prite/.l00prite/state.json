@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "finish final performance/package checks and stop at the manual browser/WordPress review gate",
+  "current_goal": "rebuild the final archive and execute the complete release verification matrix",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T03:21:00Z",
+  "last_updated": "2026-08-16T03:25:00Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit dense world content, inspect performance budgets, rebuild the final zip, and run the complete release matrix"
+  "next_recommended_action": "commit procedural audio polish, rebuild the source-map-free zip, verify hashes/secrets/tests/builds/PHP, then release the lock at the manual QA gate"
 }

@@ -18,7 +18,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   const rng = new SeededRng('eldric-millhaven-v1');
   const player = { x: 250, y: 370, previousX: 250, previousY: 370, facingX: 1, facingY: 0,
     health: 100, maxHealth: 100, stamina: 100, maxStamina: 100, state: 'idle', timer: 0,
-    invulnerable: 0, attackId: 0 };
+    invulnerable: 0, attackId: 0, stepTimer: 0 };
   const enemies = ENEMY_SPAWNS.map(createEnemy);
   const saved = platform.storage?.load?.() ?? null;
   if (saved?.player) Object.assign(player, saved.player);
@@ -116,6 +116,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     player.timer = Math.max(0, player.timer - delta);
     player.invulnerable = Math.max(0, player.invulnerable - delta);
     player.stamina = Math.min(player.maxStamina, player.stamina + 24 * delta);
+    player.stepTimer = Math.max(0, player.stepTimer - delta);
     if (player.timer <= 0 && ['attack', 'heavy', 'dodge', 'hurt'].includes(player.state)) player.state = 'idle';
 
     if (platform.input.pressed(Action.ATTACK) && player.stamina >= 10) startAttack('attack', 0.34, 10, 22, 42);
@@ -130,6 +131,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       const running = platform.input.down(Action.RUN) && player.stamina > 2;
       const speed = player.state === 'dodge' ? 205 : running ? 120 : 78;
       if (running) player.stamina -= 15 * delta;
+      if ((movement.x || movement.y) && player.stepTimer <= 0) { platform.audio?.play?.('footstep', { bus: 'sfx', volume: running ? .12 : .08 }); player.stepTimer = running ? .2 : .32; }
       const nextX = player.x + movement.x * speed * delta;
       const nextY = player.y + movement.y * speed * delta;
       if (!collides(nextX, player.y)) player.x = clamp(nextX, 12, WORLD.width - 12);
@@ -260,7 +262,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     const target = nearestInteractable();
     if (!target) return;
     if (target.type === 'npc' || target.type === 'traveler') { state.dialogue = target.id; state.dialogueIndex = 0; return; }
-    if (target.type === 'building') { state.mode = 'interior'; state.interior = target.interior; state.interiorX = 192; state.interiorY = 170; toast(`Entered ${target.name.replace('Enter the ', '')}.`); return; }
+    if (target.type === 'building') { platform.audio?.play?.('door', { bus: 'sfx', volume: .18 }); state.mode = 'interior'; state.interior = target.interior; state.interiorX = 192; state.interiorY = 170; toast(`Entered ${target.name.replace('Enter the ', '')}.`); return; }
     if (target.id === 'campfire') {
       platform.audio?.play?.('fire', { bus: 'ambience', volume: .2 });
       player.health = player.maxHealth; player.stamina = player.maxStamina;
@@ -272,12 +274,12 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     }
     if (target.id === 'cave-door') {
       if (!state.discoveries.has('ruin-key')) { toast('An iron seal. Its key bears the Broken King’s crown.'); return; }
-      state.gloamOpen = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', 'The Gloam Gate opened. Within, three stones wait: river, crown, root.'); return;
+      platform.audio?.play?.('door', { bus: 'sfx', volume: .3 }); state.gloamOpen = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', 'The Gloam Gate opened. Within, three stones wait: river, crown, root.'); return;
     }
     if (target.type === 'rune') { touchRune(target.rune); return; }
     if (target.type === 'hidden') { discover('hidden-glade', 'Beyond the pale mushrooms, a moonlit glade concealed the Witchglass Charm.'); if (!state.inventory.includes('Witchglass Charm')) state.inventory.push('Witchglass Charm'); return; }
     if (target.type === 'locked') { if (!state.discoveries.has('ruin-key')) { toast('The cellar lock bears the same broken crown as the eastern ruin.'); return; } discover('locked-cellar', 'The River Key opened the cellar. Inside lay medicine hidden from frightened villagers.'); return; }
-    if (target.type === 'chest') { discover(target.id, 'Inside: the River Key and the Broken King’s medallion.'); state.quest = Math.max(state.quest, 4); return; }
+    if (target.type === 'chest') { platform.audio?.play?.('treasure', { bus: 'sfx', volume: .24 }); discover(target.id, 'Inside: the River Key and the Broken King’s medallion.'); state.quest = Math.max(state.quest, 4); return; }
     if (target.type === 'secret') { discover(target.id, target.id === 'statue' ? 'The saint points southeast. A hidden trail answers in pale mushrooms.' : 'The hollow rock concealed a traveler’s rain-stained letter: “It spoke Elara’s name.”'); return; }
     discover(target.id, target.id === 'wagon' ? 'The claw marks were carved from inside the wagon.' :
       target.id === 'tracks' ? 'Bare human footprints enter the river. Webbed tracks leave it.' :
@@ -306,13 +308,13 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     if (state.runesSolved) { toast('The three stones hum in one river-deep chord.'); return; }
     const order = [2, 1, 3]; const expected = order[state.runeSequence.length];
     if (rune !== expected) { state.runeSequence = rune === order[0] ? [rune] : []; toast('The cavern rejects the sequence; the stones fall dark.'); return; }
-    state.runeSequence.push(rune); toast(['', 'The river stone answers.', 'The crown stone bows.', 'Roots split the final seal.'][state.runeSequence.length]);
+    state.runeSequence.push(rune); platform.audio?.play?.('magic', { bus: 'sfx', volume: .2 + state.runeSequence.length * .04 }); toast(['', 'The river stone answers.', 'The crown stone bows.', 'Roots split the final seal.'][state.runeSequence.length]);
     if (state.runeSequence.length === order.length) { state.runesSolved = true; state.bossAwake = true; state.quest = Math.max(state.quest, 7); discover('gloam_runes_solved', 'River, crown, root: the old order woke what waited beneath Blackwater.'); }
   }
 
   function updateZone() {
     const zone = ZONES.find((candidate) => inside(player, candidate));
-    if (zone && state.zone !== zone.id) { state.zone = zone.id; state.weather = zone.id === 'gloam-cave' || zone.id === 'sunken-ruin' ? 'fog' : zone.id === 'blackwater-bridge' ? 'rain' : zone.id === 'millhaven' ? 'fireflies' : 'leaves'; toast(zone.name); platform.audio?.setMusic?.(zone.id === 'millhaven' ? 'village' : zone.id === 'gloam-cave' || zone.id === 'sunken-ruin' ? 'dungeon' : 'exploration'); }
+    if (zone && state.zone !== zone.id) { state.zone = zone.id; state.weather = zone.id === 'gloam-cave' || zone.id === 'sunken-ruin' ? 'fog' : zone.id === 'blackwater-bridge' ? 'rain' : zone.id === 'millhaven' ? 'fireflies' : 'leaves'; toast(zone.name); platform.audio?.setMusic?.(zone.id === 'millhaven' ? 'village' : zone.id === 'gloam-cave' || zone.id === 'sunken-ruin' ? 'dungeon' : 'exploration'); platform.audio?.play?.(zone.id === 'blackwater-bridge' ? 'water' : zone.id === 'whisperwood' ? 'bird' : zone.id === 'gloam-cave' ? 'danger' : 'fire', { bus: 'ambience', volume: .08 }); }
   }
 
   function render(alpha) {

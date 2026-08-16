@@ -449,6 +449,20 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then rebuild the final archive and run the complete release matrix.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T03:25:00Z — Codex (authorized story run, iteration 18)
+- **Goal:** Make the original procedural music/sound implementation feel continuous rather than cue-like.
+- **Completed work:** Persistent six-state synthesized chord beds with clean stop/switch/dispose;
+  distinct sword, treasure, fire, water, danger, footstep, door, magic, rain and bird cues;
+  movement, region, interior, chest, gate and rune hooks; unchanged silent backend fallback.
+- **Tests run / Verification:** focused audio/smoke tests and full 29-file `npm test` exit `0`;
+  WordPress build exits `0`, 2026-08-16T03:24:30Z.
+- **Failures:** subjective mix and speaker behavior require physical-device QA.
+- **Decisions:** 0.1 sound remains original synthesis with no external files/CDN; music handles are
+  owned by the director so state changes cannot leak oscillators.
+- **Confidence:** High for lifecycle/fallback correctness, medium for final mix aesthetics.
+- **Next action:** Commit, rebuild final zip, run full release matrix, release lock at manual QA gate.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
