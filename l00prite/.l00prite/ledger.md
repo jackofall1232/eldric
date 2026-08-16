@@ -783,3 +783,108 @@ Append one entry per agent run. Do not overwrite prior runs.
   then the WordPress upload path).
 - **Do-not-retry notes:** none.
 - **Lock:** `claude-eldric-frontend-polish-20260816T1330Z` acquired and released this run.
+
+### Run 2026-08-16T18:20:00Z — Claude (supervised, user-directed: explicit AI connector selection)
+- **Goal:** Answer how the storyteller picks an AI when a site has several WordPress AI
+  connectors installed (e.g. OpenAI and Anthropic), then make that choice explicit and make the
+  admin status honest.
+- **Triggering event:** User question — "how the ai connector works if I have both open ai and
+  Anthropic connectors installed... how do i choose what ai is used and are they set up
+  correctly." Scope confirmed in-session via a plan: provider picker + honest status, no model or
+  temperature controls, and the unused `api_key` field left exactly as it is.
+- **Finding that motivated the change:** `LC_Provider_WP_AI` called `wp_ai_client_prompt()` with
+  no provider constraint, so core's `ModelResolver::resolve()` fell through to
+  `reset($candidateMap)` — the first configured provider in registration order. All three official
+  connector plugins register on `init` priority 5, and `activate_plugin()` keeps `active_plugins`
+  alphabetically sorted, so `anthropic` beat `openai` by accident of plugin slug with no way for
+  the administrator to see or change it. Separately, `available()` tested only
+  `function_exists( 'wp_ai_client_prompt' )`, so a WP 7.0+ site with zero configured connectors
+  reported "Site AI — Available" while every request silently served the authored fallback.
+- **Decision:** The user's explicit request is the human authorization for touching the
+  review-gated `includes/providers/**` and `class-lc-settings.php` paths. Storyteller JSON
+  contract, validators, rate limiting and the fallback guarantee are unchanged.
+- **Completed work:**
+  - `LC_Provider_WP_AI`: `KNOWN_PROVIDERS` (anthropic/openai/google), a cached support probe
+    (`lc_wp_ai_probe` transient, 5 min) that never runs during a front-end request, `configured()`
+    / `configured_providers()` / `probe_is_live()`, `provider_label()`, and `using_provider()`
+    applied in `generate()` when a connector is chosen. Constructor clamps unknown ids to empty.
+  - `LC_Settings`: `ai_provider` added to defaults and the sanitize allowlist (unknown → `''`),
+    `chosen_ai_provider()` / `active_ai_provider()` mirroring the existing chosen-vs-active split,
+    probe cache flushed on save, and `active_provider()` now degrades to `local` when no connector
+    can serve rather than only when the AI Client is absent.
+  - Admin: a second "Which AI answers" select (site default + the three connectors, each marked
+    when not connected) with a link to Settings → Connectors; setup-guide chip names the connector
+    actually answering, or "No connector"; both screens warn when the choice cannot serve.
+  - `LC_REST::health()` reports `ai_provider` alongside `provider`.
+  - Docs: corrected the stale "normal play never calls the REST route" claims in `readme.txt` and
+    `docs/wordpress-integration.md` (the shortcode has emitted `remote` since the Site AI work),
+    documented connector selection in `INSTALL.md` and a new FAQ entry.
+- **Fix implemented:** yes — silent degradation to local while the admin reported Site AI as
+  available, and unselectable connector routing.
+- **Changed files:** `wordpress/living-chronicle/includes/providers/class-lc-provider-wp-ai.php`,
+  `includes/class-lc-settings.php`, `includes/class-lc-plugin.php`, `includes/class-lc-rest.php`,
+  `includes/class-lc-admin.php`, `admin/settings-page.php`, `admin/setup-page.php`,
+  `readme.txt`, `INSTALL.md`, `docs/wordpress-integration.md`,
+  `tests/integration/php-wp-provider.{php,test.js}`. No JavaScript changed, so the rebuilt
+  `assets/build/*` bundles came out byte-identical and are not part of this diff.
+- **Tests run / Verification:**
+  - `command: php -l (20 files)` · `exit_code: 0` · `summary: all clean` · `timestamp: 2026-08-16T18:20:00Z`
+  - `command: php tests/integration/php-wp-provider.php` · `exit_code: 0` · `summary: 31 fields correct incl. connector routing, cache, and local degradation` · `timestamp: 2026-08-16T18:22:00Z`
+  - `command: npm test` · `exit_code: 0` · `summary: 61/61 pass (was 55 tests; +1 connector-selection test, +5 from workspace install)` · `timestamp: 2026-08-16T18:24:00Z`
+  - `command: npm run build && ./scripts/build-wp-zip.sh` · `exit_code: 0` · `summary: 42-file zip rebuilt` · `timestamp: 2026-08-16T18:25:00Z`
+  - `command: grep api_key|anthropic|openai in built client bundle` · `exit_code: 0` · `summary: no matches — constraint 21 holds` · `timestamp: 2026-08-16T18:25:00Z`
+- **Response drafted/sent:** Explanation of core's resolution order and the two defects delivered
+  to the user in-session, ahead of the implementation.
+- **Event status:** not applicable.
+- **Failures:** Fresh container needed `npm install` before workspace tests resolved — 6 tests
+  failed with `ERR_MODULE_NOT_FOUND: @eldric/engine` until then (already catalogued; it caught me
+  again, so it is worth a preflight step).
+- **Decisions:** Probed the documented builder API (`using_provider()->is_supported_for_text_generation()`)
+  rather than reaching into `AiClient::defaultRegistry()` or `WP_Connector_Registry` — core exposes
+  no enumeration contract and no filters for provider choice, so a private API would be a
+  liability. Probes are skipped entirely on front-end requests so a page render never waits on
+  connector metadata; a cold cache there assumes the client can serve, which is safe because a
+  real failure still falls back mid-play.
+- **Confidence:** High for selection logic, sanitization and fallback (harness-verified).
+  **Low-to-medium for the connector id strings themselves** — `anthropic`/`openai`/`google` are
+  inferred from core's `connectors_ai_{$id}_api_key` naming and were never exercised against a
+  live WordPress 7.0 install. A wrong id degrades visibly (the connector is simply absent from the
+  dropdown), not dangerously.
+- **Next action:** Manual QA on a real WP 7.0+ site with both `ai-provider-for-anthropic` and
+  `ai-provider-for-openai` keyed: confirm both appear in the dropdown, that picking each changes
+  what `lc/v1/health` reports, and that removing a key flips the screen to "not connected".
+- **Do-not-retry notes:** Do not call `AiClient::defaultRegistry()` from this plugin; core ships no
+  stable enumeration API and `connectors.php` contains zero `apply_filters()` calls.
+- **Lock:** `claude-eldric-connector-select-20260816T1820Z` acquired and released this run.
+
+### Run 2026-08-16T18:05:00Z — Claude (supervised, PR #5 review response)
+- **Goal:** Address the one Copilot review finding on PR #5.
+- **Triggering event:** `pull_request_review.submitted` — Copilot, PR #5.
+- **Reviewer/comment reference:** https://github.com/jackofall1232/eldric/pull/5#discussion_r3792451251
+- **Finding (accepted):** `probe()` never wrote a cached result on non-admin requests, so
+  `configured()` returned the optimistic `true` forever on a site whose administrator never opened
+  a plugin screen — the admin screens were the cache's only writer. Front-end code kept treating
+  Site AI as configured on a site with zero working connectors, costing a wasted `lc/v1/story`
+  round trip per beat and misreporting `lc/v1/health`.
+- **Fix implemented:** `LC_Provider_WP_AI::remember_unconfigured()` writes the negative result to
+  the same transient when a generation attempt against the **site default** reports no usable
+  model. Guarded on `'' === $this->ai_provider`: a named connector failing proves nothing about
+  the connectors beside it, and recording it would falsely condemn a working site default. The
+  existing TTL lets a repaired connector recover after one attempt.
+- **Changed files:** `wordpress/living-chronicle/includes/providers/class-lc-provider-wp-ai.php`,
+  `tests/integration/php-wp-provider.{php,test.js}`, `docs/wordpress-integration.md`.
+- **Tests run / Verification:**
+  - `command: php -l` · `exit_code: 0` · `summary: clean` · `timestamp: 2026-08-16T18:06:00Z`
+  - `command: php tests/integration/php-wp-provider.php` · `exit_code: 0` · `summary: 37 fields correct; front end starts optimistic, flips to local after one real failure, named-connector failure does not condemn the site` · `timestamp: 2026-08-16T18:07:00Z`
+  - `command: npm test` · `exit_code: 0` · `summary: 62/62 pass` · `timestamp: 2026-08-16T18:07:00Z`
+- **Event status:** handled — fix pushed and replied on the thread.
+- **Decisions:** Learning from real outcomes was chosen over probing during REST requests
+  (`rest_api_init` fires for every REST route on the site, not just this plugin's) and over a
+  scheduled probe (a cron event for a five-minute cache is disproportionate). The optimistic
+  first request is kept deliberately: a page render must not wait on connector metadata, and a
+  wrong guess costs one round trip that already falls back to authored storytelling.
+- **Confidence:** High — the harness now exercises both the front-end and admin paths.
+- **Next action:** Unchanged; the live WP 7.0 manual QA in todos.md is still the open item.
+- **Do-not-retry notes:** Do not probe connectors from `rest_api_init`; it runs for every REST
+  request on the site.
+- **Lock:** `claude-eldric-pr5-review-20260816T1805Z` acquired and released this run.

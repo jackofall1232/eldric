@@ -1,20 +1,20 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "manual browser/device playtest and clean WordPress upload of the verified 0.1 archive, now including the crisp-render frontend pass (supersampled canvas, spread touch controls, help menu)",
+  "current_goal": "manual QA on a real WordPress 7.0+ site with multiple AI connectors keyed, verifying the new explicit connector selection; plus the pending device/upload playtest",
   "current_phase": "manual_qa",
   "active_agent": null,
-  "last_agent": "Claude (frontend aesthetics: crisp text, spread touch controls, help menu)",
-  "last_updated": "2026-08-16T14:00:00Z",
+  "last_agent": "Claude (explicit AI connector selection + PR #5 review response)",
+  "last_updated": "2026-08-16T18:10:00Z",
   "status": "awaiting_manual_qa",
   "blocked": false,
   "blocker_reason": null,
   "active_event_id": null,
-  "last_event_processed": null,
+  "last_event_processed": "pull_request_review.submitted (Copilot, PR #5) \u2014 probe cache never written on non-admin requests; fixed in b4f71f7",
   "pending_event_count": 0,
-  "review_response_required": true,
+  "review_response_required": false,
   "ci_status": "local_green",
   "execution_active": false,
   "execution_stop_reason": "human_review_gate",
-  "next_recommended_action": "manual QA on real devices: text readability at phone size, thumb ergonomics of the spread touch layout, stick-edge sprint, and the ? help menu on desktop + phone; then the pending wp-admin and WordPress 7.0 Site AI QA"
+  "next_recommended_action": "manual QA: WP 7.0+ with ai-provider-for-anthropic and ai-provider-for-openai both keyed \u2014 confirm both appear in 'Which AI answers', that switching changes lc/v1/health, and that removing a key flips the connector to 'not connected'; connector id strings are still unverified against a live install"
 }

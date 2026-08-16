@@ -22,9 +22,10 @@ secrets, and write a persistent personal Chronicle of your deeds.
 * Progress saves automatically in the player's own browser (local storage). Each shortcode
   instance keeps its own save.
 * Keyboard and touch controls; touch buttons appear automatically on mobile devices.
-* Includes an optional, nonce-protected REST endpoint (`lc/v1/story`) reserved for future
-  server-side storytelling. Normal play in this release never calls it, and the game falls back to
-  its built-in authored storytelling if any story request fails.
+* Includes an optional, nonce-protected REST endpoint (`lc/v1/story`) used only when the
+  administrator switches the story provider to Site AI. With the default local storyteller it is
+  never called, and the game falls back to its built-in authored storytelling if any story
+  request fails.
 
 Shortcode attributes (all optional):
 
@@ -56,11 +57,18 @@ troubleshooting. Optional settings live under **Eldric → Storyteller**. Nothin
 required for play. You can pick the story provider:
 
 * **Local storyteller (default)** — authored offline storytelling, no key, no network.
-* **Site AI — WordPress AI Client** — on WordPress 7.0+ with a configured AI provider, the
+* **Site AI — WordPress AI Client** — on WordPress 7.0+ with a configured AI connector, the
   storyteller's dramatic beats are narrated by your site's own AI connector. Requests go through
   the plugin's server-side proxy (rate limiting, validation, size limits); if the AI is slow,
   unavailable, or returns something invalid, the game continues seamlessly with the local
   storyteller. No AI credential is ever sent to visitors' browsers.
+
+When Site AI is selected, a second setting picks **which** connector answers — Anthropic, OpenAI,
+Google, or the site default. This matters on a site with more than one connector keyed: left to
+itself, WordPress uses the first provider it happens to load, which is decided by plugin order
+rather than by you. Connectors that cannot currently generate text are marked "not connected",
+and a connector that stops answering falls back to the site default rather than breaking play.
+Keys themselves live in WordPress under Settings → Connectors; this plugin never stores them.
 
 The key field is a write-only, server-side placeholder reserved for future direct providers; the
 Site AI option does not use it.
@@ -71,9 +79,16 @@ Site AI option does not use it.
 
 No. By default the game plays entirely offline in the visitor's browser using the plugin's
 authored local storyteller. Optionally, on WordPress 7.0+ you can switch the story provider to
-Site AI, which uses the AI provider your site already has configured through the built-in
-WordPress AI Client — the plugin itself still stores no AI credential, and the game always
-falls back to the local storyteller if the AI is unavailable.
+Site AI, which uses an AI connector your site already has configured under Settings → Connectors
+— the plugin itself still stores no AI credential, and the game always falls back to the local
+storyteller if the AI is unavailable.
+
+= I have both OpenAI and Anthropic connectors installed. Which one does the game use? =
+
+Whichever you pick under **Eldric → Storyteller → Which AI answers**. If you leave that on "Site
+default", WordPress chooses for you — and its choice is the first configured provider it loads,
+which comes down to plugin order rather than any preference of yours. Choose explicitly if it
+matters. `GET /wp-json/lc/v1/health` reports the connector actually in use.
 
 = Where is player progress saved? =
 

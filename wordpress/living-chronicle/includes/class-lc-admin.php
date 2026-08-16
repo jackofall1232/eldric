@@ -60,10 +60,12 @@ final class LC_Admin {
 
     public function render_setup(): void {
         if ( ! current_user_can( 'manage_options' ) ) { return; }
-        $chosen_provider = LC_Settings::chosen_provider();
-        $active_provider = LC_Settings::active_provider();
-        $wp_ai_available = LC_Provider_WP_AI::available();
-        $settings_url    = admin_url( 'admin.php?page=' . self::SETTINGS_SLUG );
+        $chosen_provider    = LC_Settings::chosen_provider();
+        $active_provider    = LC_Settings::active_provider();
+        $wp_ai_available    = LC_Provider_WP_AI::available();
+        $wp_ai_configured   = LC_Provider_WP_AI::configured();
+        $active_ai_provider = LC_Settings::active_ai_provider();
+        $settings_url       = admin_url( 'admin.php?page=' . self::SETTINGS_SLUG );
         include LC_PATH . 'admin/setup-page.php';
     }
 

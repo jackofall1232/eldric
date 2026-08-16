@@ -19,8 +19,10 @@ final class LC_Plugin {
         add_action( 'init', array( $shortcode, 'register' ) );
         add_action( 'rest_api_init', static function (): void {
             // Resolved at request time so AI Client availability is always current.
-            $provider = 'wp-ai' === LC_Settings::active_provider() ? new LC_Provider_WP_AI() : new LC_Provider_Local();
-            $rest = new LC_REST( new LC_Story_Controller( $provider, new LC_Rate_Limiter() ), $provider->id() );
+            $serving_ai = 'wp-ai' === LC_Settings::active_provider();
+            $ai_provider = $serving_ai ? LC_Settings::active_ai_provider() : '';
+            $provider = $serving_ai ? new LC_Provider_WP_AI( $ai_provider ) : new LC_Provider_Local();
+            $rest = new LC_REST( new LC_Story_Controller( $provider, new LC_Rate_Limiter() ), $provider->id(), $ai_provider );
             $rest->register();
         } );
         ( new LC_Admin( $settings ) )->register();
