@@ -21,6 +21,7 @@ export function unmount(element) {
 export function mountAll(scope = document) {
   const mounted = [];
   for (const element of scope.querySelectorAll('[data-eldric-game]')) {
+    if (instances.has(element)) continue;
     const config = parseConfig(element.dataset.eldricConfig);
     mounted.push(mount(element, config));
   }

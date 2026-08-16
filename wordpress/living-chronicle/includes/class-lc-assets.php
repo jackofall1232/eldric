@@ -19,7 +19,7 @@ final class LC_Assets {
         $this->loader_added = true;
         wp_add_inline_script(
             self::SCRIPT,
-            'document.addEventListener("DOMContentLoaded",function(){if(window.EldricLivingChronicle){window.EldricLivingChronicle.mountAll(document);}});',
+            '(function(){function lcBoot(){if(window.EldricLivingChronicle){window.EldricLivingChronicle.mountAll(document);}}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",lcBoot,{once:true});}else{lcBoot();}}());',
             'after'
         );
     }

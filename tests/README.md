@@ -13,4 +13,6 @@
   responses. Malicious fixtures attempting to set health, damage, position or stamina must be
   **dropped, not clamped**.
 
-All stubs today.
+`npm test` recursively runs the complete suite. The offline playthrough test advances every
+Blackwater objective, exercises deterministic combat and boss phases, applies story consequences,
+and round-trips a versioned save without a browser, network, or AI key.

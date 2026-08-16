@@ -23,4 +23,6 @@ WordPress, so the same core can later run inside an Android wrapper.
 | Network | `src/net/transports/*` |
 | Platform object | `src/platform/web-platform.js` |
 
-Everything is a stub today. See `l00prite/.l00prite/todos.md` (milestone M1) for the build order.
+The 0.1 engine implements the deterministic loop, scene/entity lifecycle, Canvas2D command
+renderer, camera, abstract input, combat, quests, inventory, reputation, NPC memory, rumors,
+Chronicle, time/weather/lighting, audio fallbacks, story validation and storage adapters.

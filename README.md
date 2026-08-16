@@ -9,10 +9,10 @@ through a `[living_chronicle]` shortcode. Sword combat, villages, forests, ruins
 dungeon, weather, day and night — and an AI storyteller that watches what you actually did and
 tells the story back to you.
 
-> **Status: scaffolding only. The game is not playable yet.**
-> This repo currently contains the project blueprint, the agent memory protocol, and the
-> directory structure with stub files. There is no gameplay code. The build order lives in
-> [`l00prite/.l00prite/todos.md`](l00prite/.l00prite/todos.md).
+> **Status: playable 0.1 vertical slice.** Millhaven, the Whisperwood, Blackwater Road, the
+> Sunken Ruin and Gloam Cave are playable now, including combat, two bosses, a consequential
+> ending, local saves, touch controls and the Chronicle. The local storyteller is the default and
+> requires no account, API key or network connection.
 
 ## The idea
 
@@ -51,22 +51,26 @@ scripts/                  l00prite-doctor.js, the read-only project health check
 
 Vanilla JavaScript ES modules, Canvas2D, Vite. No game framework.
 
-## Running it
+## Run and test it
 
-Nothing runs yet — these are the commands the scaffolding is built around:
+Node.js 20.19+ (or 22.12+) is required for the Vite toolchain.
 
 ```bash
 npm install
-npm run dev        # dev server for the standalone web build
+npm run dev        # standalone game at http://localhost:4173
+npm run build      # production browser build -> build/web/
 npm run build:wp   # plugin bundle -> wordpress/living-chronicle/assets/build/
-npm test           # node --test
+npm test           # deterministic unit, integration, security and playthrough tests
 npm run doctor     # project health check
 ```
 
-Installing the plugin (once there is something to install): copy
-`wordpress/living-chronicle/` into `wp-content/plugins/`, activate it, and put
-`[living_chronicle]` on a page. Details will land in
-`wordpress/living-chronicle/INSTALL.md`.
+For WordPress, upload the release zip or copy `wordpress/living-chronicle/` into
+`wp-content/plugins/`, activate **Eldric: The Living Chronicle**, and put `[living_chronicle]` on
+a page. See [INSTALL.md](wordpress/living-chronicle/INSTALL.md).
+
+Keyboard controls: WASD/arrows move, Shift runs, J attacks, K performs a heavy attack, L blocks,
+Space dodges, E interacts, I opens inventory, and Tab opens the Chronicle. Touch controls appear
+automatically on mobile/coarse-pointer devices.
 
 ## The AI storyteller
 

@@ -115,7 +115,8 @@ implement and verify in a single loop.
 - [ ] Nonce lifetime under page caching (a cached page serves a stale nonce and the proxy 403s).
 - [x] Build to `wordpress/living-chronicle/assets/build/` — never `dist/`, which `.gitignore`
       silently swallows, leaving the plugin 404ing in production.
-- [ ] `INSTALL.md` and `readme.txt`; install verified from a zip on a clean WordPress site.
+- [ ] `INSTALL.md` and `readme.txt` are complete and the zip structure is tested; installation on
+      a clean WordPress site remains a manual release check.
 - [ ] Performance pass: sprite atlases, lazy-loaded regions and audio, bounded particles;
       measured on a mid-range Android phone browser.
 - [ ] Verify no key or secret appears anywhere in the built client bundle.

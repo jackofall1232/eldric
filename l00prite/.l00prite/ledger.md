@@ -405,6 +405,20 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then complete documentation, WordPress packaging, and release verification.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T03:10:00Z — Codex (authorized story run, iteration 15)
+- **Goal:** Make the implemented vertical slice’s developer/WordPress handoff accurate and release-safe.
+- **Completed work:** Replaced stale scaffold claims; documented run/install/controls/cache/security/Android
+  boundaries; added canonical strings; stable page/profile/slot save identity; ready-state-safe loader;
+  idempotent bulk mounting; self-contained WordPress package integration test; honest generated asset notes.
+- **Tests run / Verification:** full `npm test`, 29 files pass; every plugin PHP file passes `php -l`;
+  both production builds pass; `npm run doctor` reports 24 OK, 0 warn/fail, 2026-08-16T03:09:30Z.
+- **Failures:** a clean-site WordPress installation and browser screenshot pass are not available locally.
+- **Decisions:** Remote story proxy remains secure-but-dormant in 0.1; docs explicitly require page-cache
+  bypass before enabling it. Explicit shortcode `slot` is the durable identity for reorderable embeds.
+- **Confidence:** High for package composition and syntax; medium for ecosystem-plugin compatibility until manual QA.
+- **Next action:** Commit, then produce and inspect the source-map-free installable zip and scan for secrets.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active, lease refreshed.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

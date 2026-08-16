@@ -1,20 +1,11 @@
-# Assets
+# Eldric assets
 
-Source art and audio for the game. Every asset must be **original** work created for this
-project — original characters, monsters, locations, lore, UI and music. No third-party assets, no
-work derived from existing IP.
+Every visual and sound source in this tree is original to **Eldric: The Living Chronicle**. The
+0.1 vertical slice ships a painted Millhaven opening plate, renderer-native illustrated world and
+character silhouettes, procedural weather/light effects, and original WebAudio synthesis with a
+silent fallback. It has no third-party media or runtime CDN dependency.
 
-```
-sprites/{player,npc,enemy,boss,items,effects}/   character and object art
-tilesets/                                        terrain, buildings, cave and dungeon tiles
-maps/                                            map sources
-ui/{hud,book,icons,fonts}/                       interface and the Chronicle book
-chronicle/                                       illustration plates
-audio/{music,sfx,ambient}/                        music states, effects, ambience
-```
-
-Runtime loading goes through a generated manifest and sprite atlases — see
-`docs/asset-pipeline.md`. Record provenance for every asset in `LICENSES.md` as it arrives, not
-at ship time.
-
-Empty today. The shipped region must contain no placeholder rectangles.
+`npm run build` copies this tree into `build/web/`; `npm run build:wp` copies it into the plugin’s
+`assets/build/`. `manifest.json` identifies runtime assets and `LICENSES.md` records provenance.
+Source art remains separate from deterministic game state so later atlas/animation passes do not
+change combat, input, saves, or the Android platform seam.

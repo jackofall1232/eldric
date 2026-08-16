@@ -15,4 +15,5 @@ backend services; it is not the game. Nothing in `packages/engine/` may depend o
 Files here that touch the proxy, providers, settings or the response validator are on the
 Autonomous-Edit Denylist in `l00prite/.l00prite/constraints.md` and need human review.
 
-Everything is a stub today. See `l00prite/.l00prite/todos.md` (milestone M8).
+The 0.1 plugin is implemented and installable. Build it with `npm run build:wp`; installation and
+page-cache guidance live in `living-chronicle/INSTALL.md`.
