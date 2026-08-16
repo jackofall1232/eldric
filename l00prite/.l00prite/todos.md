@@ -7,8 +7,10 @@ implement and verify in a single loop.
 ## Next
 
 ### M1 — Engine skeleton (first playable: a grey box that moves)
-- [ ] Root build config: `package.json` workspaces, `vite.config.js`, `index.html` dev host
-      (smallest useful step — nothing else runs until `npm run dev` serves a blank canvas).
+- [ ] Real build config: `package.json`, `vite.config.js`, `vite.config.wp.js` and `index.html`
+      exist as stubs — fill them in, install dependencies, and get `npm run dev` serving a blank
+      canvas (smallest useful step; nothing else runs until this does). The WordPress config must
+      emit an IIFE bundle into `wordpress/living-chronicle/assets/build/`, never `dist/`.
 - [ ] `packages/engine/src/core/loop.js` — fixed-timestep update with interpolated render, pause
       and resume, no frame-rate-dependent movement.
 - [ ] `packages/engine/src/core/time.js`, `events.js`, `rng.js` (seeded — replays and procedural

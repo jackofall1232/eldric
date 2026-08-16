@@ -194,6 +194,7 @@ are fed back into later prompts so the story stays consistent with what actually
 
 | Session | Date | Built | Tested | Status |
 |---------|------|-------|--------|--------|
+| Project scaffold | 2026-08-16 | Converted the repo from a copy of the l00prite protocol source into a scaffolded target: `l00prite/` blueprint + memory + M1–M8 backlog, root pointers, engine/game/WordPress/docs/tests stub scaffolding, rewritten README; trimmed `cli-os/`, `templates/`, `examples/`, the validator and l00prite's own memory | `node scripts/l00prite-doctor.js .` (24 ok, 0 warn, 0 fail — HEALTHY); protocol-section byte-parity diff; adapter `cmp` checks; JSON parse + stub-discipline sweep (189 files); `git check-ignore` on the plugin build path. Game tests and build not run — nothing is implemented yet | Scaffold complete, awaiting review |
 
 <!-- This table is a living log. Each build session should append a row, not overwrite
      prior rows. -->
