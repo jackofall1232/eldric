@@ -14,5 +14,5 @@ test('Millhaven vertical slice contains every promised destination', () => {
 
 test('Millhaven ships distinct enemy encounters and both bosses', () => {
   const kinds = new Set(ENEMY_SPAWNS.map((enemy) => enemy.kind));
-  for (const kind of ['wolf', 'bandit', 'skeleton', 'miniboss', 'boss']) assert.ok(kinds.has(kind));
+  for (const kind of ['wolf', 'bandit', 'skeleton', 'forest_creature', 'armored_knight', 'dungeon_creature', 'miniboss', 'boss']) assert.ok(kinds.has(kind));
 });

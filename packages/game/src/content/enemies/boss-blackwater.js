@@ -1,1 +1,1 @@
-// The Blackwater Bridge boss: multiple phases, readable patterns.
+export const DROWNED_OATH_PHASES = Object.freeze([{ threshold: 1, attacks: ['chain_sweep','river_lunge'] }, { threshold: .62, attacks: ['chain_sweep','rising_water','river_lunge'] }, { threshold: .28, attacks: ['oath_break','rising_water','double_lunge'] }]);

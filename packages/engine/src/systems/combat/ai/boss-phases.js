@@ -1,1 +1,1 @@
-// Multi-phase boss patterns the player can learn.
+export class BossPhases { constructor(phases) { this.phases = phases; this.current = 0; } update(healthRatio) { let next = 0; for (let i = 0; i < this.phases.length; i += 1) if (healthRatio <= this.phases[i].threshold) next = i; const changed = next !== this.current; this.current = next; return changed; } pattern(tick) { const phase = this.phases[this.current]; return phase.attacks[Math.abs(tick) % phase.attacks.length]; } }

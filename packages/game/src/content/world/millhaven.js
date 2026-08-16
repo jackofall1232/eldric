@@ -41,8 +41,11 @@ export const ENEMY_SPAWNS = Object.freeze([
   { id: 'wolf-1', kind: 'wolf', x: 585, y: 250 },
   { id: 'wolf-2', kind: 'wolf', x: 645, y: 430 },
   { id: 'bandit-1', kind: 'bandit', x: 735, y: 300 },
+  { id: 'briarshade-1', kind: 'forest_creature', x: 470, y: 115 },
   { id: 'skeleton-1', kind: 'skeleton', x: 1080, y: 240 },
+  { id: 'oath-knight-1', kind: 'armored_knight', x: 1085, y: 330 },
   { id: 'thornhart', kind: 'miniboss', x: 1180, y: 145 },
+  { id: 'gloam-eye-1', kind: 'dungeon_creature', x: 1115, y: 650 },
   { id: 'blackwater-beast', kind: 'boss', x: 1160, y: 685 },
 ]);
 

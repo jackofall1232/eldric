@@ -1,1 +1,1 @@
-// Block, guard break and dodge invulnerability windows.
+export function resolveDefense({ damage, blocking = false, dodging = false, guard = 0, guardDamage = damage } = {}) { if (dodging) return { damage: 0, blocked: false, dodged: true, guardBreak: false }; if (!blocking) return { damage, blocked: false, dodged: false, guardBreak: false }; const guardBreak = guardDamage > guard; return { damage: guardBreak ? Math.ceil(damage * .6) : Math.ceil(damage * .2), blocked: true, dodged: false, guardBreak }; }

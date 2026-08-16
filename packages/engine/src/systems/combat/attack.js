@@ -1,1 +1,2 @@
-// Light and heavy attacks: windup, active frames, recovery.
+export const ATTACKS = Object.freeze({ light: Object.freeze({ id: 'light', windup: .08, active: .1, recovery: .17, damage: 22, stamina: 10, reach: 34, knockback: 14 }), heavy: Object.freeze({ id: 'heavy', windup: .28, active: .14, recovery: .28, damage: 40, stamina: 25, reach: 46, knockback: 24 }) });
+export function attackPhase(attack, elapsed) { return elapsed < attack.windup ? 'windup' : elapsed < attack.windup + attack.active ? 'active' : elapsed < attack.windup + attack.active + attack.recovery ? 'recovery' : 'complete'; }

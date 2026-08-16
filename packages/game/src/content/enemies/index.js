@@ -1,1 +1,1 @@
-// Enemy roster: wolf, bandit, skeleton, forest creature, armored knight, dungeon creature.
+import { EnemyBehavior } from '@eldric/engine'; export const ENEMY_ROSTER = Object.freeze(Object.fromEntries(Object.entries(EnemyBehavior).map(([id, behavior]) => [id, Object.freeze({ id, behavior, health: { wolf: 42, bandit: 58, skeleton: 70, forest_creature: 86, armored_knight: 110, dungeon_creature: 74 }[id] })])));

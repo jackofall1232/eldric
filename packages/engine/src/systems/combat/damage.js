@@ -1,1 +1,1 @@
-// Damage application, knockback, hit flash and freeze frames.
+export function applyDamage(target, amount, direction = { x: 0, y: 0 }, knockback = 0) { const dealt = Math.max(0, Math.round(amount)); target.health = Math.max(0, target.health - dealt); target.flash = .12; target.knockback = { x: direction.x * knockback, y: direction.y * knockback }; return { dealt, defeated: target.health === 0, hitStop: dealt >= 35 ? .09 : .055 }; }

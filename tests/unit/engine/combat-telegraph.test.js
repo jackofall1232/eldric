@@ -1,1 +1,3 @@
-// Unit test: combat-telegraph. Stub.
+import assert from 'node:assert/strict'; import test from 'node:test'; import { BossPhases, Telegraph, behaviorAction } from '../../../packages/engine/src/index.js'; import { DROWNED_OATH_PHASES } from '../../../packages/game/src/content/enemies/boss-blackwater.js';
+test('telegraphs never resolve before their readable window', () => { const telegraph = new Telegraph(.45); assert.equal(telegraph.update(.4), false); assert.equal(telegraph.update(.05), true); assert.equal(telegraph.update(.1), false); });
+test('enemies differ by behavior and boss phases change recognizable patterns', () => { assert.equal(behaviorAction('bandit', { healthRatio: .1 }), 'flee_low_health'); assert.equal(behaviorAction('forest_creature', { distance: 100 }), 'hidden'); const boss = new BossPhases(DROWNED_OATH_PHASES); assert.equal(boss.update(.25), true); assert.ok(['oath_break','rising_water','double_lunge'].includes(boss.pattern(2))); });

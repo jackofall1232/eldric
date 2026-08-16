@@ -1,1 +1,2 @@
-// Combat resolution. Deterministic game code — the storyteller never touches it.
+import { applyDamage } from './damage.js'; import { resolveDefense } from './defense.js'; import { overlaps } from './hitbox.js';
+export class CombatSystem { resolve({ attack, hitbox, target, hurtbox, direction }) { if (!overlaps(hitbox, hurtbox)) return null; const defense = resolveDefense({ damage: attack.damage, blocking: target.blocking, dodging: target.invulnerable > 0, guard: target.guard ?? 0, guardDamage: attack.damage }); if (defense.dodged) return defense; return { ...defense, ...applyDamage(target, defense.damage, direction, attack.knockback) }; } }

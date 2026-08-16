@@ -1,1 +1,1 @@
-// Enemy attack telegraphs — the player must be able to read an incoming attack.
+export class Telegraph { constructor(duration = .45, cue = 'flash') { this.duration = Math.max(.25, duration); this.remaining = this.duration; this.cue = cue; this.resolved = false; } update(delta) { this.remaining = Math.max(0, this.remaining - delta); if (!this.remaining && !this.resolved) { this.resolved = true; return true; } return false; } progress() { return 1 - this.remaining / this.duration; } }

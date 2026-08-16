@@ -131,7 +131,9 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     const cy = player.y + player.facingY * reach * 0.65;
     for (const enemy of enemies) {
       if (!enemy.alive || enemy.lastHit === player.attackId || distance(cx, cy, enemy.x, enemy.y) > reach) continue;
-      enemy.lastHit = player.attackId; enemy.health -= damage; enemy.flash = 0.12;
+      enemy.lastHit = player.attackId;
+      const guardedDamage = enemy.kind === 'armored_knight' && kind !== 'heavy' ? 4 : damage;
+      enemy.health -= guardedDamage; enemy.flash = 0.12;
       enemy.x += player.facingX * 14; enemy.y += player.facingY * 14;
       camera.shake(kind === 'heavy' ? 4 : 2, 0.1);
       if (enemy.health <= 0) defeatEnemy(enemy);
@@ -140,19 +142,47 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
 
   function updateEnemies(delta) {
     for (const enemy of enemies) {
-      if (!enemy.alive) continue;
+      if (!enemy.alive) {
+        if (enemy.reassemble > 0) {
+          enemy.reassemble -= delta;
+          if (enemy.reassemble <= 0) {
+            enemy.alive = true; enemy.reassembled = true; enemy.health = Math.ceil(enemy.maxHealth * 0.45);
+            toast('Behind you, old bones remember their oath.');
+          }
+        }
+        continue;
+      }
       if (enemy.kind === 'boss' && !state.bossAwake) continue;
       enemy.cooldown = Math.max(0, enemy.cooldown - delta); enemy.flash = Math.max(0, enemy.flash - delta);
       const d = distance(player.x, player.y, enemy.x, enemy.y);
       if (d > enemy.aggro || d < 1) continue;
       const dx = (player.x - enemy.x) / d; const dy = (player.y - enemy.y) / d;
+      const healthRatio = enemy.health / enemy.maxHealth;
+      if (enemy.kind === 'forest_creature' && !enemy.revealed && d > 62) continue;
+      if (enemy.kind === 'forest_creature') enemy.revealed = true;
+      if (enemy.kind === 'bandit' && healthRatio < 0.2) {
+        enemy.x -= dx * enemy.speed * 1.4 * delta; enemy.y -= dy * enemy.speed * 1.4 * delta;
+        continue;
+      }
+      if (enemy.kind === 'boss') {
+        enemy.bossPhase = healthRatio > .66 ? 1 : healthRatio > .33 ? 2 : 3;
+        enemy.reach = enemy.bossPhase === 3 ? 92 : enemy.bossPhase === 2 ? 74 : 62;
+        enemy.damage = enemy.bossPhase === 3 ? 42 : enemy.bossPhase === 2 ? 37 : 34;
+      }
+      if (enemy.kind === 'miniboss') {
+        const charging = enemy.attackStep % 2 === 0;
+        enemy.reach = charging ? 46 : 72;
+        enemy.speed = charging ? 76 : 38;
+      }
       if (enemy.telegraph > 0) {
         enemy.telegraph -= delta;
         if (enemy.telegraph <= 0 && d < enemy.reach + 12) hurtPlayer(enemy.damage, dx, dy);
       } else if (enemy.cooldown <= 0 && d < enemy.reach) {
-        enemy.telegraph = enemy.kind === 'boss' ? 0.72 : 0.46; enemy.cooldown = enemy.kind === 'boss' ? 1.15 : 1.5;
+        enemy.telegraph = enemy.kind === 'boss' ? Math.max(.38, .78 - enemy.bossPhase * .1) : enemy.kind === 'dungeon_creature' ? .7 : .46;
+        enemy.cooldown = enemy.kind === 'boss' ? Math.max(.72, 1.35 - enemy.bossPhase * .17) : 1.5;
+        enemy.attackStep += 1;
       } else {
-        const orbit = enemy.kind === 'wolf' ? Math.sin(enemy.phase += delta * 3) * 0.55 : 0;
+        const orbit = enemy.kind === 'wolf' ? Math.sin(enemy.phase += delta * 3) * 0.55 : enemy.kind === 'dungeon_creature' ? Math.sin(enemy.phase += delta * 2) * 0.35 : 0;
         enemy.x += (dx - dy * orbit) * enemy.speed * delta; enemy.y += (dy + dx * orbit) * enemy.speed * delta;
       }
     }
@@ -172,6 +202,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
 
   function defeatEnemy(enemy) {
     enemy.alive = false;
+    if (enemy.kind === 'skeleton' && !enemy.reassembled) enemy.reassemble = 3.2;
     if (enemy.kind === 'miniboss') { discover('thornhart_defeated', 'The Thornhart fell guarding a rusted river key.'); state.quest = Math.max(state.quest, 5); }
     if (enemy.kind === 'boss') {
       state.mode = 'decision'; state.dialogue = 'decision'; state.dialogueIndex = 0;
@@ -315,7 +346,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function drawObstacle(o) { const p = camera.worldToScreen(o.x, o.y); const fill = o.kind === 'house' ? '#a67c52' : o.kind === 'ruin' ? '#6d7068' : '#6a5036'; renderer.rect({ x: p.x, y: p.y, width: o.width, height: o.height, fill, stroke: PALETTE.ink, radius: 3 }, RenderLayer.OBJECT, o.y); if (o.kind === 'house') { renderer.polygon({ points: [{ x: p.x - 6, y: p.y + 8 }, { x: p.x + o.width / 2, y: p.y - 30 }, { x: p.x + o.width + 6, y: p.y + 8 }], fill: '#70423a', stroke: PALETTE.ink }, RenderLayer.OVERHEAD, o.y); renderer.rect({ x: p.x + o.width / 2 - 8, y: p.y + o.height - 26, width: 16, height: 26, fill: '#3a2b25' }, RenderLayer.ENTITY, o.y + o.height); } }
   function drawInteractable(t) { const p = camera.worldToScreen(t.x, t.y); if (t.type === 'npc') { renderer.circle({ x: p.x, y: p.y - 9, radius: 6, fill: '#d9b38c', stroke: PALETTE.ink }, RenderLayer.ENTITY, t.y); renderer.polygon({ points: [{ x: p.x - 8, y: p.y + 11 }, { x: p.x, y: p.y - 4 }, { x: p.x + 8, y: p.y + 11 }], fill: t.color, stroke: PALETTE.ink }, RenderLayer.ENTITY, t.y + 1); } else if (t.type === 'campfire') { renderer.polygon({ points: [{ x: p.x, y: p.y - 14 }, { x: p.x - 8, y: p.y + 6 }, { x: p.x + 8, y: p.y + 6 }], fill: PALETTE.ember }, RenderLayer.ENTITY, t.y); } else { renderer.circle({ x: p.x, y: p.y, radius: 5, fill: state.discoveries.has(t.id) ? '#70766d' : PALETTE.moon, stroke: PALETTE.ink }, RenderLayer.ENTITY, t.y); } }
   function drawPlayer(x, y) { const p = camera.worldToScreen(x, y); const hurt = player.state === 'hurt' && Math.floor(player.timer * 30) % 2; renderer.circle({ x: p.x, y: p.y - 9, radius: 6, fill: hurt ? '#fff' : '#d6aa7f', stroke: PALETTE.ink }, RenderLayer.ENTITY, y); renderer.polygon({ points: [{ x: p.x - 8, y: p.y + 12 }, { x: p.x, y: p.y - 4 }, { x: p.x + 8, y: p.y + 12 }], fill: '#35536a', stroke: PALETTE.ink }, RenderLayer.ENTITY, y + 1); renderer.line({ x1: p.x + player.facingX * 5, y1: p.y + player.facingY * 4, x2: p.x + player.facingX * 17, y2: p.y + player.facingY * 17, stroke: '#d8d2bd', lineWidth: 2 }, RenderLayer.ENTITY, y + 2); if (player.state === 'attack' || player.state === 'heavy') renderer.circle({ x: p.x + player.facingX * 20, y: p.y + player.facingY * 20, radius: player.state === 'heavy' ? 20 : 15, stroke: '#f0d68a', alpha: .65 }, RenderLayer.ENTITY, y + 3); }
-  function drawEnemy(e) { const p = camera.worldToScreen(e.x, e.y); const color = e.flash ? '#fff' : e.kind === 'wolf' ? '#655f59' : e.kind === 'bandit' ? '#75434a' : e.kind === 'skeleton' ? '#b8b09b' : e.kind === 'miniboss' ? '#3b684d' : '#315e68'; const radius = e.kind === 'boss' ? 18 : e.kind === 'miniboss' ? 14 : 9; renderer.circle({ x: p.x, y: p.y, radius, fill: color, stroke: PALETTE.ink, lineWidth: 2 }, RenderLayer.ENTITY, e.y); if (e.telegraph > 0) renderer.circle({ x: p.x, y: p.y, radius: radius + 8 + Math.sin(e.telegraph * 20) * 2, stroke: '#e6a35d', lineWidth: 2 }, RenderLayer.ENTITY, e.y + 1); if (e.kind === 'boss') renderer.text({ text: 'THE DROWNED OATH', x: 192, y: 24, align: 'center', fill: PALETTE.parchment, font: 'bold 9px Georgia' }); }
+  function drawEnemy(e) { const p = camera.worldToScreen(e.x, e.y); const colors = { wolf: '#655f59', bandit: '#75434a', skeleton: '#b8b09b', forest_creature: '#31563c', armored_knight: '#737881', dungeon_creature: '#665089', miniboss: '#3b684d', boss: '#315e68' }; const color = e.flash ? '#fff' : colors[e.kind]; const radius = e.kind === 'boss' ? 18 : e.kind === 'miniboss' ? 14 : e.kind === 'armored_knight' ? 11 : 9; renderer.circle({ x: p.x, y: p.y, radius, fill: color, stroke: PALETTE.ink, lineWidth: 2 }, RenderLayer.ENTITY, e.y); if (e.telegraph > 0) renderer.circle({ x: p.x, y: p.y, radius: radius + 8 + Math.sin(e.telegraph * 20) * 2, stroke: '#e6a35d', lineWidth: 2 }, RenderLayer.ENTITY, e.y + 1); if (e.kind === 'boss') renderer.text({ text: `THE DROWNED OATH · PHASE ${e.bossPhase}`, x: 192, y: 24, align: 'center', fill: PALETTE.parchment, font: 'bold 9px Georgia' }); }
   function drawParticles() { for (const particle of particles) { particle.y += .12; particle.x += Math.sin(particle.phase + state.hour) * .08; if (particle.y > canvas.height) particle.y = 0; renderer.circle({ x: particle.x, y: particle.y, radius: 1, fill: 'rgba(227,199,112,.35)' }, RenderLayer.WEATHER); } }
   function drawNight() { const darkness = state.hour > 19 || state.hour < 6 ? .38 : .08; renderer.rect({ x: 0, y: 0, width: canvas.width, height: canvas.height, fill: `rgba(10,20,28,${darkness})` }, RenderLayer.LIGHTING); }
 
@@ -348,7 +379,20 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   }
 }
 
-function createEnemy(spawn) { const stats = spawn.kind === 'boss' ? [260, 34, 62, 165, 16] : spawn.kind === 'miniboss' ? [120, 28, 54, 135, 13] : spawn.kind === 'wolf' ? [42, 18, 58, 105, 8] : [58, 20, 45, 110, 10]; return { ...spawn, health: stats[0], maxHealth: stats[0], damage: stats[1], speed: stats[2], aggro: stats[3], reach: stats[4], cooldown: 0, telegraph: 0, flash: 0, phase: 0, lastHit: -1, alive: true }; }
+function createEnemy(spawn) {
+  const roster = {
+    boss: [260, 34, 62, 165, 62],
+    miniboss: [120, 28, 54, 135, 22],
+    wolf: [42, 18, 58, 105, 16],
+    bandit: [58, 20, 45, 110, 20],
+    skeleton: [70, 22, 34, 105, 20],
+    forest_creature: [86, 26, 86, 120, 24],
+    armored_knight: [110, 30, 28, 110, 22],
+    dungeon_creature: [74, 24, 22, 145, 78],
+  };
+  const stats = roster[spawn.kind];
+  return { ...spawn, health: stats[0], maxHealth: stats[0], damage: stats[1], speed: stats[2], aggro: stats[3], reach: stats[4], cooldown: 0, telegraph: 0, flash: 0, phase: 0, bossPhase: 1, attackStep: 0, lastHit: -1, alive: true, revealed: spawn.kind !== 'forest_creature', reassemble: 0, reassembled: false };
+}
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 function lerp(a, b, t) { return a + (b - a) * t; }
 function distance(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }

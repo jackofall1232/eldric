@@ -347,6 +347,20 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement reusable combat/enemy modules and offline playthrough test.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:54:00Z — Codex (authorized story run, iteration 11)
+- **Goal:** Replace combat stubs with reusable deterministic mechanics and behavior-distinct encounters.
+- **Completed work:** Attack/stamina/telegraph/hitbox/defense/damage modules; six behavior identities;
+  eight enemy encounter types in Millhaven; guarded armor, ambush, ranged pressure, skeleton
+  reassembly, low-health retreat; two-pattern Thornhart; three health-driven Blackwater phases.
+- **Tests run / Verification:** focused combat, engine purity, and region content tests exit `0`;
+  standalone and WordPress production builds exit `0`, 2026-08-16T02:53:30Z.
+- **Failures:** none.
+- **Decisions:** Combat resolution remains deterministic code; bosses select only authored patterns;
+  regular sword strikes glance from plate while heavy strikes remain the readable guard-break answer.
+- **Confidence:** High — systems are unit-tested and all encounter identities compile into both builds.
+- **Next action:** Commit, then replace the offline playthrough stub with a full-slice integration test.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

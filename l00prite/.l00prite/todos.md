@@ -39,11 +39,11 @@ implement and verify in a single loop.
 - [x] Health and stamina economy; block and dodge costs.
 - [x] Hit feedback: flash, camera shake, knockback, particles; sound hooks remain.
 - [x] Enemy attack telegraphs and recovery windows.
-- [ ] Six behaviour-distinct enemies: wolf (pack, circling), bandit (feints, flees at low health),
+- [x] Six behaviour-distinct enemies: wolf (pack, circling), bandit (feints, flees at low health),
       skeleton (reassembles), forest creature (ambush), armored knight (guard break required),
       dungeon creature (ranged/area).
-- [ ] Mini-boss with a readable two-attack pattern.
-- [ ] Major boss with multiple phases and a pattern the player can learn.
+- [x] Mini-boss with a readable two-attack pattern.
+- [x] Major boss with multiple phases and a pattern the player can learn.
 
 ### M4 — Content systems
 - [x] Inventory: weapons, armor, consumables, keys, artifacts, quest items; equipment slots.

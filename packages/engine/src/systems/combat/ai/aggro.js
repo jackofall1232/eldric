@@ -1,1 +1,1 @@
-// Detection, pursuit, disengage and pack coordination.
+export function aggroState(enemy, target, { detect = 140, disengage = 220 } = {}) { const distance = Math.hypot(enemy.x - target.x, enemy.y - target.y); if (enemy.aggro && distance > disengage) return 'disengage'; if (!enemy.aggro && distance <= detect) return 'acquire'; return enemy.aggro ? 'pursue' : 'idle'; }
