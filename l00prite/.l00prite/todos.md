@@ -51,7 +51,7 @@ implement and verify in a single loop.
 - [ ] Quest system: the nine objectives (`GO_TO`, `TALK_TO`, `FIND`, `COLLECT`, `DELIVER`,
       `DEFEAT`, `PROTECT`, `EXPLORE`, `CHOOSE`) and the compiler that every quest resolves through.
 - [ ] Encounter templates (e.g. `TRAVELER_IN_TROUBLE`) with narrative variables game code fills.
-- [ ] Save/load behind the `StorageAdapter` interface, with a versioned schema and migrations.
+- [x] Save/load behind the `StorageAdapter` interface, with a versioned schema and migrations.
 
 ### M5 — Story layer
 - [ ] Storyteller output JSON schema (`narration`, `npc_dialogue`, `quest_changes`,

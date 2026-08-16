@@ -19,3 +19,8 @@ export { TouchSource } from './input/sources/touch.js';
 export { createPlatform } from './platform/platform.js';
 export { createWebPlatform } from './platform/web-platform.js';
 export { capabilityProfile } from './platform/capabilities.js';
+export { StorageAdapter } from './save/backends/storage-adapter.js';
+export { MemoryStorageBackend } from './save/backends/memory-backend.js';
+export { LocalStorageBackend } from './save/backends/localstorage-backend.js';
+export { SAVE_SCHEMA_VERSION, createSave } from './save/schema.js';
+export { migrateSave } from './save/migrations.js';

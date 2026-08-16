@@ -1,5 +1,7 @@
 import { resolveConfig } from './config.js';
 import { createGameRuntime } from '../runtime/game-runtime.js';
+import { LocalStorageBackend } from '@eldric/engine';
+import { mountMobileControls } from '../ui/mobile-controls.js';
 
 export function bootstrapGame(root, overrides = {}) {
   if (!root || typeof root.append !== 'function') {
@@ -25,7 +27,9 @@ export function bootstrapGame(root, overrides = {}) {
   const openingPlate = new root.ownerDocument.defaultView.Image();
   openingPlate.decoding = 'async';
   openingPlate.src = `${config.assetBase.replace(/\/$/, '')}/opening/millhaven-book-source.png`;
-  const runtime = createGameRuntime(canvas, { ...config, openingPlate }, (message) => { status.textContent = message; });
+  const storage = new LocalStorageBackend(root.ownerDocument.defaultView.localStorage, config.saveKey);
+  const runtime = createGameRuntime(canvas, { ...config, openingPlate, storage }, (message) => { status.textContent = message; });
+  const unmountControls = mountMobileControls(root, runtime.platform.touchSource);
 
   const abortController = new AbortController();
   const resize = () => resizeCanvasDisplay(root, canvas, config);
@@ -43,6 +47,7 @@ export function bootstrapGame(root, overrides = {}) {
     runtime,
     destroy() {
       runtime.stop();
+      unmountControls();
       abortController.abort();
       root.classList.remove('lc-mounted');
       root.replaceChildren();

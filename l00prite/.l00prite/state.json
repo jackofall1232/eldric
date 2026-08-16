@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "build the complete playable Eldric: The Living Chronicle vertical slice in verified commit batches; current unit: mobile controls and persistent story systems",
+  "current_goal": "build the complete playable Eldric: The Living Chronicle vertical slice in verified commit batches; current unit: WordPress shortcode host and local storyteller systems",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Claude Code (Planning Mode scaffold)",
-  "last_updated": "2026-08-16T02:12:44Z",
+  "last_updated": "2026-08-16T02:17:22Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit the playable Millhaven slice, then add touch UI, saves, inventory, and storyteller systems"
+  "next_recommended_action": "commit mobile/persistence, then complete safe WordPress host files before the AI-proxy review boundary"
 }

@@ -54,6 +54,16 @@
   border: 0;
 }
 
+.living-chronicle .lc-touch-controls { position: absolute; inset: 0; z-index: 5; pointer-events: none; display: none; }
+.living-chronicle .lc-stick { position: absolute; left: max(18px, env(safe-area-inset-left)); bottom: max(20px, env(safe-area-inset-bottom)); width: 92px; height: 92px; border: 1px solid rgba(232,210,162,.45); border-radius: 50%; background: rgba(17,24,23,.46); pointer-events: auto; }
+.living-chronicle .lc-stick span { position: absolute; left: 30px; top: 30px; width: 30px; height: 30px; border-radius: 50%; background: rgba(227,139,69,.65); border: 1px solid #e8d2a2; }
+.living-chronicle .lc-touch-actions { position: absolute; right: max(15px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); width: 142px; height: 118px; pointer-events: none; }
+.living-chronicle .lc-touch-actions button, .living-chronicle .lc-book-button { position: absolute; width: 44px; height: 44px; padding: 0; border: 1px solid rgba(232,210,162,.68); border-radius: 50%; color: #e8d2a2; background: rgba(42,36,48,.78); font: 700 17px Georgia,serif; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
+.living-chronicle .lc-touch-actions button:nth-child(1) { left: 0; top: 38px; } .living-chronicle .lc-touch-actions button:nth-child(2) { left: 46px; top: 0; } .living-chronicle .lc-touch-actions button:nth-child(3) { left: 46px; top: 74px; } .living-chronicle .lc-touch-actions button:nth-child(4) { right: 0; top: 38px; } .living-chronicle .lc-touch-actions button:nth-child(5) { left: 47px; top: 37px; }
+.living-chronicle .lc-book-button { right: max(16px, env(safe-area-inset-right)); top: max(14px, env(safe-area-inset-top)); width: 36px; height: 36px; }
+.living-chronicle .lc-touch-actions button:active, .living-chronicle .lc-book-button:active { background: rgba(227,139,69,.88); transform: scale(.94); }
+@media (pointer: coarse), (max-width: 760px) { .living-chronicle .lc-touch-controls { display: block; } }
+
 .eldric-dev-host {
   min-height: 100dvh;
   margin: 0;

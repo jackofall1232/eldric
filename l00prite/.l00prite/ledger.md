@@ -158,6 +158,23 @@ Append one entry per agent run. Do not overwrite prior runs.
   imports do that, so it is shipped via the public asset base.
 - **Lock:** `codex-eldric-20260816T015338Z` active.
 
+### Run 2026-08-16T02:17:22Z — Codex (Execution Mode, iteration 7)
+- **Goal:** Make the playable slice mobile-controllable and persistent without coupling gameplay
+  to browser storage or touch events.
+- **Decision:** Normal work; touch and storage are platform seams supporting the same playable flow.
+- **Completed work:** Added virtual stick/action buttons with pointer cancellation, inventory view,
+  versioned storage adapter, localStorage-to-memory fallback, legacy migration, and persistence of
+  position, quest, discoveries, Chronicle, rumors, outcome, and inventory.
+- **Tests run / Verification:** focused input/save tests, both builds, and full 25-file test run all
+  exited `0` at 2026-08-16T02:17:08Z.
+- **Failures:** none.
+- **Decisions:** Quota/private-mode failures degrade to memory; mobile UI writes only to
+  `TouchSource`; autosave occurs on discoveries, campfire, decisions, opening completion, teardown.
+- **Confidence:** High for seams and compilation; physical-device feel remains a later playtest.
+- **Next action:** Commit, then make the shortcode host installable.
+- **Do-not-retry notes:** Do not access localStorage from game runtime directly.
+- **Lock:** `codex-eldric-20260816T015338Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
