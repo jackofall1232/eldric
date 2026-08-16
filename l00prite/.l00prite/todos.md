@@ -119,7 +119,7 @@ implement and verify in a single loop.
       a clean WordPress site remains a manual release check.
 - [ ] Performance pass: sprite atlases, lazy-loaded regions and audio, bounded particles;
       measured on a mid-range Android phone browser.
-- [ ] Verify no key or secret appears anywhere in the built client bundle.
+- [x] Verify no key or secret appears anywhere in the built client bundle.
 
 ## Later
 - [ ] Android wrapper: replace the platform seams (input source, audio backend, save backend,

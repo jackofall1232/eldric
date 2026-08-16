@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "produce the installable WordPress zip and run final security/release verification",
+  "current_goal": "complete the remaining dense-region interactions before final release verification",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T03:10:00Z",
+  "last_updated": "2026-08-16T03:14:00Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit docs and WordPress host fixes, then build and inspect the source-map-free release zip"
+  "next_recommended_action": "commit the verified zip-source cleanup, then add enterable interiors, hidden-glade memory gating, and a cave rune puzzle"
 }

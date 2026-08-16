@@ -419,6 +419,21 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then produce and inspect the source-map-free installable zip and scan for secrets.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active, lease refreshed.
 
+### Run 2026-08-16T03:14:00Z — Codex (authorized story run, iteration 16)
+- **Goal:** Produce and inspect the installable WordPress release artifact.
+- **Completed work:** Generated source-map-free `eldric-living-chronicle-0.1.0.zip`; completed archive
+  integrity and root-layout checks; scanned the client bundle for key/bearer patterns; replaced the
+  last packaged placeholder notes and added a bounded future user-meta save seam.
+- **Tests run / Verification:** `unzip -t` reports no errors; archive contains only top-level
+  `living-chronicle/` and no map; built-client secret scan returns no matches; PHP save seam lints;
+  SHA-256 `76c2bf551efe917c306029cee367134f1776c5bc6cb78a09d71b6934a8fd3a87`,
+  size 2,897,804 bytes, 2026-08-16T03:13:30Z.
+- **Failures:** clean-site WordPress and physical-browser QA remain manual checks.
+- **Decisions:** Production zip excludes source maps while the repository retains them for debugging.
+- **Confidence:** High for archive composition and absence of embedded credentials.
+- **Next action:** Commit, then finish enterable interiors, memory-gated hidden glade, and cave puzzle.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
