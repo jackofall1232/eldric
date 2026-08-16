@@ -268,5 +268,5 @@ notification is out of scope by design.
 
 - [anti-patterns.md](./anti-patterns.md) — design mistakes to avoid *before* arming a run.
 - [concepts.md](./concepts.md) — intent debt, comprehension debt, protocol vs harness.
-- `templates/l00prite/constraints.md` — the Autonomous-Edit Denylist you enforce.
+- `.l00prite/constraints.md` — the Autonomous-Edit Denylist you enforce.
 - `scripts/l00prite-doctor.js` — the read-only health check that detects many of these.

@@ -1,8 +1,9 @@
 # l00prite docs
 
 Operating knowledge for running l00prite's Execution Mode safely. These are protocol-level
-docs about *how loops fail and how to run them well* — distinct from `README.md` (what
-l00prite is) and `HANDOFF.md` (what changed).
+docs about *how loops fail and how to run them well* — distinct from `../CLAUDE.md` (this
+project's blueprint), `../AGENTS.md` (the operating rules), and the repo's own `docs/`
+(design documentation for the game itself).
 
 | Doc | Read it for |
 |-----|-------------|
@@ -15,7 +16,7 @@ l00prite is) and `HANDOFF.md` (what changed).
 - **`.l00prite/failures.md`** ships with a compact, severity-tagged version of the failure
   catalog seeded in (marked as inherited generic wisdom, not project history), so a freshly
   scaffolded project warns a fresh agent about known mistakes before it repeats them.
-- **`templates/l00prite/constraints.md`** carries the machine-readable **Autonomous-Edit
+- **`.l00prite/constraints.md`** carries the machine-readable **Autonomous-Edit
   Denylist** referenced throughout the failure catalog — the path guard that maps onto the
   `destructive_operation_required` boundary.
 - **`scripts/l00prite-doctor.js`** is the read-only health check that mechanically detects many
