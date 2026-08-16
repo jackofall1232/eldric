@@ -391,6 +391,20 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then replace geometric character placeholders with expressive silhouettes.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T03:05:00Z — Codex (authorized story run, iteration 14)
+- **Goal:** Replace debug-like world entities with coherent, expressive storybook silhouettes.
+- **Completed work:** Layered player and named-NPC silhouettes; eight visually distinct enemy/boss
+  profiles; animated campfire; readable chest, gate, tracks, saint, and nearby interaction mark;
+  richer multi-canopy trees with trunks and ground shadows.
+- **Tests run / Verification:** full `npm test`, 28 files pass, exit `0`; standalone and WordPress
+  production builds exit `0`, 2026-08-16T03:04:30Z.
+- **Failures:** browser screenshot automation remains unavailable on this machine.
+- **Decisions:** Use original renderer-native illustrated silhouettes for this vertical slice so every
+  entity stays fast, scalable, and coherent while preserving the future sprite-atlas seam.
+- **Confidence:** Medium-high — all runtime/build checks pass; aesthetics need physical browser/device review.
+- **Next action:** Commit, then complete documentation, WordPress packaging, and release verification.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
