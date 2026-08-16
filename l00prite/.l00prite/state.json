@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "project_name": "eldric",
+  "current_goal": "scaffolding complete (blueprint, memory, stubs); the next unit is M1 — the engine game-loop skeleton in packages/engine/src/core/",
+  "current_phase": "scaffolded",
+  "active_agent": null,
+  "last_agent": "Claude Code (Planning Mode scaffold)",
+  "last_updated": "2026-08-16T00:00:00Z",
+  "status": "not_started",
+  "blocked": false,
+  "blocker_reason": null,
+  "active_event_id": null,
+  "last_event_processed": null,
+  "pending_event_count": 0,
+  "review_response_required": false,
+  "ci_status": "unknown",
+  "execution_active": false,
+  "execution_stop_reason": null,
+  "next_recommended_action": "read l00prite/CLAUDE.md end to end, then start prompts/resume-loop.md with the first M1 item in todos.md (fixed-timestep loop in packages/engine/src/core/loop.js)"
+}

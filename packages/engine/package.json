@@ -1,0 +1,8 @@
+{
+  "name": "@eldric/engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vendor-neutral game core. Must not import @eldric/game, WordPress, or anything platform-specific outside the declared seams.",
+  "main": "src/index.js"
+}

@@ -1,0 +1,1 @@
+// Unit test: rumor. Stub.

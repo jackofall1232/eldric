@@ -1,0 +1,1 @@
+// The nine supported objectives: GO_TO, TALK_TO, FIND, COLLECT, DELIVER, DEFEAT, PROTECT, EXPLORE, CHOOSE.
