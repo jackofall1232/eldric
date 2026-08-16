@@ -1,0 +1,4 @@
+{
+  "type": "commonjs",
+  "//": "Scoping marker only: scripts/l00prite-doctor.js is CommonJS, while the repo root sets type=module. Without this, node refuses to run it."
+}
