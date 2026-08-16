@@ -1,4 +1,4 @@
-# Vibe Code: The Living Chronicle
+# Eldric: The Living Chronicle
 
 > A black screen. A fire crackling. *"Gather close, and heed my tale."*
 > An old storyteller begins. A book opens. The camera falls into the illustration —
