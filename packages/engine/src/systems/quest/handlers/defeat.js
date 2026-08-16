@@ -1,1 +1,1 @@
-// Objective handler: defeat — progress and completion conditions.
+import { createObjectiveHandler } from './factory.js'; export const handleDefeat = createObjectiveHandler('DEFEAT');

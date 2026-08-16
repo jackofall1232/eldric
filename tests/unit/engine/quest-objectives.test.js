@@ -1,1 +1,4 @@
-// Unit test: quest-objectives. Stub.
+import assert from 'node:assert/strict'; import test from 'node:test';
+import { OBJECTIVE_TYPES } from '../../../packages/engine/src/systems/quest/objectives.js'; import { QuestSystem } from '../../../packages/engine/src/systems/quest/quest-system.js';
+test('exactly nine objective mechanics are supported', () => { assert.deepEqual([...OBJECTIVE_TYPES], ['GO_TO','TALK_TO','FIND','COLLECT','DELIVER','DEFEAT','PROTECT','EXPLORE','CHOOSE']); });
+test('quest system advances sequential objectives and quantities', () => { const system = new QuestSystem(); const quest = system.add({ id: 'test', title: 'Test', objectives: [{ type: 'COLLECT', target: 'herb', quantity: 2 }, { type: 'CHOOSE', target: 'oath' }] }); system.handle({ type: 'COLLECT', target: 'herb' }); assert.equal(quest.activeIndex, 0); system.handle({ type: 'COLLECT', target: 'herb' }); assert.equal(quest.activeIndex, 1); system.handle({ type: 'CHOOSE', target: 'oath' }); assert.equal(quest.status, 'completed'); });

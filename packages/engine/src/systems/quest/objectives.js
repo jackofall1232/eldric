@@ -1,1 +1,3 @@
-// The nine supported objectives: GO_TO, TALK_TO, FIND, COLLECT, DELIVER, DEFEAT, PROTECT, EXPLORE, CHOOSE.
+export const ObjectiveType = Object.freeze({ GO_TO: 'GO_TO', TALK_TO: 'TALK_TO', FIND: 'FIND', COLLECT: 'COLLECT', DELIVER: 'DELIVER', DEFEAT: 'DEFEAT', PROTECT: 'PROTECT', EXPLORE: 'EXPLORE', CHOOSE: 'CHOOSE' });
+export const OBJECTIVE_TYPES = new Set(Object.values(ObjectiveType));
+export const OBJECTIVE_EVENTS = Object.freeze({ GO_TO: 'ENTER', TALK_TO: 'TALK', FIND: 'FIND', COLLECT: 'COLLECT', DELIVER: 'DELIVER', DEFEAT: 'DEFEAT', PROTECT: 'PROTECT', EXPLORE: 'EXPLORE', CHOOSE: 'CHOOSE' });

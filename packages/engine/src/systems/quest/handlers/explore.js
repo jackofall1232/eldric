@@ -1,1 +1,1 @@
-// Objective handler: explore — progress and completion conditions.
+import { createObjectiveHandler } from './factory.js'; export const handleExplore = createObjectiveHandler('EXPLORE');

@@ -1,1 +1,1 @@
-// Objective handler: go to — progress and completion conditions.
+import { createObjectiveHandler } from './factory.js'; export const handleGoTo = createObjectiveHandler('GO_TO');

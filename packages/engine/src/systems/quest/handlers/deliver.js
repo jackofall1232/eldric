@@ -1,1 +1,1 @@
-// Objective handler: deliver — progress and completion conditions.
+import { createObjectiveHandler } from './factory.js'; export const handleDeliver = createObjectiveHandler('DELIVER');

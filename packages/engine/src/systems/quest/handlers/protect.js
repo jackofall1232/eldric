@@ -1,1 +1,1 @@
-// Objective handler: protect — progress and completion conditions.
+import { createObjectiveHandler } from './factory.js'; export const handleProtect = createObjectiveHandler('PROTECT');

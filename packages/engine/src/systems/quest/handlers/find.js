@@ -1,1 +1,1 @@
-// Objective handler: find — progress and completion conditions.
+import { createObjectiveHandler } from './factory.js'; export const handleFind = createObjectiveHandler('FIND');

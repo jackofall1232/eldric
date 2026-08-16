@@ -1,1 +1,1 @@
-// Objective handler: choose — progress and completion conditions.
+import { createObjectiveHandler } from './factory.js'; export const handleChoose = createObjectiveHandler('CHOOSE');

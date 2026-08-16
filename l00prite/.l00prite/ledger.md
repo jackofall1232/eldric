@@ -261,6 +261,19 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then build/test remaining deterministic content systems.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:35:19Z — Codex (authorized story run, iteration 4)
+- **Goal:** Make every authored/generated quest compile into deterministic supported mechanics.
+- **Completed work:** Nine-objective enum/event map, strict compiler, sequential progress system,
+  quest log, individual handler exports, and eight-step authored Blackwater quest.
+- **Tests run / Verification:** quest compiler/objective/story tests and standalone build exit `0`,
+  2026-08-16T02:35:03Z.
+- **Failures:** none.
+- **Decisions:** Unknown mechanics reject at compile; objectives progress in order; quantity is
+  bounded; AI quest actions remain narrative commands until compiled through this system.
+- **Confidence:** High — all nine types and sequential/quantity behavior are directly asserted.
+- **Next action:** Commit, then implement inventory/equipment.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
