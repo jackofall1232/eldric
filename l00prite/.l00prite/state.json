@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "complete deterministic rumor, encounter, Chronicle, time/weather, and audio subsystems with real tests",
+  "current_goal": "complete deterministic Chronicle, time/weather, and audio subsystems with real tests",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T02:40:44Z",
+  "last_updated": "2026-08-16T02:43:24Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit reputation/memory, then implement rumors and encounter templates"
+  "next_recommended_action": "commit rumors/encounters, then implement the Chronicle domain model"
 }

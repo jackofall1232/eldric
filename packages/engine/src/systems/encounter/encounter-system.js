@@ -1,1 +1,1 @@
-// Runs encounters built from authored templates.
+export class EncounterSystem { constructor() { this.templates = new Map(); this.active = new Map(); } register(template) { this.templates.set(template.id, template); } create(id, variables) { const template = this.templates.get(id); if (!template) throw new RangeError('Unknown encounter template.'); const encounter = template.instantiate(variables); this.active.set(`${id}-${this.active.size + 1}`, encounter); return encounter; } }

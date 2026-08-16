@@ -1,1 +1,1 @@
-// Spawn placement and pacing for encounters.
+export function encounterSpawnPoints(origin, count, spacing = 24) { return Array.from({ length: count }, (_, index) => { const angle = index / count * Math.PI * 2; return { x: Math.round(origin.x + Math.cos(angle) * spacing), y: Math.round(origin.y + Math.sin(angle) * spacing) }; }); }

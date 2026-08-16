@@ -1,1 +1,1 @@
-// How rumors travel and distort as they move between settlements.
+export function spreadRumor(rumor, settlement, rng) { const distance = rumor.distance + 1; let truth = rumor.truth; if (distance > 1 && rng.chance(Math.min(.7, distance * .18))) truth = truth === 'true' ? 'exaggerated' : 'false'; return Object.freeze({ ...rumor, id: `${rumor.event_id}_${settlement}_${distance}`, settlement, distance, truth }); }

@@ -298,6 +298,18 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement rumors/encounters.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:43:24Z — Codex (authorized story run, iteration 7)
+- **Goal:** Let legends distort real events and AI vary only authored encounter mechanics.
+- **Completed work:** True/exaggerated/false rumor variants and deterministic spread; strict
+  encounter templates/system/spawn points; traveler-in-trouble and bridge-ambush authored templates.
+- **Tests run / Verification:** rumor/encounter tests and standalone build exit `0`, 2026-08-16T02:43:08Z.
+- **Failures:** none.
+- **Decisions:** AI-provided encounter variables must match a template allowlist; game code owns
+  objectives, enemy counts, placements, and rewards.
+- **Confidence:** High — impossible enemy variables reject and legend distortion stays linked to source event.
+- **Next action:** Commit, then implement Chronicle model.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

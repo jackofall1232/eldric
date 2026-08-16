@@ -50,7 +50,7 @@ implement and verify in a single loop.
 - [x] Dialogue system with authored trees for background NPCs.
 - [x] Quest system: the nine objectives (`GO_TO`, `TALK_TO`, `FIND`, `COLLECT`, `DELIVER`,
       `DEFEAT`, `PROTECT`, `EXPLORE`, `CHOOSE`) and the compiler that every quest resolves through.
-- [ ] Encounter templates (e.g. `TRAVELER_IN_TROUBLE`) with narrative variables game code fills.
+- [x] Encounter templates (e.g. `TRAVELER_IN_TROUBLE`) with narrative variables game code fills.
 - [x] Save/load behind the `StorageAdapter` interface, with a versioned schema and migrations.
 
 ### M5 — Story layer
@@ -71,7 +71,7 @@ implement and verify in a single loop.
       differently by different NPCs and factions.
 - [x] NPC memory: promises, insults, gifts, debts, betrayals, rescues, prior conversations —
       dialogue evolves instead of resetting.
-- [ ] Rumor system generating true, exaggerated and false variants from real world state.
+- [x] Rumor system generating true, exaggerated and false variants from real world state.
 - [x] Story beat triggers: new region, campfire rest, important NPC, dungeon cleared, major
       decision, returning to a village, unusual artifact, new chapter.
 - [ ] Campfire rest: fade, legend summary, Chronicle entry.
