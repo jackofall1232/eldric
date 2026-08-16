@@ -61,6 +61,31 @@ Append one entry per agent run. Do not overwrite prior runs.
   bundles to `dist/`.
 - **Lock:** `codex-eldric-20260816T015338Z` active for the confirmed execute-loop run.
 
+### Run 2026-08-16T02:00:28Z — Codex (Execution Mode, iteration 2)
+- **Goal:** Establish deterministic engine time primitives before gameplay is attached.
+- **Triggering event:** none — confirmed roadmap execution.
+- **Decision:** Normal work; treated loop, game time, event bus, and seeded RNG as one cohesive
+  deterministic-core unit.
+- **Completed work:** Implemented a 60 Hz fixed-step loop with interpolation, catch-up cap,
+  pause/resume and injected scheduler; added scaled game time, framework-neutral event bus, and
+  snapshot-capable seeded xorshift RNG.
+- **Fix implemented:** Replaced core stubs and their loop/RNG test stubs with real deterministic
+  behavior and assertions.
+- **Changed files:** `packages/engine/src/core/{loop,time,events,rng}.js`, engine public barrel,
+  fake clock helper, loop/RNG unit tests, and l00prite memory.
+- **Tests run / Verification:** `node --test tests/unit/engine/loop.test.js tests/unit/engine/rng.test.js`,
+  exit_code `0`, 5 assertions/tests passed; `npm run build`, exit_code `0`; `npm run build:wp`,
+  exit_code `0`; all at 2026-08-16T02:00:12Z.
+- **Response drafted/sent:** Progress update sent; no external publish action taken.
+- **Event status:** not applicable.
+- **Failures:** none.
+- **Decisions:** Scheduler is injected so the engine remains platform-neutral; simulation caps at
+  eight catch-up steps; gameplay randomness must use serializable seeded state.
+- **Confidence:** High — deterministic behavior and pause/catch-up edge cases are directly tested.
+- **Next action:** Commit the unit, then build entity and scene lifecycle.
+- **Do-not-retry notes:** Do not introduce `Math.random` or browser scheduling into gameplay code.
+- **Lock:** `codex-eldric-20260816T015338Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

@@ -11,9 +11,9 @@ implement and verify in a single loop.
       exist as stubs — fill them in, install dependencies, and get `npm run dev` serving a blank
       canvas (smallest useful step; nothing else runs until this does). The WordPress config must
       emit an IIFE bundle into `wordpress/living-chronicle/assets/build/`, never `dist/`.
-- [ ] `packages/engine/src/core/loop.js` — fixed-timestep update with interpolated render, pause
+- [x] `packages/engine/src/core/loop.js` — fixed-timestep update with interpolated render, pause
       and resume, no frame-rate-dependent movement.
-- [ ] `packages/engine/src/core/time.js`, `events.js`, `rng.js` (seeded — replays and procedural
+- [x] `packages/engine/src/core/time.js`, `events.js`, `rng.js` (seeded — replays and procedural
       content must be deterministic).
 - [ ] `packages/engine/src/core/entity.js` and `scene/` scene stack (world / dialogue / menu /
       chronicle push and pop).

@@ -1,1 +1,4 @@
-// Public engine API barrel — re-exports createEngine and the subsystem interfaces. Nothing else in the repo may import engine internals directly.
+export { createFixedStepLoop } from './core/loop.js';
+export { GameTime } from './core/time.js';
+export { EventBus } from './core/events.js';
+export { SeededRng } from './core/rng.js';
