@@ -46,7 +46,7 @@ implement and verify in a single loop.
 - [ ] Major boss with multiple phases and a pattern the player can learn.
 
 ### M4 — Content systems
-- [ ] Inventory: weapons, armor, consumables, keys, artifacts, quest items; equipment slots.
+- [x] Inventory: weapons, armor, consumables, keys, artifacts, quest items; equipment slots.
 - [ ] Dialogue system with authored trees for background NPCs.
 - [x] Quest system: the nine objectives (`GO_TO`, `TALK_TO`, `FIND`, `COLLECT`, `DELIVER`,
       `DEFEAT`, `PROTECT`, `EXPLORE`, `CHOOSE`) and the compiler that every quest resolves through.

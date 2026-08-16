@@ -1,1 +1,1 @@
-// Armor definitions.
+import { ItemType, createItem } from '@eldric/engine'; export const WAYFARER_MAIL = createItem({ id: 'wayfarer_mail', type: ItemType.ARMOR, name: 'Wayfarer Mail', description: 'Weathered rings beneath a blue surcoat.', slot: 'armor', stats: { defense: 5 } });

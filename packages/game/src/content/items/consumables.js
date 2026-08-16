@@ -1,1 +1,1 @@
-// Consumable definitions.
+import { ItemType, createItem } from '@eldric/engine'; export const TRAVELERS_TONIC = createItem({ id: 'travelers_tonic', type: ItemType.CONSUMABLE, name: 'Traveler’s Tonic', description: 'Bitter yarrow and honey. Restores health.', stackable: true, maxStack: 5 });

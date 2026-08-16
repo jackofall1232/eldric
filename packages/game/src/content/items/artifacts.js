@@ -1,1 +1,1 @@
-// Artifacts — the items most likely to carry player history in their names.
+import { ItemType, createItem } from '@eldric/engine'; export const BROKEN_KING_MEDALLION = createItem({ id: 'broken_king_medallion', type: ItemType.ARTIFACT, name: 'Broken King’s Medallion', description: 'Warm beside old river-stone.', slot: 'charm', stats: { mystery: 4 } });

@@ -1,1 +1,1 @@
-// Key items.
+import { ItemType, createItem } from '@eldric/engine'; export const RIVER_KEY = createItem({ id: 'river_key', type: ItemType.KEY, name: 'River Key', description: 'Green iron bearing the Broken King’s crown.' });

@@ -1,1 +1,1 @@
-// Quest items.
+import { ItemType, createItem } from '@eldric/engine'; export const CORVENS_SCARF = createItem({ id: 'corvens_scarf', type: ItemType.QUEST, name: 'Corven’s Blue Scarf', description: 'River-soaked, but not torn.' });

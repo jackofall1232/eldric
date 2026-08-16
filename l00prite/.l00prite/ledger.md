@@ -274,6 +274,18 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement inventory/equipment.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:38:09Z — Codex (authorized story run, iteration 5)
+- **Goal:** Implement the six-category inventory and equipment seam with item history.
+- **Completed work:** Item definitions/types, bounded stacking/capacity, equipment/stat aggregation,
+  seeded loot table, and original Millhaven weapon/armor/consumable/key/artifact/quest items including
+  history-named Oathkeeper.
+- **Tests run / Verification:** inventory tests and standalone build exit `0`, 2026-08-16T02:37:54Z.
+- **Failures:** none.
+- **Decisions:** Story history changes item prose/name only; equipment stats remain authored deterministic data.
+- **Confidence:** High — stacking, uniqueness, history prose, and equipment totals are asserted.
+- **Next action:** Commit, then implement reputation/NPC memory.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

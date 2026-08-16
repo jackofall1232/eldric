@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "complete deterministic inventory, reputation, NPC memory, rumor, encounter, and Chronicle subsystems with real tests",
+  "current_goal": "complete deterministic reputation, NPC memory, rumor, encounter, and Chronicle subsystems with real tests",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T02:35:19Z",
+  "last_updated": "2026-08-16T02:38:09Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit the quest compiler/system, then implement inventory and equipment"
+  "next_recommended_action": "commit inventory/equipment, then implement reputation and NPC memory"
 }
