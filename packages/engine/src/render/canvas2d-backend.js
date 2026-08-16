@@ -61,8 +61,14 @@ const DRAW_COMMANDS = {
     context.font = props.font ?? '10px Georgia, serif';
     context.textAlign = props.align ?? 'left';
     context.textBaseline = props.baseline ?? 'alphabetic';
-    if (props.stroke) context.strokeText(String(props.text), props.x, props.y, props.maxWidth);
-    if (props.fill !== false) context.fillText(String(props.text), props.x, props.y, props.maxWidth);
+    const lines = props.wrapWidth
+      ? wrapTextLines(context, String(props.text), props.wrapWidth, props.maxLines)
+      : [String(props.text)];
+    lines.forEach((line, index) => {
+      const y = props.y + index * (props.lineHeight ?? 10);
+      if (props.stroke) context.strokeText(line, props.x, y, props.maxWidth);
+      if (props.fill !== false) context.fillText(line, props.x, y, props.maxWidth);
+    });
   },
   sprite(context, props) {
     if (!props.image) return;
@@ -76,6 +82,30 @@ const DRAW_COMMANDS = {
     context.restore();
   },
 };
+
+export function wrapTextLines(context, value, width, maximum = Number.POSITIVE_INFINITY) {
+  const paragraphs = String(value).split('\n');
+  const lines = [];
+  for (const paragraph of paragraphs) {
+    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { lines.push(''); continue; }
+    let line = words.shift();
+    for (const word of words) {
+      const candidate = `${line} ${word}`;
+      if (context.measureText(candidate).width <= width) line = candidate;
+      else { lines.push(line); line = word; }
+      if (lines.length >= maximum) break;
+    }
+    if (lines.length < maximum) lines.push(line);
+    if (lines.length >= maximum) break;
+  }
+  if (lines.length === maximum && context.measureText(lines.at(-1)).width > width) {
+    let last = lines.at(-1);
+    while (last.length > 1 && context.measureText(`${last}…`).width > width) last = last.slice(0, -1);
+    lines[lines.length - 1] = `${last}…`;
+  }
+  return lines.slice(0, maximum);
+}
 
 function applyStyle(context, props) {
   context.globalAlpha = props.alpha ?? 1;

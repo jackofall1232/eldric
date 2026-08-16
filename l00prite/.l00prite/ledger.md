@@ -377,6 +377,20 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then apply the design audit’s highest-impact opening/mobile presentation fixes.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T03:01:00Z — Codex (authorized story run, iteration 13)
+- **Goal:** Apply the design agent’s highest-impact opening, mobile legibility, and atmosphere fixes.
+- **Completed work:** Branded fire/title beat and animated book-to-world push-in; fractional narrow-phone
+  canvas scaling with fixed aspect ratio; measured multiline text; readable dialogue/toasts/Chronicle;
+  zone-specific rain, fog, leaves, and fireflies; localized campfire, window, and cave glow.
+- **Tests run / Verification:** text wrapping, responsive layout, and smoke boot tests exit `0`;
+  standalone and WordPress production builds exit `0`, 2026-08-16T03:00:30Z.
+- **Failures:** no headless browser executable is installed, so screenshot/console automation remains unrun.
+- **Decisions:** Preserve crisp integer scaling when space permits, but prefer a fitted fractional scale over
+  clipping on sub-384px phones; atmospheric effects remain budget-capped renderer commands.
+- **Confidence:** Medium-high — deterministic layout/build checks pass; visual result still needs a real browser review.
+- **Next action:** Commit, then replace geometric character placeholders with expressive silhouettes.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

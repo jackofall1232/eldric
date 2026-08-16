@@ -63,10 +63,12 @@ export function bootstrapGame(root, overrides = {}) {
 function resizeCanvasDisplay(root, canvas, config) {
   const availableWidth = Math.max(1, root.clientWidth || config.logicalWidth);
   const availableHeight = Math.max(1, root.clientHeight || config.logicalHeight);
-  const scale = Math.max(1, Math.floor(Math.min(
-    availableWidth / config.logicalWidth,
-    availableHeight / config.logicalHeight,
-  )));
+  const scale = computeDisplayScale(availableWidth, availableHeight, config.logicalWidth, config.logicalHeight);
   canvas.style.width = `${config.logicalWidth * scale}px`;
   canvas.style.height = `${config.logicalHeight * scale}px`;
+}
+
+export function computeDisplayScale(availableWidth, availableHeight, logicalWidth, logicalHeight) {
+  const fit = Math.max(.25, Math.min(availableWidth / logicalWidth, availableHeight / logicalHeight));
+  return fit >= 1 ? Math.max(1, Math.floor(fit)) : fit;
 }
