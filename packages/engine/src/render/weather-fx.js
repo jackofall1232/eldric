@@ -1,1 +1,1 @@
-// Weather overlays driven by the game's weather system.
+export function weatherEmitterProfile(weather) { return weather === 'rain' || weather === 'storm' ? { type: 'rain', rate: weather === 'storm' ? 80 : 45, velocity: { x: -18, y: 150 } } : weather === 'fog' ? { type: 'fog', rate: 4, velocity: { x: 7, y: 0 } } : { type: 'leaf', rate: 8, velocity: { x: 10, y: 16 } }; }

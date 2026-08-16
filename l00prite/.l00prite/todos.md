@@ -98,8 +98,8 @@ implement and verify in a single loop.
 - [ ] Audio: ambience, wind, rain, birds, footsteps, impacts, fire, village chatter, dungeon
       echoes, water, doors, treasure — with graceful fallbacks when assets are missing.
 - [ ] Music states: exploration, danger, combat, village, dungeon, story moments.
-- [ ] Particles (leaves, rain, fog, sparks, fireflies) with a dynamic budget on slower devices.
-- [ ] Lighting around fires, windows, magic and moonlight; day/night cycle; weather.
+- [x] Particles (leaves, rain, fog, sparks, fireflies) with a dynamic budget on slower devices.
+- [x] Lighting around fires, windows, magic and moonlight; day/night cycle; weather.
 
 ### M8 — WordPress and ship
 - [x] Plugin bootstrap, header, constants; `[living_chronicle]` shortcode with per-instance config

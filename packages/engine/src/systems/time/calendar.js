@@ -1,1 +1,1 @@
-// In-world date tracking for the Chronicle.
+export class WorldCalendar { constructor({ day = 1, season = 'wane', year = 742 } = {}) { this.day = day; this.season = season; this.year = year; } advanceDay() { this.day += 1; if (this.day > 30) { this.day = 1; this.season = this.season === 'wane' ? 'deepwinter' : this.season === 'deepwinter' ? 'thaw' : this.season === 'thaw' ? 'highsun' : 'wane'; if (this.season === 'wane') this.year += 1; } } label() { return `Day ${this.day} of ${this.season}, ${this.year}`; } }

@@ -322,6 +322,18 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement time/weather/audio.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:48:47Z — Codex (authorized story run, iteration 9)
+- **Goal:** Add bounded atmospheric simulation suitable for ordinary Android phones.
+- **Completed work:** World calendar, deterministic day/night phases and darkness, seeded weather
+  profiles, dynamically bounded particle pool/emitter profiles, and budgeted camera-culled lights.
+- **Tests run / Verification:** day/night/weather/budget tests and standalone build exit `0`, 2026-08-16T02:48:31Z.
+- **Failures:** none.
+- **Decisions:** Capability profile owns particle/light budgets; rendering consumes state but does not
+  advance it; weather changes through seeded gameplay RNG.
+- **Confidence:** High — rollover, visibility states, and hard budgets are tested.
+- **Next action:** Commit, then implement audio/music fallback.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
