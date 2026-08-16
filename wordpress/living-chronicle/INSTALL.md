@@ -1,7 +1,15 @@
-# Installing the Living Chronicle plugin
+# Installing Eldric: The Living Chronicle
 
-Stub — written in milestone M8.
+1. Run `npm install && npm run build:wp` at the repository root.
+2. Copy `wordpress/living-chronicle/` into `wp-content/plugins/living-chronicle/`, or zip that
+   directory and upload it from **Plugins → Add New → Upload Plugin**.
+3. Activate **Eldric: The Living Chronicle**.
+4. Add `[living_chronicle]` to a post or page.
 
-Will cover: copying `living-chronicle/` into `wp-content/plugins/`, activating, placing the
-`[living_chronicle]` shortcode, and configuring (or omitting) an AI provider. The plugin works
-with no provider configured.
+Optional attributes: `[living_chronicle profile="family" height="720"]`. Multiple shortcodes on
+one page are isolated instances. The current release uses the local authored storyteller and needs
+no API key or network request.
+
+Keyboard: WASD/arrow keys move, Shift runs, J attacks, K heavy-attacks, L blocks, Space dodges,
+E interacts, I opens inventory, and Tab opens the Chronicle. Touch controls appear automatically
+on coarse-pointer/mobile devices.

@@ -102,9 +102,9 @@ implement and verify in a single loop.
 - [ ] Lighting around fires, windows, magic and moonlight; day/night cycle; weather.
 
 ### M8 — WordPress and ship
-- [ ] Plugin bootstrap, header, constants; `[living_chronicle]` shortcode with per-instance config
+- [x] Plugin bootstrap, header, constants; `[living_chronicle]` shortcode with per-instance config
       on a data attribute (multiple shortcodes on one page must not collide).
-- [ ] Scoped asset enqueue inside the render callback, `lc-` prefixed handles, CSS scoped under a
+- [x] Scoped asset enqueue inside the render callback, `lc-` prefixed handles, CSS scoped under a
       single root, one global exposing `mount`/`unmount`.
 - [ ] REST proxy (`lc/v1/story`, `lc/v1/health`): nonce and permission checks, request validation,
       per-user and per-IP rate limiting, timeouts, maximum prompt and response sizes, PHP-side
@@ -113,7 +113,7 @@ implement and verify in a single loop.
       **Human review gate.**
 - [ ] PHP/JS schema parity test.
 - [ ] Nonce lifetime under page caching (a cached page serves a stale nonce and the proxy 403s).
-- [ ] Build to `wordpress/living-chronicle/assets/build/` — never `dist/`, which `.gitignore`
+- [x] Build to `wordpress/living-chronicle/assets/build/` — never `dist/`, which `.gitignore`
       silently swallows, leaving the plugin 404ing in production.
 - [ ] `INSTALL.md` and `readme.txt`; install verified from a zip on a clean WordPress site.
 - [ ] Performance pass: sprite atlases, lazy-loaded regions and audio, bounded particles;

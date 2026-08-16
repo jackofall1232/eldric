@@ -1,2 +1,23 @@
 <?php
-// Plugin main file — plugin header, ABSPATH guard, LC_VERSION/LC_PATH/LC_URL constants, bootstrap into LC_Plugin. Stub.
+/**
+ * Plugin Name: Eldric: The Living Chronicle
+ * Description: An original top-down storybook action-adventure embedded with [living_chronicle].
+ * Version: 0.1.0
+ * Requires at least: 6.4
+ * Requires PHP: 8.0
+ * Author: Eldric Contributors
+ * License: MIT
+ * Text Domain: living-chronicle
+ */
+
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
+define( 'LC_VERSION', '0.1.0' );
+define( 'LC_PATH', plugin_dir_path( __FILE__ ) );
+define( 'LC_URL', plugin_dir_url( __FILE__ ) );
+
+require_once LC_PATH . 'includes/class-lc-assets.php';
+require_once LC_PATH . 'includes/class-lc-shortcode.php';
+require_once LC_PATH . 'includes/class-lc-plugin.php';
+
+LC_Plugin::instance()->boot();

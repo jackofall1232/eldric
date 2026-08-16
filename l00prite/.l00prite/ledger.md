@@ -175,6 +175,24 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not access localStorage from game runtime directly.
 - **Lock:** `codex-eldric-20260816T015338Z` active.
 
+### Run 2026-08-16T02:20:10Z — Codex (Execution Mode, iteration 8)
+- **Goal:** Make the safe WordPress host side installable and shortcode-driven.
+- **Decision:** Normal work, stopping before denylisted proxy/validator files.
+- **Completed work:** Added real plugin metadata/bootstrap, singleton hook wiring, scoped asset
+  registration/enqueue, isolated shortcode instances and config, auto-mount loader, noscript
+  fallback, install guide, and WordPress readme.
+- **Tests run / Verification:** all plugin PHP files passed `php -l`; WordPress build exited `0`;
+  bundle secret grep returned no match; l00prite doctor reported 24 OK / HEALTHY; all at
+  2026-08-16T02:19:54Z.
+- **Failures:** clean WordPress install and automated browser check are not available locally.
+- **Decisions:** Default provider remains local/offline; shortcode supplies the plugin asset base
+  and per-instance save namespace; no remote provider or key surface is exposed.
+- **Confidence:** High for syntax/build/asset wiring, medium for unexecuted stock-WordPress smoke.
+- **Next action:** Commit, then request per-action authorization for the denylisted storyteller
+  schema/validator and AI proxy/settings/provider files.
+- **Do-not-retry notes:** Do not edit proxy/security contract files without the required gate.
+- **Lock:** `codex-eldric-20260816T015338Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
