@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "lock_id": "claude-eldric-frontend-polish-20260816T1330Z",
+  "lock_id": "claude-eldric-pr5-review-20260816T1805Z",
   "owner_agent": "claude",
-  "owner_session": "eldric-frontend-aesthetics-controls",
-  "acquired_at": "2026-08-16T13:30:00Z",
-  "expires_at": "2026-08-16T15:30:00Z",
+  "owner_session": "eldric-wordpress-ai-connector-selection",
+  "acquired_at": "2026-08-16T18:05:00Z",
+  "expires_at": "2026-08-16T20:05:00Z",
   "ttl_seconds": 7200,
-  "purpose": "user-requested frontend aesthetics pass: crisp text rendering, spread-out touch controls, in-game help (?) controls menu",
+  "purpose": "user-requested explicit AI connector selection for the Site AI storyteller, plus the PR #5 review response",
   "protected_paths": [
     "ledger.md",
     "memory.md",
@@ -19,5 +19,5 @@
     "sessions/"
   ],
   "status": "released",
-  "released_at": "2026-08-16T14:00:00Z"
+  "released_at": "2026-08-16T18:10:00Z"
 }
