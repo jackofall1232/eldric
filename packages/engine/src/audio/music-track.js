@@ -36,9 +36,16 @@ export class MusicTrack {
       element.preload = 'auto';
       this.element = element;
       this.url = url;
-      this.#follow();
-      await element.play?.();
+      // Mark the bed active before following the mixer: it owns the music bus
+      // from here whether or not a sound is coming out of it, which is what
+      // keeps the authored chords from starting underneath it.
       this.playing = true;
+      this.#follow();
+      // Starting while muted would stream and decode at volume zero for as long
+      // as the player left it muted — the very cost the pause-on-mute exists to
+      // avoid, and reachable on any reload with mute saved. Hold the element
+      // instead; #follow starts it the moment they unmute.
+      if (!this.mixer?.muted) await element.play?.();
       this.failed = false;
       return true;
     } catch {

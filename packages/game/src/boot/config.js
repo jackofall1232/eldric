@@ -26,8 +26,10 @@ export function resolveConfig(overrides = {}) {
 }
 
 // The soundtrack URL can arrive from a shortcode attribute, so it is caller
-// input: allow only http(s) and protocol-relative paths, never a javascript:
-// or data: URL that a media element would happily accept.
+// input. The allowlist is http(s), protocol-relative (//host/…), root-relative
+// (/path) and relative (./path, ../path) — relative is what the bundled score
+// resolves to. Everything else is dropped, which is the point: a media element
+// would happily load a javascript: or data: URL.
 export function resolveMusicUrl(value) {
   if (typeof value !== 'string') return '';
   const url = value.trim();

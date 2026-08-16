@@ -61,3 +61,29 @@ test('a scored bed stands the authored chords down, and a failed one does not', 
   assert.equal(silent.setMusic(MusicState.VILLAGE), true, 'the chords still carry the game');
   await audio.dispose();
 });
+
+test('a bed started while muted holds silent instead of streaming at zero', async () => {
+  const backend = { async init() { return true; }, play: () => null, stop() {},
+    setBusVolume() {}, async dispose() {} };
+  const plays = [];
+  let element = null;
+  const audio = new AudioSystem(backend, { createMediaElement: () => {
+    element = { volume: 1, paused: true, play() { plays.push('play'); this.paused = false; return Promise.resolve(); },
+      pause() { this.paused = true; } };
+    return element;
+  } });
+  await audio.init();
+  // A player who muted last session: the setting is restored before the first
+  // gesture ever starts the audio stack.
+  audio.restoreVolumes({ muted: true });
+
+  assert.equal(await audio.useMusicTrack('https://example.test/bed.mp3'), true);
+  assert.deepEqual(plays, [], 'nothing streams while muted');
+  assert.equal(element.paused, true);
+  assert.equal(audio.setMusic(MusicState.VILLAGE), false, 'the bed still owns the bus');
+
+  audio.setMuted(false);
+  assert.deepEqual(plays, ['play'], 'unmuting starts it');
+  assert.equal(element.paused, false);
+  await audio.dispose();
+});
