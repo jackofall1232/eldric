@@ -567,3 +567,57 @@ Append one entry per agent run. Do not overwrite prior runs.
   convert `scripts/l00prite-doctor.js` to fix module-type errors; the `scripts/package.json`
   marker is the fix.
 - **Lock:** none — no other agent was active, and `lock.json` remains `unlocked` as shipped.
+
+### Run 2026-08-16T10:00:00Z — Claude (supervised, user-directed end-to-end delivery)
+- **Goal:** Verify the 0.1 vertical slice actually works end to end in a real browser, close the
+  remaining M7 art gap and M8 packaging gaps with parallel subagents, and deliver a pushable,
+  WordPress-installable build on `claude/eldric-wordpress-game-yb99b5`.
+- **Triggering event:** Direct user request ("working game end to end that I can plug into any
+  WordPress page; use frontend design agents and whatever other agents you need").
+- **Reviewer/comment reference:** none.
+- **Decision:** Normal work under direct user instruction; supervised (not an Execution Mode run).
+- **Completed work:**
+  - Verified baseline: 56/56 tests, doctor HEALTHY, web + WP builds green.
+  - Played the built game in headless Chromium (Playwright): opening cinematic, skip, movement,
+    camera follow, NPC dialogue (Elara), quest progression to "Investigate Blackwater Road",
+    Chronicle book (TAB), inventory (I), tavern interior, combat swings, zone transitions,
+    collision, storyteller toasts, save persistence. Mobile viewport (412x915, touch): virtual
+    joystick + action buttons render and no page errors.
+  - Frontend-design subagent: full storybook art pass. New `packages/game/src/render/art.js`
+    (~1480 lines) — all drawing moved out of game-runtime.js (496→396 lines); engine gained
+    `ellipse`/`path` draw commands and gradient paints in canvas2d-backend.js. Timber-framed
+    houses, village dressing, layered trees/fire, detailed hero/enemies, parchment UI, richer
+    opening (timings/skip logic unchanged). Seeded precomputed detail, camera culling,
+    ~500-560 draw commands/frame, 60fps in harness.
+  - Packaging subagent: all 17 plugin PHP files lint (PHP 8.4); shortcode render simulated with a
+    22-stub WP harness (15/15 checks incl. multi-instance isolation and mountAll bootstrap);
+    stale-nonce behavior verified to degrade to local fallback; rewrote readme.txt + INSTALL.md;
+    new `scripts/build-wp-zip.sh`.
+- **Fix implemented:** Engine input robustness — `KeyboardSource`/`TouchSource` dropped taps
+  shorter than one frame (live Set returned from poll). Added sticky-tap latching so a sub-frame
+  tap registers for exactly one poll. Found via Playwright `press()` (~5ms taps) failing to open
+  the Chronicle.
+- **Changed files:** `packages/game/src/render/art.js` (new), `packages/game/src/runtime/game-runtime.js`,
+  `packages/engine/src/render/{canvas2d-backend,renderer}.js`, `packages/engine/src/input/sources/{keyboard,touch}.js`,
+  `wordpress/living-chronicle/{readme.txt,INSTALL.md}`, `wordpress/README.md`,
+  `scripts/build-wp-zip.sh` (new), `wordpress/living-chronicle/assets/build/*` (rebuilt),
+  l00prite memory files. Left untouched: REST proxy, settings PHP, storyteller schema/validator,
+  all protocol files.
+- **Tests run / Verification:**
+  - `command: npm test` · `exit_code: 0` · `summary: 56/56 pass (before and after every change)` · `timestamp: 2026-08-16T10:30:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok, 0 warn, 0 fail — HEALTHY` · `timestamp: 2026-08-16T10:30:00Z`
+  - `command: npm run build && npm run build:wp` · `exit_code: 0` · `summary: web 111.34kB / WP 110.86kB (gzip ~38kB) bundles` · `timestamp: 2026-08-16T10:30:00Z`
+  - `command: node playtest-final.mjs (Playwright vs built preview)` · `exit_code: 0` · `summary: opening→village→dialogue→chronicle→inventory→interior→road→combat verified; only console error is the favicon 404` · `evidence_path: scratchpad shots-final/` · `timestamp: 2026-08-16T10:35:00Z`
+  - `command: ./scripts/build-wp-zip.sh && unzip -l …` · `exit_code: 0` · `summary: 39-file zip, living-chronicle/ root, 0 .map files; secret grep clean (one BEGIN…KEY false positive = minified beginPath code)` · `timestamp: 2026-08-16T10:40:00Z`
+- **Response drafted/sent:** Summary delivered to the user in session.
+- **Event status:** not applicable.
+- **Failures:** None blocking. Known cosmetic: favicon 404 on the dev preview page.
+- **Decisions:** Art stays procedural (no bitmap assets) behind engine draw commands; 0.1 ships
+  with the local story provider hardcoded, REST proxy present but unused (matches the
+  "playable with AI disabled" requirement; remote wiring stays on the Later list).
+- **Confidence:** High — every claim above was exercised in a real browser or a real build.
+- **Next action:** Human playtest on a physical Android phone and a clean WordPress install of
+  the zip (manual release checks that cannot be automated here).
+- **Do-not-retry notes:** Playwright `page.keyboard.press()` taps are shorter than one game frame;
+  use ≥70ms down/up holds in future automated playtests.
+- **Lock:** `claude-eldric-e2e-20260816T100000Z` acquired and released this run.

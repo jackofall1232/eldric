@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "lock_id": "codex-eldric-story-20260816T022113Z",
-  "owner_agent": "codex",
-  "owner_session": "eldric-story-security",
-  "acquired_at": "2026-08-16T02:21:13Z",
-  "expires_at": "2026-08-16T03:40:00Z",
-  "ttl_seconds": 1800,
-  "purpose": "execute-loop run: authorized storyteller and AI proxy security paths",
+  "lock_id": "claude-eldric-e2e-20260816T100000Z",
+  "owner_agent": "claude",
+  "owner_session": "eldric-e2e-verify-ship",
+  "acquired_at": "2026-08-16T10:00:00Z",
+  "expires_at": "2026-08-16T12:00:00Z",
+  "ttl_seconds": 7200,
+  "purpose": "verify vertical slice end to end, close art/packaging gaps, produce installable build",
   "protected_paths": [
     "ledger.md",
     "memory.md",
@@ -19,5 +19,5 @@
     "sessions/"
   ],
   "status": "released",
-  "released_at": "2026-08-16T03:29:00Z"
+  "released_at": "2026-08-16T10:45:00Z"
 }

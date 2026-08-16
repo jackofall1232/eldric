@@ -49,6 +49,30 @@ const DRAW_COMMANDS = {
     if (props.fill) context.fill();
     if (props.stroke) context.stroke();
   },
+  ellipse(context, props) {
+    applyStyle(context, props);
+    context.beginPath();
+    context.ellipse(props.x, props.y, Math.max(0, props.radiusX), Math.max(0, props.radiusY),
+      props.rotation ?? 0, props.start ?? 0, props.end ?? Math.PI * 2);
+    if (props.close) context.closePath();
+    if (props.fill) context.fill();
+    if (props.stroke) context.stroke();
+  },
+  path(context, props) {
+    const points = props.points;
+    if (!points?.length) return;
+    applyStyle(context, props);
+    context.beginPath();
+    context.moveTo(points[0].x, points[0].y);
+    for (let index = 1; index < points.length; index += 1) {
+      const point = points[index];
+      if (point.cx === undefined) context.lineTo(point.x, point.y);
+      else context.quadraticCurveTo(point.cx, point.cy, point.x, point.y);
+    }
+    if (props.close !== false) context.closePath();
+    if (props.fill) context.fill();
+    if (props.stroke) context.stroke();
+  },
   line(context, props) {
     applyStyle(context, props);
     context.beginPath();
@@ -107,10 +131,23 @@ export function wrapTextLines(context, value, width, maximum = Number.POSITIVE_I
   return lines.slice(0, maximum);
 }
 
+// A paint is either a CSS colour string or a gradient descriptor:
+//   { type: 'linear', x0, y0, x1, y1, stops: [[offset, colour], …] }
+//   { type: 'radial', x0, y0, r0, x1, y1, r1, stops: [[offset, colour], …] }
+export function resolvePaint(context, paint) {
+  if (!paint || typeof paint === 'string') return paint;
+  const gradient = paint.type === 'radial'
+    ? context.createRadialGradient(paint.x0, paint.y0, paint.r0 ?? 0,
+      paint.x1 ?? paint.x0, paint.y1 ?? paint.y0, Math.max(0.01, paint.r1))
+    : context.createLinearGradient(paint.x0, paint.y0, paint.x1, paint.y1);
+  for (const [offset, colour] of paint.stops) gradient.addColorStop(offset, colour);
+  return gradient;
+}
+
 function applyStyle(context, props) {
   context.globalAlpha = props.alpha ?? 1;
-  if (props.fill) context.fillStyle = props.fill;
-  if (props.stroke) context.strokeStyle = props.stroke;
+  if (props.fill) context.fillStyle = resolvePaint(context, props.fill);
+  if (props.stroke) context.strokeStyle = resolvePaint(context, props.stroke);
   context.lineWidth = props.lineWidth ?? 1;
   context.lineCap = props.lineCap ?? 'round';
   context.lineJoin = props.lineJoin ?? 'round';

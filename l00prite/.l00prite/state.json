@@ -3,9 +3,9 @@
   "project_name": "eldric",
   "current_goal": "manual browser/device playtest and clean WordPress upload of the verified 0.1 archive",
   "current_phase": "manual_qa",
-  "active_agent": "Codex",
-  "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T03:29:00Z",
+  "active_agent": null,
+  "last_agent": "Claude (supervised end-to-end delivery)",
+  "last_updated": "2026-08-16T10:45:00Z",
   "status": "awaiting_manual_qa",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "local_green",
   "execution_active": false,
   "execution_stop_reason": "human_review_gate",
-  "next_recommended_action": "upload eldric-living-chronicle-0.1.0.zip to a clean WordPress 6.4+ site and play through on desktop plus a mid-range Android phone"
+  "next_recommended_action": "upload build/eldric-living-chronicle-0.1.0.zip to a clean WordPress 6.4+ site and play through on desktop plus a mid-range Android phone; art pass and packaging now verified in headless Chromium"
 }
