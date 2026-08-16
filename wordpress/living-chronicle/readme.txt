@@ -50,8 +50,10 @@ book or screen and steps back outside from a building interior.
 Manual install: unzip the file and upload the `living-chronicle` folder to
 `wp-content/plugins/`, then activate it from the Plugins screen.
 
-Optional settings live under **Settings → Eldric Storyteller**. Nothing there is required for
-play. You can pick the story provider:
+After activation a top-level **Eldric** menu appears in the dashboard. **Eldric → Setup Guide**
+walks through embedding the game, shortcode attributes, controls, saves, caching, and
+troubleshooting. Optional settings live under **Eldric → Storyteller**. Nothing there is
+required for play. You can pick the story provider:
 
 * **Local storyteller (default)** — authored offline storytelling, no key, no network.
 * **Site AI — WordPress AI Client** — on WordPress 7.0+ with a configured AI provider, the
@@ -112,4 +114,5 @@ controls.
 * `[living_chronicle]` shortcode with profile, slot, and height attributes.
 * Local authored storyteller; nonce-protected, rate-limited `lc/v1/story` REST endpoint reserved
   for future providers.
-* Settings page (Settings → Eldric Storyteller) with server-side, write-only key placeholder.
+* Top-level Eldric admin menu with an in-dashboard Setup Guide and a Storyteller settings page
+  (server-side, write-only key placeholder).

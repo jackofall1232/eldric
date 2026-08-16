@@ -661,3 +661,61 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Manual QA on WordPress 7.0 with a configured AI provider; then desktop/Android
   playthrough of the slice.
 - **Lock:** `claude-eldric-wpai-20260816T1145Z` acquired and released this run.
+
+### Run 2026-08-16T12:55:00Z — Claude (top-level admin menu + designed admin panel)
+- **Goal:** User request: give the plugin a top-level admin menu, make the admin panel modern and
+  fitting the game's aesthetic (via a design subagent), and put game-setup instructions inside the
+  admin itself.
+- **Triggering event:** none — direct user request on branch `claude/admin-panel-setup-23nxts`.
+- **Reviewer/comment reference:** none.
+- **Decision:** Valid, normal work. Touching `class-lc-settings.php` sits behind the settings/security
+  review gate, but the change was explicitly user-requested and deliberately avoids all security
+  logic: `sanitize()`, provider allowlisting, key handling, the REST proxy, and the storyteller
+  contract are byte-identical. Only page registration/presentation moved.
+- **Completed work:**
+  - New `includes/class-lc-admin.php` (`LC_Admin`): top-level **Eldric** menu (original single-path
+    flame-over-open-book SVG icon as base64 data URI, recolored by wp-admin's svg-painter) with two
+    screens — **Setup Guide** (slug `lc-eldric`, the landing page) and **Storyteller** (keeps legacy
+    slug `lc-storyteller`). Admin CSS enqueued only on the plugin's own hook suffixes. Custom-page
+    settings feedback via `add_settings_error`/`settings_errors` on `settings-updated`.
+  - New `admin/setup-page.php`: in-admin setup instructions — status chips (version, active
+    storyteller, Site AI availability), three steps (place `[living_chronicle]`, optional
+    profile/slot/height attributes, choose storyteller), plus Controls, Saves, Caching & security,
+    and Troubleshooting reference cards. Content sourced from INSTALL.md, no invented capability.
+  - `LC_Settings`: removed `add_options_page` registration (moved to `LC_Admin`); all other logic
+    untouched. `LC_Plugin` boots `LC_Admin`; bootstrap requires the new class.
+  - Design subagent produced `admin/css/lc-admin.css` (721 lines, all scoped under `.lc-admin`,
+    zero external assets): dark firelit hero/cards on ink-night surfaces, parchment text
+    (AA+ contrast), ember accents, Georgia serif display, keycap kbd styles, ember buttons shared
+    with `submit_button()` output, restyled notices, responsive grid (1-col <960px), reduced-motion
+    support; plus template polish (`wp-header-end` markers) and the refined menu icon.
+  - Docs: INSTALL.md gains "The Eldric admin menu" section; settings path renamed
+    Settings → Eldric Storyteller ⇒ **Eldric → Storyteller**; readme.txt description and 0.1.0
+    changelog bullet updated to the top-level menu + Setup Guide.
+- **Fix implemented:** not applicable (feature work).
+- **Changed files:** `wordpress/living-chronicle/includes/class-lc-admin.php` (new),
+  `admin/setup-page.php` (new), `admin/settings-page.php`, `admin/css/lc-admin.css`,
+  `includes/class-lc-settings.php`, `includes/class-lc-plugin.php`, `living-chronicle.php`,
+  `INSTALL.md`, `readme.txt`. Untouched by design: REST proxy, providers, validator, sanitizer,
+  rate limiter, shortcode, schema.
+- **Tests run / Verification:**
+  - `command: php -l (6 touched PHP files)` · `exit_code: 0` · `summary: all clean` · `timestamp: 2026-08-16T12:50:00Z`
+  - `command: php scratch admin-render-harness.php (WP-stub)` · `exit_code: 0` · `summary: 22 checks — 3 menu entries, top-level slug lc-eldric, legacy settings slug kept, valid 20x20 base64 SVG icon, setup page landmarks, settings form fields in both provider/key states, clear-key control` · `timestamp: 2026-08-16T12:50:00Z`
+  - `command: npm test` · `exit_code: 0` · `summary: 59/59 pass (after npm install in fresh container)` · `timestamp: 2026-08-16T12:52:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok, only advisory warn = this run's own active lock` · `timestamp: 2026-08-16T12:52:00Z`
+  - `command: Playwright screenshots of stub-rendered pages (1440px + 400px)` · `exit_code: 0` · `summary: both screens render the intended design; mobile stacks to one column; screenshots sent to user` · `timestamp: 2026-08-16T12:54:00Z`
+- **Response drafted/sent:** Screenshots of both admin screens delivered to the user with the run
+  summary.
+- **Event status:** not applicable.
+- **Failures:** Initial `npm test` showed 6 failures — stale container without installed workspace
+  deps (`@eldric/engine` unresolved), not a code fault; green after `npm install`.
+- **Decisions:** Setup Guide is the top-level landing screen (setup is the first admin need);
+  settings keep slug `lc-storyteller` so existing links survive; admin CSS is fully self-contained
+  and scoped to avoid bleeding into wp-admin.
+- **Confidence:** High for markup/CSS/menu registration (stub-rendered and screenshot-reviewed);
+  medium for exact appearance across WP admin color schemes — the panel paints its own surfaces,
+  but a live wp-admin pass remains manual QA.
+- **Next action:** Manual QA of the two screens on a real WordPress install (default + at least one
+  non-default admin color scheme), then the still-pending WP 7.0 Site AI manual QA.
+- **Do-not-retry notes:** none.
+- **Lock:** `claude-eldric-admin-20260816T1230Z` acquired and released this run.

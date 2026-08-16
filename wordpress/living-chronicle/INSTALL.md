@@ -30,9 +30,20 @@ Optional attributes: `[living_chronicle profile="family" slot="main" height="720
 
 The current release uses the local authored storyteller and needs no API key or network request.
 
+## The Eldric admin menu
+
+Activation adds a top-level **Eldric** menu to the dashboard for administrators
+(`manage_options`):
+
+- **Eldric → Setup Guide** — in-dashboard instructions covering everything on this page:
+  embedding the shortcode, its attributes, choosing the storyteller, controls, saves, caching
+  and troubleshooting, plus a live status line showing the plugin version and which
+  storyteller is currently serving.
+- **Eldric → Storyteller** — the settings screen below.
+
 ## Settings (optional)
 
-**Settings → Eldric Storyteller** lets you pick the story provider. Nothing on this page is
+**Eldric → Storyteller** lets you pick the story provider. Nothing on this page is
 required for play:
 
 - **Local storyteller (default)** — authored offline storytelling; no key, no network.

@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "lock_id": "claude-eldric-wpai-20260816T1145Z",
+  "lock_id": "claude-eldric-admin-20260816T1230Z",
   "owner_agent": "claude",
-  "owner_session": "eldric-wp-ai-provider",
-  "acquired_at": "2026-08-16T11:45:00Z",
-  "expires_at": "2026-08-16T12:30:00Z",
+  "owner_session": "eldric-admin-panel-setup",
+  "acquired_at": "2026-08-16T12:30:00Z",
+  "expires_at": "2026-08-16T14:30:00Z",
   "ttl_seconds": 7200,
-  "purpose": "user-requested WordPress AI Client provider + PR review fixes",
+  "purpose": "user-requested top-level Eldric admin menu, styled admin panel, in-admin setup guide",
   "protected_paths": [
     "ledger.md",
     "memory.md",
@@ -19,5 +19,5 @@
     "sessions/"
   ],
   "status": "released",
-  "released_at": "2026-08-16T12:00:00Z"
+  "released_at": "2026-08-16T13:00:00Z"
 }

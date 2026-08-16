@@ -9,9 +9,6 @@ final class LC_Settings {
     public function register_setting(): void {
         register_setting( 'lc_story', self::OPTION, array( 'type' => 'array', 'sanitize_callback' => array( $this, 'sanitize' ), 'default' => self::DEFAULTS ) );
     }
-    public function add_page(): void {
-        add_options_page( __( 'Eldric Storyteller', 'living-chronicle' ), __( 'Eldric Storyteller', 'living-chronicle' ), 'manage_options', 'lc-storyteller', array( $this, 'render' ) );
-    }
     public function sanitize( mixed $submitted ): array {
         $existing = get_option( self::OPTION, self::DEFAULTS );
         $submitted = is_array( $submitted ) ? $submitted : array();
