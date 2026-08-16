@@ -5,6 +5,6 @@ export const BLACKWATER_QUEST = Object.freeze({ id: 'blackwater_oath', title: 'W
   { type: 'EXPLORE', target: 'sunken-ruin', text: 'Search the Broken King’s watch.' },
   { type: 'COLLECT', target: 'river_key', text: 'Recover the River Key.' },
   { type: 'DEFEAT', target: 'thornhart', text: 'Defeat the ruin’s guardian.' },
-  { type: 'CHOOSE', target: 'river_oath', text: 'Break the seal or renew the binding.' },
   { type: 'DEFEAT', target: 'drowned_oath', text: 'Survive what the river remembers.' },
+  { type: 'CHOOSE', target: 'river_oath', text: 'Break the seal or renew the binding.' },
 ] });

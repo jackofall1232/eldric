@@ -361,6 +361,22 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then replace the offline playthrough stub with a full-slice integration test.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:57:00Z — Codex (authorized story run, iteration 12)
+- **Goal:** Replace the offline-playthrough placeholder with evidence that the complete story slice works without AI.
+- **Completed work:** Full authored Blackwater quest progression; deterministic Thornhart combat and
+  three boss phases; local storyteller arrival/decision beats; reputation and Elara memory; Chronicle
+  decisions; history-named Oathkeeper; versioned in-memory save/reload. Corrected choice ordering to
+  match the shipped boss-then-decision sequence.
+- **Tests run / Verification:** `node --test tests/integration/offline-playthrough.test.js
+  tests/unit/engine/quest-compiler.test.js`, exit `0`; full `npm test`, 26 files pass, exit `0`,
+  2026-08-16T02:56:30Z.
+- **Failures:** none.
+- **Decisions:** End-to-end verification uses the same public domain APIs as runtime and never requires
+  a browser, network, API key, or non-deterministic game authority.
+- **Confidence:** High — persistence and story consequences are asserted after a full supported objective chain.
+- **Next action:** Commit, then apply the design audit’s highest-impact opening/mobile presentation fixes.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

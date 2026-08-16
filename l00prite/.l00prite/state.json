@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "replace the offline playthrough stub with a real full-slice deterministic verification",
+  "current_goal": "polish the opening five minutes and mobile presentation using the design audit",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T02:54:00Z",
+  "last_updated": "2026-08-16T02:57:00Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit combat, then implement and run the full offline playthrough integration test"
+  "next_recommended_action": "commit offline verification, then improve the opening transition, canvas scaling, text wrapping, and localized light"
 }
