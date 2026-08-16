@@ -1,6 +1,13 @@
+// When logical dimensions are given, the canvas element may carry a larger
+// physical resolution (supersampling): every frame draws in logical
+// coordinates through a uniform transform, so vector art and text stay laid
+// out identically but rasterize at the sharper physical resolution.
 export class Canvas2DBackend {
-  constructor(canvas) {
+  constructor(canvas, { logicalWidth = null, logicalHeight = null } = {}) {
     this.canvas = canvas;
+    this.logicalWidth = logicalWidth;
+    this.logicalHeight = logicalHeight;
+    this.scale = 1;
     this.context = canvas.getContext('2d');
     if (!this.context) throw new Error('Canvas2D is unavailable.');
     this.context.imageSmoothingEnabled = false;
@@ -8,11 +15,14 @@ export class Canvas2DBackend {
 
   begin(clear) {
     const context = this.context;
+    this.scale = this.logicalWidth ? this.canvas.width / this.logicalWidth : 1;
     context.setTransform(1, 0, 0, 1, 0, 0);
     context.globalAlpha = 1;
     context.globalCompositeOperation = 'source-over';
     context.fillStyle = clear;
     context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.scale !== 1) context.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+    context.imageSmoothingEnabled = this.scale !== 1;
   }
 
   execute({ type, props }) {
@@ -20,8 +30,8 @@ export class Canvas2DBackend {
     if (draw) draw(this.context, props);
   }
 
-  get width() { return this.canvas.width; }
-  get height() { return this.canvas.height; }
+  get width() { return this.logicalWidth ?? this.canvas.width; }
+  get height() { return this.logicalHeight ?? this.canvas.height; }
 }
 
 const DRAW_COMMANDS = {

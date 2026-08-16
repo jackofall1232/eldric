@@ -11,8 +11,11 @@ import {
 
 export function createGameRuntime(canvas, config, onStatus = () => {}) {
   const platform = createWebPlatform(canvas, { storage: config.storage, audio: config.audio });
-  const renderer = new Renderer(new Canvas2DBackend(canvas));
-  const camera = new Camera({ width: canvas.width, height: canvas.height, x: 270, y: 375, smoothing: 9 });
+  // All layout math runs in the fixed logical space; the canvas element itself
+  // may carry a supersampled physical resolution for crisp rasterization.
+  const viewport = { width: config.logicalWidth ?? canvas.width, height: config.logicalHeight ?? canvas.height };
+  const renderer = new Renderer(new Canvas2DBackend(canvas, { logicalWidth: viewport.width, logicalHeight: viewport.height }));
+  const camera = new Camera({ width: viewport.width, height: viewport.height, x: 270, y: 375, smoothing: 9 });
   camera.setBounds({ x: 0, y: 0, ...WORLD });
   const rng = new SeededRng('eldric-millhaven-v1');
   const player = { x: 250, y: 370, previousX: 250, previousY: 370, facingX: 1, facingY: 0,
@@ -48,7 +51,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   let accumulator = 0;
   let requestId = 0;
   const particles = Array.from({ length: platform.capabilities.particleBudget }, (_, index) => ({
-    x: rng.int(0, canvas.width), y: rng.int(0, canvas.height), phase: index * 0.73,
+    x: rng.int(0, viewport.width), y: rng.int(0, viewport.height), phase: index * 0.73,
   }));
 
   function frame(time) {
@@ -322,8 +325,10 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
 
   const artCache = createArtCache({ world: WORLD, obstacles: OBSTACLES, trees: TREE_CLUMPS });
   const artCtx = {
-    renderer, camera, canvas, config, state, player, enemies, particles,
+    renderer, camera, canvas: viewport, config, state, player, enemies, particles,
     art: artCache, obstacles: OBSTACLES, interactables: INTERACTABLES, world: WORLD,
+    // On touch devices the DOM buttons replace the keyboard hint text.
+    touchControls: canvas.ownerDocument?.defaultView?.matchMedia?.('(pointer: coarse)')?.matches ?? false,
     clock: 0, heroX: player.x, heroY: player.y, nearest: null, questText: '',
     dialogueTitle: '', dialogueLine: '', dialogueColor: null,
     ox: 0, oy: 0, view: null,

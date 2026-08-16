@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "manual browser/device playtest and clean WordPress upload of the verified 0.1 archive, now including the new Eldric admin menu screens",
+  "current_goal": "manual browser/device playtest and clean WordPress upload of the verified 0.1 archive, now including the crisp-render frontend pass (supersampled canvas, spread touch controls, help menu)",
   "current_phase": "manual_qa",
   "active_agent": null,
-  "last_agent": "Claude (top-level admin menu + designed admin panel)",
-  "last_updated": "2026-08-16T12:58:00Z",
+  "last_agent": "Claude (frontend aesthetics: crisp text, spread touch controls, help menu)",
+  "last_updated": "2026-08-16T14:00:00Z",
   "status": "awaiting_manual_qa",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "local_green",
   "execution_active": false,
   "execution_stop_reason": "human_review_gate",
-  "next_recommended_action": "manual QA: verify Eldric → Setup Guide and Eldric → Storyteller on a real wp-admin (default + one non-default color scheme); then WordPress 7.0 Site AI QA and desktop/Android playthrough of the zip"
+  "next_recommended_action": "manual QA on real devices: text readability at phone size, thumb ergonomics of the spread touch layout, stick-edge sprint, and the ? help menu on desktop + phone; then the pending wp-admin and WordPress 7.0 Site AI QA"
 }

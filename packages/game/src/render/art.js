@@ -177,6 +177,7 @@ function distance(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
 // Frame context: offsets are rounded once so every world shape lands on the same pixel grid.
 export function prepareFrame(ctx) {
   const { camera, canvas } = ctx;
+  ctx.bossBanner = false;
   ctx.ox = Math.round(canvas.width / 2 - camera.x + camera.shakeX);
   ctx.oy = Math.round(canvas.height / 2 - camera.y + camera.shakeY);
   ctx.view = ctx.view ?? { x0: 0, y0: 0, x1: 0, y1: 0 };
@@ -890,8 +891,13 @@ function drawEnemy(ctx, enemy) {
     renderer.circle({ x, y, radius: pulse, fill: 'rgba(230,163,93,.12)' }, RenderLayer.ENTITY, order + 19);
   }
   if (enemy.kind === 'boss') {
-    renderer.rect({ x: canvas.width / 2 - 96, y: 16, width: 192, height: 14, fill: 'rgba(18,14,16,.72)', stroke: '#8d7853', radius: 3 }, RenderLayer.UI);
-    renderer.text({ text: `THE DROWNED OATH · PHASE ${enemy.bossPhase}`, x: canvas.width / 2, y: 26, align: 'center', fill: PALETTE.parchment, font: 'bold 9px Georgia' });
+    ctx.bossBanner = true;
+    const half = canvas.width / 2;
+    renderer.rect({ x: half - 96, y: 6, width: 192, height: 14, fill: 'rgba(18,14,16,.8)', stroke: '#8d7853', radius: 3 }, RenderLayer.UI);
+    renderer.rect({ x: half - 94, y: 9, width: 188 * Math.max(0, enemy.health / enemy.maxHealth), height: 8, fill: {
+      type: 'linear', x0: 0, y0: 9, x1: 0, y1: 17, stops: [[0, '#c05852'], [1, PALETTE.blood]],
+    }, radius: 2 }, RenderLayer.UI, 1);
+    renderer.text({ text: `THE DROWNED OATH · PHASE ${enemy.bossPhase}`, x: half, y: 16, align: 'center', fill: PALETTE.parchment, font: 'bold 8px Georgia', stroke: 'rgba(23,19,20,.8)', lineWidth: 2 }, RenderLayer.UI, 2);
   }
 }
 
@@ -1193,9 +1199,9 @@ export function drawOpening(ctx) {
         fill: 'rgba(199,166,104,.6)', alpha }, RenderLayer.UI, 1);
     }
   }
-  if (t > .9 && t < 4.6) renderer.text({ text: 'THE LIVING CHRONICLE', x: 192, y: 65, align: 'center', fill: '#a99670', font: 'bold 7px Georgia', alpha: Math.min(1, (t - .9) * 1.4, 4.6 - t) });
+  if (t > .9 && t < 4.6) renderer.text({ text: 'THE LIVING CHRONICLE', x: 192, y: 66, align: 'center', fill: '#a99670', font: 'bold 8px Georgia', alpha: Math.min(1, (t - .9) * 1.4, 4.6 - t) });
   if (t > 1.45 && t < 4.6) renderer.text({ text: '“Gather close, and heed my tale.”', x: 192, y: 92, align: 'center', fill: PALETTE.parchment, font: 'italic 11px Georgia', alpha: Math.min(1, (t - 1.45) * 1.2, 4.6 - t) });
-  if (t > 2.7 && t < 4.6) renderer.text({ text: 'A kingdom waits for the hand that will write its history.', x: 192, y: 109, align: 'center', fill: '#b6a580', font: '8px Georgia', alpha: Math.min(1, (t - 2.7) * 1.5, 4.6 - t) });
+  if (t > 2.7 && t < 4.6) renderer.text({ text: 'A kingdom waits for the hand that will write its history.', x: 192, y: 109, align: 'center', fill: '#c2b28c', font: '8px Georgia', alpha: Math.min(1, (t - 2.7) * 1.5, 4.6 - t) });
   if (t > 3.55) {
     const progress = clamp01((t - 3.55) / 3.65);
     const eased = progress * progress * (3 - 2 * progress);
@@ -1230,7 +1236,7 @@ export function drawOpening(ctx) {
     renderer.rect({ x: x + width * .5 - 4, y: y - 5, width: 8, height: height * .34, fill: '#8d3e3a', alpha: .85 }, RenderLayer.OVERHEAD, 3);
     renderer.polygon({ points: [{ x: x + width * .5 - 4, y: y - 5 + height * .34 }, { x: x + width * .5, y: y - 10 + height * .34 },
       { x: x + width * .5 + 4, y: y - 5 + height * .34 }], fill: '#6f2d2c', alpha: .85 }, RenderLayer.OVERHEAD, 3);
-    if (progress > .55) renderer.text({ text: 'Press E / J to enter the page', x: 192, y: 204, align: 'center', fill: PALETTE.parchment, font: 'bold 7px Georgia', stroke: '#171314', lineWidth: 3 });
+    if (progress > .55) renderer.text({ text: 'Press E / J to enter the page', x: 192, y: 204, align: 'center', fill: PALETTE.parchment, font: 'bold 8px Georgia', stroke: '#171314', lineWidth: 3 });
   }
   renderer.rect({ x: 0, y: 0, width: w, height: h, fill: {
     type: 'radial', x0: w / 2, y0: h / 2, r0: h * .3, x1: w / 2, y1: h / 2, r1: w * .74,
@@ -1312,8 +1318,8 @@ export function drawInterior(ctx) {
     renderer.rect({ x: 230, y: 65, width: 58, height: 28, fill: '#927447', stroke: '#382d24' }, RenderLayer.ENTITY, 2);
     renderer.rect({ x: 236, y: 71, width: 46, height: 4, fill: 'rgba(232,210,162,.35)' }, RenderLayer.ENTITY, 3);
   }
-  renderer.text({ text: title, x: 192, y: 36, align: 'center', fill: PALETTE.parchment, font: 'bold 9px Georgia' });
-  renderer.text({ text: 'E near the back to investigate · E at the door to leave', x: 192, y: 197, align: 'center', fill: '#d4bf91', font: '7px Georgia' });
+  renderer.text({ text: title, x: 192, y: 36, align: 'center', fill: PALETTE.parchment, font: 'bold 10px Georgia', stroke: '#171314', lineWidth: 2.5 });
+  renderer.text({ text: 'E near the back to investigate · E at the door to leave', x: 192, y: 197, align: 'center', fill: '#d4bf91', font: '8px Georgia', stroke: '#171314', lineWidth: 2 });
   drawInteriorHero(ctx);
   renderer.rect({ x: 172, y: 184, width: 40, height: 20, fill: '#2c2422', stroke: '#8c6844' }, RenderLayer.OBJECT, 4);
   renderer.rect({ x: 176, y: 186, width: 32, height: 16, fill: '#1c1614' }, RenderLayer.OBJECT, 5);
@@ -1342,17 +1348,17 @@ function drawInteriorHero(ctx) {
 }
 
 // ── UI: parchment and ink ─────────────────────────────────────────────────────
-function ornateFrame(renderer, x, y, width, height, layer, order = 0, accent = '#b59a67') {
-  renderer.rect({ x: x + 2, y: y + 2, width, height, fill: 'rgba(8,8,10,.4)', radius: 4 }, layer, order);
+function ornateFrame(renderer, x, y, width, height, layer, order = 0, accent = '#b59a67', alpha = 1) {
+  renderer.rect({ x: x + 2, y: y + 2, width, height, fill: 'rgba(8,8,10,.4)', radius: 4, alpha }, layer, order);
   renderer.rect({ x, y, width, height, fill: {
     type: 'linear', x0: 0, y0: y, x1: 0, y1: y + height,
     stops: [[0, 'rgba(46,40,42,.94)'], [1, 'rgba(26,22,24,.94)']],
-  }, stroke: accent, radius: 4 }, layer, order + 1);
-  renderer.rect({ x: x + 2, y: y + 2, width: width - 4, height: height - 4, stroke: 'rgba(232,210,162,.16)', radius: 3 }, layer, order + 2);
+  }, stroke: accent, radius: 4, alpha }, layer, order + 1);
+  renderer.rect({ x: x + 2, y: y + 2, width: width - 4, height: height - 4, stroke: 'rgba(232,210,162,.16)', radius: 3, alpha }, layer, order + 2);
   for (const corner of [[x, y, 1, 1], [x + width, y, -1, 1], [x, y + height, 1, -1], [x + width, y + height, -1, -1]]) {
     const [cx, cy, sx, sy] = corner;
     renderer.path({ points: [{ x: cx + sx * 9, y: cy + sy * 2 }, { x: cx + sx * 2, y: cy + sy * 2 }, { x: cx + sx * 2, y: cy + sy * 9 }],
-      stroke: accent, close: false }, layer, order + 3);
+      stroke: accent, close: false, alpha }, layer, order + 3);
   }
 }
 
@@ -1366,30 +1372,33 @@ export function drawHud(ctx) {
   renderer.rect({ x: 14, y: 14, width: 88 * player.health / player.maxHealth, height: 2, fill: 'rgba(255,214,196,.28)' }, RenderLayer.UI, 6);
   renderer.rect({ x: 13, y: 21, width: 90, height: 5, fill: 'rgba(12,10,10,.7)', radius: 2 }, RenderLayer.UI, 4);
   renderer.rect({ x: 14, y: 22, width: 88 * player.stamina / player.maxStamina, height: 3, fill: '#c0a65b' }, RenderLayer.UI, 5);
-  // quest ribbon
-  const quest = ctx.questText;
-  renderer.rect({ x: canvas.width / 2 - 108, y: 6, width: 216, height: 13, fill: 'rgba(24,20,22,.66)', radius: 2 }, RenderLayer.UI, 0);
-  for (const side of [-1, 1]) {
-    renderer.polygon({ points: [{ x: canvas.width / 2 + side * 108, y: 6 }, { x: canvas.width / 2 + side * 118, y: 6 },
-      { x: canvas.width / 2 + side * 113, y: 12.5 }, { x: canvas.width / 2 + side * 118, y: 19 },
-      { x: canvas.width / 2 + side * 108, y: 19 }], fill: 'rgba(24,20,22,.55)' }, RenderLayer.UI, 0);
+  // quest ribbon — suppressed while the boss banner holds the same slot
+  if (!ctx.bossBanner) {
+    const quest = ctx.questText;
+    renderer.rect({ x: canvas.width / 2 - 108, y: 6, width: 216, height: 13, fill: 'rgba(24,20,22,.8)', radius: 2 }, RenderLayer.UI, 0);
+    for (const side of [-1, 1]) {
+      renderer.polygon({ points: [{ x: canvas.width / 2 + side * 108, y: 6 }, { x: canvas.width / 2 + side * 118, y: 6 },
+        { x: canvas.width / 2 + side * 113, y: 12.5 }, { x: canvas.width / 2 + side * 118, y: 19 },
+        { x: canvas.width / 2 + side * 108, y: 19 }], fill: 'rgba(24,20,22,.68)' }, RenderLayer.UI, 0);
+    }
+    renderer.line({ x1: canvas.width / 2 - 104, y1: 18, x2: canvas.width / 2 + 104, y2: 18, stroke: 'rgba(199,166,104,.5)' }, RenderLayer.UI, 1);
+    renderer.text({ text: quest, x: 192, y: 15, align: 'center', fill: PALETTE.parchment, font: '8px Georgia' });
   }
-  renderer.line({ x1: canvas.width / 2 - 104, y1: 18, x2: canvas.width / 2 + 104, y2: 18, stroke: 'rgba(199,166,104,.35)' }, RenderLayer.UI, 1);
-  renderer.text({ text: quest, x: 192, y: 14, align: 'center', fill: PALETTE.parchment, font: '7px Georgia' });
   if (ctx.nearest && !state.dialogue) {
-    renderer.rect({ x: 192 - 78, y: 188, width: 156, height: 12, fill: 'rgba(22,18,20,.6)', radius: 6 }, RenderLayer.UI, 0);
-    renderer.circle({ x: 192 - 66, y: 194, radius: 4.6, fill: '#2c2422', stroke: PALETTE.gold }, RenderLayer.UI, 1);
-    renderer.text({ text: 'E', x: 192 - 66, y: 197, align: 'center', fill: PALETTE.gold, font: 'bold 6px Georgia' }, RenderLayer.UI, 2);
-    renderer.text({ text: ctx.nearest.name, x: 197, y: 196, align: 'center', fill: PALETTE.parchment, font: 'bold 8px Georgia' }, RenderLayer.UI, 2);
+    const pillWidth = Math.max(90, Math.min(200, ctx.nearest.name.length * 4.6 + 44));
+    renderer.rect({ x: 192 - pillWidth / 2, y: 187, width: pillWidth, height: 14, fill: 'rgba(22,18,20,.78)', radius: 7 }, RenderLayer.UI, 0);
+    renderer.circle({ x: 192 - pillWidth / 2 + 12, y: 194, radius: 5.2, fill: '#2c2422', stroke: PALETTE.gold }, RenderLayer.UI, 1);
+    renderer.text({ text: 'E', x: 192 - pillWidth / 2 + 12, y: 197, align: 'center', fill: PALETTE.gold, font: 'bold 7px Georgia' }, RenderLayer.UI, 2);
+    renderer.text({ text: ctx.nearest.name, x: 192 + 11, y: 196, align: 'center', fill: PALETTE.parchment, font: 'bold 8px Georgia' }, RenderLayer.UI, 2);
   }
   if (state.toastTime > 0) {
     const alpha = Math.min(1, state.toastTime * 1.6);
-    ornateFrame(renderer, 55, 164, 274, 30, RenderLayer.UI, 3, '#8d7853');
-    renderer.text({ text: state.toast, x: 192, y: 177, align: 'center', fill: PALETTE.parchment, font: '7px Georgia',
-      wrapWidth: 250, lineHeight: 8, maxLines: 2, alpha }, RenderLayer.UI, 7);
+    ornateFrame(renderer, 55, 154, 274, 30, RenderLayer.UI, 3, '#8d7853', alpha);
+    renderer.text({ text: state.toast, x: 192, y: 165, align: 'center', fill: PALETTE.parchment, font: '8px Georgia',
+      wrapWidth: 250, lineHeight: 10, maxLines: 2, alpha }, RenderLayer.UI, 7);
   }
-  if (state.storyPending) renderer.text({ text: '✦ The storyteller is turning a page…', x: 192, y: 207, align: 'center', fill: '#e3a85e', font: 'italic 7px Georgia' });
-  renderer.text({ text: 'TAB Chronicle', x: 376, y: 210, align: 'right', fill: '#d2bf92', font: '7px Georgia' });
+  if (state.storyPending) renderer.text({ text: '✦ The storyteller is turning a page…', x: 192, y: 207, align: 'center', fill: '#e3a85e', font: 'italic 8px Georgia', stroke: '#171314', lineWidth: 2 });
+  if (!ctx.touchControls) renderer.text({ text: 'TAB Chronicle · ? Help', x: 376, y: 210, align: 'right', fill: '#d2bf92', font: '7px Georgia', stroke: '#171314', lineWidth: 2 });
 }
 
 export function drawDialogue(ctx) {
@@ -1397,21 +1406,22 @@ export function drawDialogue(ctx) {
   ornateFrame(renderer, 20, 142, 344, 66, RenderLayer.UI, 10);
   if (state.dialogue === 'decision') {
     renderer.text({ text: 'Corven: Break the seal and the river may flood—or bind me here so Millhaven prospers.',
-      x: 32, y: 158, fill: PALETTE.parchment, font: '7px Georgia', wrapWidth: 318, lineHeight: 9, maxLines: 3 }, RenderLayer.UI, 14);
+      x: 32, y: 156, fill: PALETTE.parchment, font: '8px Georgia', wrapWidth: 318, lineHeight: 10, maxLines: 3 }, RenderLayer.UI, 14);
     renderer.line({ x1: 32, y1: 190, x2: 352, y2: 190, stroke: 'rgba(199,166,104,.28)' }, RenderLayer.UI, 14);
-    renderer.text({ text: 'J — Break the seal     K — Renew the binding', x: 192, y: 199, align: 'center', fill: '#e3a85e', font: 'bold 7px Georgia' }, RenderLayer.UI, 14);
+    renderer.text({ text: 'J — Break the seal', x: 112, y: 200, align: 'center', fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 14);
+    renderer.text({ text: 'K — Renew the binding', x: 272, y: 200, align: 'center', fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 14);
     return;
   }
   renderer.circle({ x: 40, y: 153, radius: 9, fill: '#3a3230', stroke: PALETTE.gold }, RenderLayer.UI, 14);
   renderer.circle({ x: 40, y: 151, radius: 3.4, fill: '#d6aa7f' }, RenderLayer.UI, 15);
   renderer.path({ points: [{ x: 34, y: 161 }, { x: 40, y: 154, cx: 34, cy: 154 }, { x: 46, y: 161, cx: 46, cy: 154 }],
     fill: ctx.dialogueColor ?? '#7a6348' }, RenderLayer.UI, 15);
-  renderer.text({ text: ctx.dialogueTitle ?? '', x: 54, y: 156, fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 14);
-  renderer.line({ x1: 54, y1: 160, x2: 352, y2: 160, stroke: 'rgba(199,166,104,.24)' }, RenderLayer.UI, 14);
-  renderer.text({ text: ctx.dialogueLine ?? '', x: 32, y: 172, fill: PALETTE.parchment, font: '7px Georgia',
-    wrapWidth: 304, lineHeight: 9, maxLines: 4 }, RenderLayer.UI, 14);
-  renderer.text({ text: 'E', x: 348, y: 201, align: 'right', fill: '#b59a67', font: 'bold 7px Georgia' }, RenderLayer.UI, 14);
-  renderer.polygon({ points: [{ x: 352, y: 197 }, { x: 356, y: 199 }, { x: 352, y: 201 }], fill: '#b59a67' }, RenderLayer.UI, 14);
+  renderer.text({ text: ctx.dialogueTitle ?? '', x: 54, y: 156, fill: '#e3a85e', font: 'bold 9px Georgia' }, RenderLayer.UI, 14);
+  renderer.line({ x1: 54, y1: 160, x2: 352, y2: 160, stroke: 'rgba(199,166,104,.32)' }, RenderLayer.UI, 14);
+  renderer.text({ text: ctx.dialogueLine ?? '', x: 32, y: 171, fill: PALETTE.parchment, font: '8px Georgia',
+    wrapWidth: 304, lineHeight: 10, maxLines: 3 }, RenderLayer.UI, 14);
+  renderer.text({ text: 'E', x: 348, y: 202, align: 'right', fill: PALETTE.gold, font: 'bold 8px Georgia' }, RenderLayer.UI, 14);
+  renderer.polygon({ points: [{ x: 352, y: 198 }, { x: 356, y: 200 }, { x: 352, y: 202 }], fill: PALETTE.gold }, RenderLayer.UI, 14);
 }
 
 function pageSpread(renderer, x, y, width, height) {
@@ -1436,9 +1446,13 @@ function pageSpread(renderer, x, y, width, height) {
 export function drawChronicle(ctx) {
   const { renderer, state } = ctx;
   pageSpread(renderer, 28, 12, 328, 192);
-  for (let rule = 66; rule < 190; rule += 11) {
-    renderer.line({ x1: 44, y1: rule, x2: 172, y2: rule, stroke: 'rgba(120,94,60,.16)' }, RenderLayer.OBJECT, 4);
-    renderer.line({ x1: 210, y1: rule, x2: 340, y2: rule, stroke: 'rgba(120,94,60,.16)' }, RenderLayer.OBJECT, 4);
+  // ruled lines sit under the actual text baselines of each column
+  for (let line = 0; line < 9; line += 1) {
+    renderer.line({ x1: 44, y1: 74 + line * 11, x2: 172, y2: 74 + line * 11, stroke: 'rgba(120,94,60,.16)' }, RenderLayer.OBJECT, 4);
+  }
+  for (let entry = 0; entry < 5; entry += 1) {
+    renderer.line({ x1: 210, y1: 74 + entry * 24, x2: 340, y2: 74 + entry * 24, stroke: 'rgba(120,94,60,.16)' }, RenderLayer.OBJECT, 4);
+    renderer.line({ x1: 210, y1: 84 + entry * 24, x2: 340, y2: 84 + entry * 24, stroke: 'rgba(120,94,60,.16)' }, RenderLayer.OBJECT, 4);
   }
   renderer.text({ text: 'THE LIVING CHRONICLE', x: 192, y: 34, align: 'center', fill: PALETTE.ink, font: 'bold 11px Georgia' });
   renderer.line({ x1: 104, y1: 40, x2: 184, y2: 40, stroke: PALETTE.rule }, RenderLayer.UI, 1);
@@ -1447,14 +1461,14 @@ export function drawChronicle(ctx) {
     renderer.polygon({ points: [{ x: 192 + dx, y: 37 }, { x: 195 + dx, y: 40 }, { x: 192 + dx, y: 43 }, { x: 189 + dx, y: 40 }],
       fill: dx ? 'rgba(140,113,77,.6)' : PALETTE.rule }, RenderLayer.UI, 1);
   }
-  renderer.text({ text: 'Rumor in Millhaven', x: 44, y: 57, fill: PALETTE.quill, font: 'bold 8px Georgia' });
-  renderer.text({ text: state.rumor, x: 44, y: 72, fill: PALETTE.ink, font: 'italic 7px Georgia', wrapWidth: 128, lineHeight: 9, maxLines: 10 });
-  renderer.text({ text: 'What Eldric did', x: 210, y: 57, fill: PALETTE.quill, font: 'bold 8px Georgia' });
+  renderer.text({ text: 'Rumor in Millhaven', x: 44, y: 57, fill: PALETTE.quill, font: 'bold 9px Georgia' });
+  renderer.text({ text: state.rumor, x: 44, y: 72, fill: PALETTE.ink, font: 'italic 8px Georgia', wrapWidth: 128, lineHeight: 11, maxLines: 9 });
+  renderer.text({ text: 'What Eldric did', x: 210, y: 57, fill: PALETTE.quill, font: 'bold 9px Georgia' });
   state.chronicle.slice(-5).forEach((entry, index) => {
-    renderer.circle({ x: 206, y: 69 + index * 23, radius: 1.6, fill: PALETTE.quill }, RenderLayer.UI, 1);
-    renderer.text({ text: `• ${entry}`, x: 210, y: 72 + index * 23, fill: PALETTE.ink, font: '7px Georgia', wrapWidth: 128, lineHeight: 8, maxLines: 2 });
+    renderer.circle({ x: 205, y: 70 + index * 24, radius: 1.6, fill: PALETTE.quill }, RenderLayer.UI, 1);
+    renderer.text({ text: entry, x: 210, y: 72 + index * 24, fill: PALETTE.ink, font: '8px Georgia', wrapWidth: 128, lineHeight: 10, maxLines: 2 });
   });
-  renderer.text({ text: 'TAB to close', x: 192, y: 194, align: 'center', fill: PALETTE.quill, font: '7px Georgia' });
+  renderer.text({ text: 'TAB to close', x: 192, y: 196, align: 'center', fill: PALETTE.quill, font: '7px Georgia' });
 }
 
 export function drawInventory(ctx) {
@@ -1472,9 +1486,9 @@ export function drawInventory(ctx) {
     renderer.line({ x1: 80, y1: y + 19, x2: 89, y2: y + 9, stroke: '#e6e1cd', lineWidth: 2.4 }, RenderLayer.UI, 2);
     renderer.line({ x1: 79, y1: y + 15, x2: 84, y2: y + 20, stroke: PALETTE.gold, lineWidth: 2 }, RenderLayer.UI, 3);
     renderer.circle({ x: 79.5, y: y + 19.5, radius: 1.4, fill: PALETTE.gold }, RenderLayer.UI, 4);
-    renderer.text({ text: item, x: 100, y: y + 17, fill: PALETTE.parchment, font: '8px Georgia' });
+    renderer.text({ text: item, x: 100, y: y + 17, fill: PALETTE.parchment, font: '9px Georgia' });
   });
-  renderer.text({ text: 'I to close', x: 192, y: 181, align: 'center', fill: '#b59a67', font: '6px Georgia' });
+  renderer.text({ text: 'I to close', x: 192, y: 181, align: 'center', fill: '#b59a67', font: '7px Georgia' });
 }
 
 function shade(hex, factor) {

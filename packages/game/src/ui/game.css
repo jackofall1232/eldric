@@ -3,6 +3,9 @@
   --lc-night: #111817;
   --lc-parchment: #e8d2a2;
   --lc-ember: #e38b45;
+  --lc-gold: #e0b45c;
+  --lc-rule: #8c714d;
+  --lc-quill: #684738;
   position: relative;
   display: grid;
   width: 100%;
@@ -35,8 +38,9 @@
   max-width: 100%;
   max-height: 100%;
   outline: none;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+  /* The backing store is supersampled to display resolution, so let the
+     browser smooth any residual scaling instead of nearest-neighboring it. */
+  image-rendering: auto;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.62);
 }
 
@@ -57,15 +61,336 @@
   border: 0;
 }
 
-.living-chronicle .lc-touch-controls { position: absolute; inset: 0; z-index: 5; pointer-events: none; display: none; }
-.living-chronicle .lc-stick { position: absolute; left: max(18px, env(safe-area-inset-left)); bottom: max(20px, env(safe-area-inset-bottom)); width: 92px; height: 92px; border: 1px solid rgba(232,210,162,.45); border-radius: 50%; background: rgba(17,24,23,.46); pointer-events: auto; }
-.living-chronicle .lc-stick span { position: absolute; left: 30px; top: 30px; width: 30px; height: 30px; border-radius: 50%; background: rgba(227,139,69,.65); border: 1px solid #e8d2a2; }
-.living-chronicle .lc-touch-actions { position: absolute; right: max(15px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); width: 142px; height: 118px; pointer-events: none; }
-.living-chronicle .lc-touch-actions button, .living-chronicle .lc-book-button { position: absolute; width: 44px; height: 44px; padding: 0; border: 1px solid rgba(232,210,162,.68); border-radius: 50%; color: #e8d2a2; background: rgba(42,36,48,.78); font: 700 17px Georgia,serif; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
-.living-chronicle .lc-touch-actions button:nth-child(1) { left: 0; top: 38px; } .living-chronicle .lc-touch-actions button:nth-child(2) { left: 46px; top: 0; } .living-chronicle .lc-touch-actions button:nth-child(3) { left: 46px; top: 74px; } .living-chronicle .lc-touch-actions button:nth-child(4) { right: 0; top: 38px; } .living-chronicle .lc-touch-actions button:nth-child(5) { left: 47px; top: 37px; }
-.living-chronicle .lc-book-button { right: max(16px, env(safe-area-inset-right)); top: max(14px, env(safe-area-inset-top)); width: 36px; height: 36px; }
-.living-chronicle .lc-touch-actions button:active, .living-chronicle .lc-book-button:active { background: rgba(227,139,69,.88); transform: scale(.94); }
-@media (pointer: coarse), (max-width: 760px) { .living-chronicle .lc-touch-controls { display: block; } }
+/* ── touch controls ─────────────────────────────────────────────────────── */
+
+.living-chronicle .lc-touch-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  display: none;
+}
+
+.living-chronicle .lc-stick {
+  position: absolute;
+  left: max(16px, calc(env(safe-area-inset-left) + 8px));
+  bottom: max(24px, calc(env(safe-area-inset-bottom) + 10px));
+  width: 100px;
+  height: 100px;
+  border: 1.5px solid rgba(232, 210, 162, 0.4);
+  border-radius: 50%;
+  background: rgba(17, 24, 23, 0.5);
+  box-shadow: inset 0 0 0 6px rgba(17, 24, 23, 0.35);
+  pointer-events: auto;
+}
+
+.living-chronicle .lc-stick span {
+  position: absolute;
+  left: 33px;
+  top: 33px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(227, 139, 69, 0.7);
+  border: 1px solid var(--lc-parchment);
+  transition: transform 40ms linear;
+}
+
+.living-chronicle .lc-stick-running {
+  border-color: rgba(227, 139, 69, 0.85);
+}
+
+.living-chronicle .lc-stick-running span {
+  background: rgba(227, 139, 69, 0.95);
+  box-shadow: 0 0 10px rgba(227, 139, 69, 0.55);
+}
+
+/* Action cluster: 4-button diamond + separated interact, most-used at the
+   bottom. Every edge gap is at least 13px so thumbs never straddle two. */
+.living-chronicle .lc-touch-actions {
+  position: absolute;
+  right: max(12px, calc(env(safe-area-inset-right) + 8px));
+  bottom: max(24px, calc(env(safe-area-inset-bottom) + 10px));
+  width: 200px;
+  height: 148px;
+  pointer-events: none;
+}
+
+.living-chronicle .lc-touch-actions button,
+.living-chronicle .lc-book-button {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1.5px solid rgba(232, 210, 162, 0.55);
+  border-radius: 50%;
+  color: var(--lc-parchment);
+  background: rgba(42, 36, 48, 0.78);
+  font: 700 18px Georgia, serif;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.06s ease, transform 0.06s ease;
+}
+
+.living-chronicle .lc-touch-actions button[data-action='attack'] {
+  left: 102px;
+  top: 92px;
+  width: 56px;
+  height: 56px;
+  background: rgba(58, 40, 34, 0.82);
+  border-color: rgba(227, 139, 69, 0.8);
+  color: #f0c789;
+  font-size: 22px;
+}
+
+.living-chronicle .lc-touch-actions button[data-action='dodge'] { left: 152px; top: 50px; }
+.living-chronicle .lc-touch-actions button[data-action='block'] { left: 60px; top: 50px; }
+.living-chronicle .lc-touch-actions button[data-action='heavy'] { left: 106px; top: 4px; }
+
+.living-chronicle .lc-touch-actions button[data-action='interact'] {
+  left: 0;
+  top: 52px;
+  width: 44px;
+  height: 44px;
+  font-size: 17px;
+}
+
+.living-chronicle .lc-touch-label {
+  position: absolute;
+  top: 100%;
+  left: -6px;
+  right: -6px;
+  margin-top: 2px;
+  text-align: center;
+  font: normal 8px Georgia, serif;
+  font-style: normal;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(232, 210, 162, 0.75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.living-chronicle .lc-book-button {
+  right: max(12px, calc(env(safe-area-inset-right) + 6px));
+  top: max(12px, calc(env(safe-area-inset-top) + 6px));
+  width: 40px;
+  height: 40px;
+}
+
+.living-chronicle .lc-touch-actions button:active,
+.living-chronicle .lc-book-button:active {
+  background: rgba(227, 139, 69, 0.9);
+  color: var(--lc-ink);
+  transform: scale(0.92);
+}
+
+@media (pointer: coarse), (max-width: 760px) {
+  .living-chronicle .lc-touch-controls {
+    display: block;
+  }
+}
+
+/* Tablets: bigger targets, same proportions. */
+@media (pointer: coarse) and (min-width: 768px) {
+  .living-chronicle .lc-stick { width: 112px; height: 112px; }
+  .living-chronicle .lc-stick span { left: 37px; top: 37px; width: 38px; height: 38px; }
+  .living-chronicle .lc-touch-actions { width: 216px; height: 160px; right: max(24px, calc(env(safe-area-inset-right) + 12px)); bottom: max(28px, calc(env(safe-area-inset-bottom) + 12px)); }
+  .living-chronicle .lc-touch-actions button { width: 52px; height: 52px; }
+  .living-chronicle .lc-touch-actions button[data-action='attack'] { left: 110px; top: 100px; width: 60px; height: 60px; }
+  .living-chronicle .lc-touch-actions button[data-action='dodge'] { left: 164px; top: 54px; }
+  .living-chronicle .lc-touch-actions button[data-action='block'] { left: 64px; top: 54px; }
+  .living-chronicle .lc-touch-actions button[data-action='heavy'] { left: 114px; top: 4px; }
+  .living-chronicle .lc-touch-actions button[data-action='interact'] { left: 0; top: 56px; width: 48px; height: 48px; }
+  .living-chronicle .lc-stick { left: max(24px, calc(env(safe-area-inset-left) + 12px)); bottom: max(28px, calc(env(safe-area-inset-bottom) + 12px)); }
+}
+
+/* ── help dropdown ──────────────────────────────────────────────────────── */
+
+.living-chronicle .lc-help-button {
+  position: absolute;
+  top: max(12px, calc(env(safe-area-inset-top) + 6px));
+  right: max(58px, calc(env(safe-area-inset-right) + 58px));
+  z-index: 6;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(232, 210, 162, 0.68);
+  border-radius: 50%;
+  background: rgba(42, 36, 48, 0.78);
+  color: var(--lc-parchment);
+  font: 700 18px Georgia, serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.06s ease, color 0.06s ease;
+}
+
+/* Without touch controls the book button is absent, so "?" owns the corner. */
+@media not ((pointer: coarse) or (max-width: 760px)) {
+  .living-chronicle .lc-help-button {
+    right: max(12px, calc(env(safe-area-inset-right) + 6px));
+  }
+}
+
+.living-chronicle .lc-help-button:hover,
+.living-chronicle .lc-help-button:active,
+.living-chronicle .lc-help-button-open {
+  background: rgba(227, 139, 69, 0.88);
+  color: var(--lc-ink);
+}
+
+.living-chronicle .lc-help-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: rgba(8, 10, 10, 0.35);
+}
+
+.living-chronicle .lc-help-panel {
+  position: absolute;
+  top: 56px;
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 7;
+  width: min(320px, calc(100% - 24px));
+  max-height: calc(100% - 72px);
+  overflow-y: auto;
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: var(--lc-ink);
+  background: linear-gradient(180deg, #e8d2a2 0%, #d7c08d 55%, #c2a97c 100%);
+  border: 1px solid #5b432e;
+  box-shadow:
+    0 0 0 3px #4a3220,
+    0 0 0 4px #2a1c12,
+    0 14px 34px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(140, 113, 77, 0.35);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.living-chronicle .lc-help-panel h2 {
+  margin: 0 24px 6px;
+  padding-bottom: 6px;
+  font: 700 15px Georgia, serif;
+  color: var(--lc-quill);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  border-bottom: 1px solid var(--lc-rule);
+}
+
+.living-chronicle .lc-help-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  color: var(--lc-quill);
+  border: 1px solid rgba(140, 113, 77, 0.5);
+  border-radius: 50%;
+  font: 700 13px Georgia, serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.living-chronicle .lc-help-close:hover {
+  background: rgba(140, 113, 77, 0.2);
+}
+
+.living-chronicle .lc-help-panel h3 {
+  margin: 10px 0 4px;
+  padding-bottom: 2px;
+  font: 700 12px Georgia, serif;
+  color: var(--lc-quill);
+  border-bottom: 1px solid rgba(140, 113, 77, 0.4);
+}
+
+.living-chronicle .lc-help-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.living-chronicle .lc-help-name {
+  flex: 0 1 auto;
+}
+
+.living-chronicle .lc-help-keys {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.living-chronicle .lc-help-key {
+  display: inline-block;
+  padding: 1px 6px;
+  margin-left: 4px;
+  background: #f2e2bb;
+  border: 1px solid var(--lc-rule);
+  border-bottom-width: 2px;
+  border-bottom-color: #6b4f2e;
+  border-radius: 3px;
+  font: 700 11px Georgia, serif;
+  color: var(--lc-ink);
+}
+
+.living-chronicle .lc-help-chip {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--lc-ink);
+  color: var(--lc-parchment);
+  font: 700 11px Georgia, serif;
+}
+
+.living-chronicle .lc-help-alt {
+  margin-left: 4px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--lc-quill);
+}
+
+/* Fine pointers rarely use the touch chips; keep them but quiet them. */
+@media not (pointer: coarse) {
+  .living-chronicle .lc-help-chip {
+    opacity: 0.55;
+  }
+}
+
+@media (pointer: coarse) {
+  .living-chronicle .lc-help-key {
+    opacity: 0.55;
+  }
+}
+
+.living-chronicle .lc-help-footnote {
+  margin: 10px 0 0;
+  padding-top: 6px;
+  border-top: 1px solid rgba(140, 113, 77, 0.4);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--lc-quill);
+}
+
+@media (max-width: 480px) {
+  .living-chronicle .lc-help-panel {
+    top: auto;
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+    max-height: 68%;
+  }
+}
+
+/* ── dev host ───────────────────────────────────────────────────────────── */
 
 .eldric-dev-host {
   min-height: 100dvh;

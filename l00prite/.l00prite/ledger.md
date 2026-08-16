@@ -719,3 +719,67 @@ Append one entry per agent run. Do not overwrite prior runs.
   non-default admin color scheme), then the still-pending WP 7.0 Site AI manual QA.
 - **Do-not-retry notes:** none.
 - **Lock:** `claude-eldric-admin-20260816T1230Z` acquired and released this run.
+
+### Run 2026-08-16T13:30:00Z — Claude (frontend aesthetics: crisp text, spread touch controls, help menu)
+- **Goal:** User-requested frontend pass: make in-game text defined and clear, spread the cramped
+  mobile/tablet touch controls apart, add a "?" help dropdown listing every control, and do a
+  detailed aesthetics pass (a design subagent produced the implementation spec).
+- **Triggering event:** none (direct user request via Claude Code session).
+- **Reviewer/comment reference:** none.
+- **Decision:** Normal work. Root cause of blurry text: the whole game rasterizes at 384×216 and
+  is nearest-neighbor upscaled; since all art is vector-drawn, supersampling the backing store to
+  display resolution (same logical coordinate space) sharpens everything with no art rework.
+- **Completed work:**
+  - Engine: `Canvas2DBackend` accepts logical dimensions and applies a uniform transform each
+    frame, so the canvas element can carry a supersampled physical resolution (smoothing on when
+    scaled; width/height getters report logical size).
+  - Boot: `resizeCanvasDisplay` sizes the backing store to CSS size × devicePixelRatio (dpr capped
+    by `pixelRatioCap`, total supersample capped at 4×); `computeDisplayScale` now returns
+    fractional scales (integer snapping only protected the old 1× pixel look); new exported
+    `computeRenderScale`.
+  - Runtime: camera/particles/art layout use logical viewport, not canvas pixels; boss-banner
+    frame flag; touch-device flag hides keyboard hints.
+  - Canvas UI type pass per design spec: body text 7→8px with lineHeight 1.25×, plates darkened
+    (.66→.8 opacity), floating text gets dark strokes, dialogue title 9px, decision options split
+    into two centered prompts, chronicle rules aligned under both columns' baselines, dynamic
+    interact-pill width, boss bar gains a real health fill and swaps into the quest-ribbon slot
+    (ribbon suppressed while visible), toast raised above the interact pill and its frame now
+    fades with the text, inventory items 9px, 6px footers raised to 7px.
+  - Touch controls: stick 92→100px (112 tablet), buttons 44→48px (attack 56, primary-styled),
+    spread diamond layout with ≥13px gaps + separated E button, uppercase labels under every
+    glyph, `[data-action]` selectors replace fragile nth-child, pressed states, safe-area
+    padding, tablet tier; pushing the stick past the walk zone now triggers RUN (mobile could
+    never sprint before) with a glowing-nub state.
+  - New `ui/help-menu.js`: "?" button (always visible, next to the book button on touch) opening
+    a parchment dropdown — Movement/Combat/World/Menus groups, key caps + touch chips, close ✕,
+    backdrop, Esc-close with capture (game doesn't also react), bottom sheet under 480px,
+    focus returns to canvas; fully scoped CSS, no external assets, WordPress-safe.
+  - Removed `image-rendering: pixelated` (supersampled store + smooth residual scaling).
+  - Rebuilt `build/web` and `wordpress/living-chronicle/assets/build` bundles.
+- **Fix implemented:** not applicable (feature/polish work).
+- **Changed files:** `packages/engine/src/render/canvas2d-backend.js`,
+  `packages/game/src/boot/bootstrap.js`, `packages/game/src/runtime/game-runtime.js`,
+  `packages/game/src/render/art.js`, `packages/game/src/ui/game.css`,
+  `packages/game/src/ui/mobile-controls.js`, `packages/game/src/ui/help-menu.js` (new),
+  `tests/unit/game/responsive-layout.test.js`, `wordpress/living-chronicle/assets/build/*`.
+  Untouched by design: gameplay rules, save format, story pipeline, WordPress PHP.
+- **Tests run / Verification:**
+  - `command: npm test` · `exit_code: 0` · `summary: 60/60 pass (responsive-layout updated for fractional scale + new computeRenderScale cases)` · `timestamp: 2026-08-16T13:55:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok, 0 warn, 0 fail` · `timestamp: 2026-08-16T13:56:00Z`
+  - `command: npm run build && npm run build:wp` · `exit_code: 0` · `summary: both bundles built clean` · `timestamp: 2026-08-16T13:56:00Z`
+  - `command: Playwright screenshots (desktop 1280@2x, phone 390@3x touch, tablet 1024@2x touch)` · `exit_code: 0` · `summary: text razor-sharp at all sizes; touch cluster spread with labels; help panel renders as parchment card on desktop and bottom sheet on phone; screenshots sent to user` · `timestamp: 2026-08-16T13:58:00Z`
+- **Response drafted/sent:** Screenshots + summary delivered to the user in-session.
+- **Event status:** not applicable.
+- **Failures:** Fresh container needed `npm install` before workspace tests resolved (known,
+  already catalogued). Playwright executable path is `/opt/pw-browsers/chromium-1194/...` in this
+  container, not `/opt/pw-browsers/chromium/...`.
+- **Decisions:** Supersample-with-logical-transform chosen over per-element text overlays or a
+  raw resolution bump (art coordinates are hardcoded to 384×216); supersample capped at 4× for
+  fill-rate; dialogue body 3 lines at 8px replaces 4 at 7px (longest lines wrap to 2);
+  quest ribbon yields its slot to the boss banner only while the banner is on screen.
+- **Confidence:** High for rendering, layout and tests (screenshot-verified at three sizes);
+  medium for real-device thumb ergonomics — worth one pass on a physical phone during manual QA.
+- **Next action:** Fold the new screens into the pending manual QA pass (real phone + tablet,
+  then the WordPress upload path).
+- **Do-not-retry notes:** none.
+- **Lock:** `claude-eldric-frontend-polish-20260816T1330Z` acquired and released this run.
