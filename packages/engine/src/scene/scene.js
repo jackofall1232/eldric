@@ -1,1 +1,16 @@
-// Scene base: enter, exit, update, render, and whether it pauses the scene below.
+export class Scene {
+  constructor({ id, opaque = true, pausesBelow = true } = {}) {
+    this.id = id ?? this.constructor.name;
+    this.opaque = opaque;
+    this.pausesBelow = pausesBelow;
+    this.manager = null;
+  }
+
+  enter() {}
+  exit() {}
+  pause() {}
+  resume() {}
+  update() {}
+  render() {}
+  handleAction() { return false; }
+}

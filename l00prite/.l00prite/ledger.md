@@ -86,6 +86,21 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not introduce `Math.random` or browser scheduling into gameplay code.
 - **Lock:** `codex-eldric-20260816T015338Z` active.
 
+### Run 2026-08-16T02:03:10Z — Codex (Execution Mode, iteration 3)
+- **Goal:** Add deterministic entity, state-machine, scene-stack, and engine lifecycle primitives.
+- **Decision:** Normal work; one cohesive lifecycle unit.
+- **Completed work:** Implemented component entities, reusable state machines, layered scene stack,
+  and an async-safe engine lifecycle around the fixed loop.
+- **Changed files:** engine core/scene/lifecycle modules, public exports, purity tests, memory.
+- **Tests run / Verification:** `node --test tests/unit/engine/engine-purity.test.js tests/unit/engine/loop.test.js tests/unit/engine/rng.test.js`, exit_code `0`; `npm run build`, exit_code `0`; 2026-08-16T02:02:58Z.
+- **Failures:** none.
+- **Decisions:** Modal scenes pause the scene beneath but can render transparently; systems and
+  platform services are disposed in reverse lifecycle order.
+- **Confidence:** High — stack semantics, state transitions, and purity boundary are exercised.
+- **Next action:** Commit, then implement Canvas2D renderer/camera.
+- **Do-not-retry notes:** Keep DOM APIs in declared seams only.
+- **Lock:** `codex-eldric-20260816T015338Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

@@ -15,7 +15,7 @@ implement and verify in a single loop.
       and resume, no frame-rate-dependent movement.
 - [x] `packages/engine/src/core/time.js`, `events.js`, `rng.js` (seeded — replays and procedural
       content must be deterministic).
-- [ ] `packages/engine/src/core/entity.js` and `scene/` scene stack (world / dialogue / menu /
+- [x] `packages/engine/src/core/entity.js` and `scene/` scene stack (world / dialogue / menu /
       chronicle push and pop).
 - [ ] `packages/engine/src/render/renderer.js` + `canvas2d-backend.js` — the only files allowed to
       touch a 2D context.
