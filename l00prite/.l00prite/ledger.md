@@ -228,6 +228,21 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement providers and asynchronous orchestration.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:27:32Z — Codex (authorized story run, iteration 2)
+- **Goal:** Add offline-first StoryProvider orchestration without placing provider work on the frame path.
+- **Completed work:** Provider interface/registry, deterministic local provider/corpus, remote
+  transport adapter, compact context builder, authored fallback, async coalescing StorySystem,
+  beat triggers, storyteller indicator, and runtime triggers for region/campfire/decision.
+- **Tests run / Verification:** full 25-file suite, standalone build, and WordPress build all exit
+  `0`, 2026-08-16T02:27:32Z; slow-provider test proves request returns pending and duplicates coalesce.
+- **Failures:** Initial purity check flagged the public import path string `fetch-transport`; fixed
+  by keeping that seam out of the general barrel, then reran successfully.
+- **Decisions:** Local provider remains default and requires no key/network; remote provider owns no
+  secret; invalid/failed provider output applies authored fallback only.
+- **Confidence:** High — offline, slow, invalid, and fallback paths are exercised.
+- **Next action:** Commit, then implement PHP mirror and proxy security pipeline.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

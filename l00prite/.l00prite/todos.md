@@ -62,9 +62,9 @@ implement and verify in a single loop.
       responses.
 - [x] The single apply module — the only place validated output mutates world state, structurally
       unable to reach health, damage, position, stamina or hitboxes.
-- [ ] `StoryProvider.generate(context)` interface and provider registry.
-- [ ] Local no-API-key provider driven by authored templates and seeded variation.
-- [ ] Context builder: compact structured facts about what the player did, plus relevant Chronicle
+- [x] `StoryProvider.generate(context)` interface and provider registry.
+- [x] Local no-API-key provider driven by authored templates and seeded variation.
+- [x] Context builder: compact structured facts about what the player did, plus relevant Chronicle
       entries.
 - [ ] Chronicle: event-key log, generated chapters, the illustrated in-game book that pauses play.
 - [ ] Reputation: seven traits (Honor, Mercy, Greed, Courage, Loyalty, Infamy, Mystery), read
@@ -72,10 +72,10 @@ implement and verify in a single loop.
 - [ ] NPC memory: promises, insults, gifts, debts, betrayals, rescues, prior conversations —
       dialogue evolves instead of resetting.
 - [ ] Rumor system generating true, exaggerated and false variants from real world state.
-- [ ] Story beat triggers: new region, campfire rest, important NPC, dungeon cleared, major
+- [x] Story beat triggers: new region, campfire rest, important NPC, dungeon cleared, major
       decision, returning to a village, unusual artifact, new chapter.
 - [ ] Campfire rest: fade, legend summary, Chronicle entry.
-- [ ] Async story calls with a subtle storyteller indicator — never a frame stall, never a block.
+- [x] Async story calls with a subtle storyteller indicator — never a frame stall, never a block.
 
 ### M6 — The Millhaven region (dense, not large)
 - [ ] Village of Millhaven: buildings, interiors, several NPCs with conflicting explanations.

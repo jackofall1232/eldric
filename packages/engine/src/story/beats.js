@@ -1,1 +1,5 @@
-// Beat triggers: new region, campfire rest, important NPC, dungeon cleared, major decision, village return, unusual artifact, new chapter.
+export const StoryBeat = Object.freeze({
+  REGION_ENTERED: 'REGION_ENTERED', CAMPFIRE_REST: 'CAMPFIRE_REST', IMPORTANT_NPC: 'IMPORTANT_NPC',
+  DUNGEON_COMPLETE: 'DUNGEON_COMPLETE', MAJOR_DECISION: 'MAJOR_DECISION', VILLAGE_RETURN: 'VILLAGE_RETURN',
+  ARTIFACT_OPENED: 'ARTIFACT_OPENED', CHAPTER_BEGIN: 'CHAPTER_BEGIN',
+});

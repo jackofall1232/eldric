@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "implement the local and remote StoryProvider pipeline on the frozen structured contract",
+  "current_goal": "mirror the frozen story contract in PHP and implement the hardened WordPress REST proxy",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T02:24:22Z",
+  "last_updated": "2026-08-16T02:27:32Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit the frozen JS contract, then implement provider registry, local fallback, and async story orchestration"
+  "next_recommended_action": "commit provider orchestration, then implement PHP schema parity, validation, rate limiting, controller, and REST routes"
 }

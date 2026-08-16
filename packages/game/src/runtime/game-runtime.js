@@ -1,7 +1,9 @@
 import {
-  Action, Camera, Canvas2DBackend, Renderer, RenderLayer, SeededRng, createWebPlatform,
+  Action, Camera, Canvas2DBackend, LocalStoryProvider, Renderer, RenderLayer, SeededRng,
+  StorySystem, buildStoryContext, createNarrativeState, createWebPlatform,
 } from '@eldric/engine';
 import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, TREE_CLUMPS, WORLD, ZONES } from '../content/world/millhaven.js';
+import { LOCAL_STORY_CORPUS } from '../content/story/local-corpus.js';
 
 const PALETTE = Object.freeze({
   ink: '#2a2430', parchment: '#e8d2a2', moss: '#4c6849', forest: '#182b2b',
@@ -37,6 +39,9 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     state.bossAwake = saved.bossAwake ?? false;
     state.inventory = saved.inventory ?? state.inventory;
   }
+  const storyState = createNarrativeState();
+  const storyteller = new StorySystem({ provider: new LocalStoryProvider({ corpus: LOCAL_STORY_CORPUS, seed: 'millhaven-player' }), state: storyState });
+  storyteller.subscribe((pending) => { state.storyPending = pending; });
   let previousTime = null;
   let accumulator = 0;
   let requestId = 0;
@@ -85,6 +90,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       toast('The road to Millhaven lies ahead.');
       onStatus('You have entered Millhaven.');
       persist();
+      requestStory('REGION_ENTERED');
     }
   }
 
@@ -196,6 +202,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       : 'They say Eldric chained a man beneath the bridge so Millhaven might sleep.';
     toast('A new chapter has been written.'); onStatus(entry);
     persist();
+    requestStory('MAJOR_DECISION');
   }
 
   function interact() {
@@ -207,7 +214,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       const summary = state.discoveries.size
         ? `At Millhaven’s fire, the storyteller recalled ${[...state.discoveries].length} signs Eldric had uncovered along Blackwater Road.`
         : 'At Millhaven’s fire, Eldric rested while an unfinished kingdom waited beyond the sparks.';
-      state.chronicle.push(summary); toast('Rested. Chronicle updated.'); persist(); return;
+      state.chronicle.push(summary); toast('Rested. Chronicle updated.'); persist(); requestStory('CAMPFIRE_REST'); return;
     }
     if (target.id === 'cave-door') {
       if (!state.discoveries.has('ruin-key')) { toast('An iron seal. Its key bears the Broken King’s crown.'); return; }
@@ -309,7 +316,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function drawParticles() { for (const particle of particles) { particle.y += .12; particle.x += Math.sin(particle.phase + state.hour) * .08; if (particle.y > canvas.height) particle.y = 0; renderer.circle({ x: particle.x, y: particle.y, radius: 1, fill: 'rgba(227,199,112,.35)' }, RenderLayer.WEATHER); } }
   function drawNight() { const darkness = state.hour > 19 || state.hour < 6 ? .38 : .08; renderer.rect({ x: 0, y: 0, width: canvas.width, height: canvas.height, fill: `rgba(10,20,28,${darkness})` }, RenderLayer.LIGHTING); }
 
-  function renderHud() { renderer.rect({ x: 8, y: 8, width: 102, height: 22, fill: 'rgba(30,26,29,.82)', stroke: '#8d7853', radius: 3 }, RenderLayer.UI); renderer.rect({ x: 14, y: 14, width: 88 * player.health / player.maxHealth, height: 5, fill: PALETTE.blood }, RenderLayer.UI, 1); renderer.rect({ x: 14, y: 22, width: 88 * player.stamina / player.maxStamina, height: 3, fill: '#c0a65b' }, RenderLayer.UI, 1); renderer.text({ text: questText(), x: 192, y: 14, align: 'center', fill: PALETTE.parchment, font: '7px Georgia' }); const target = nearestInteractable(); if (target) renderer.text({ text: `E  ${target.name}`, x: 192, y: 196, align: 'center', fill: PALETTE.parchment, font: 'bold 8px Georgia' }); if (state.toastTime > 0) { renderer.rect({ x: 55, y: 166, width: 274, height: 24, fill: 'rgba(25,22,24,.88)', stroke: '#8d7853', radius: 4 }, RenderLayer.UI); renderer.text({ text: state.toast, x: 192, y: 181, align: 'center', fill: PALETTE.parchment, font: '7px Georgia', maxWidth: 260 }); } renderer.text({ text: 'TAB Chronicle', x: 376, y: 210, align: 'right', fill: '#d2bf92', font: '6px Georgia' }); }
+  function renderHud() { renderer.rect({ x: 8, y: 8, width: 102, height: 22, fill: 'rgba(30,26,29,.82)', stroke: '#8d7853', radius: 3 }, RenderLayer.UI); renderer.rect({ x: 14, y: 14, width: 88 * player.health / player.maxHealth, height: 5, fill: PALETTE.blood }, RenderLayer.UI, 1); renderer.rect({ x: 14, y: 22, width: 88 * player.stamina / player.maxStamina, height: 3, fill: '#c0a65b' }, RenderLayer.UI, 1); renderer.text({ text: questText(), x: 192, y: 14, align: 'center', fill: PALETTE.parchment, font: '7px Georgia' }); const target = nearestInteractable(); if (target) renderer.text({ text: `E  ${target.name}`, x: 192, y: 196, align: 'center', fill: PALETTE.parchment, font: 'bold 8px Georgia' }); if (state.toastTime > 0) { renderer.rect({ x: 55, y: 166, width: 274, height: 24, fill: 'rgba(25,22,24,.88)', stroke: '#8d7853', radius: 4 }, RenderLayer.UI); renderer.text({ text: state.toast, x: 192, y: 181, align: 'center', fill: PALETTE.parchment, font: '7px Georgia', maxWidth: 260 }); } if (state.storyPending) renderer.text({ text: '✦ The storyteller is turning a page…', x: 192, y: 207, align: 'center', fill: '#e3a85e', font: 'italic 6px Georgia' }); renderer.text({ text: 'TAB Chronicle', x: 376, y: 210, align: 'right', fill: '#d2bf92', font: '6px Georgia' }); }
   function renderDialogue() { renderer.rect({ x: 20, y: 148, width: 344, height: 58, fill: '#2b2628', stroke: '#b59a67', radius: 5 }, RenderLayer.UI, 10); if (state.dialogue === 'decision') { renderer.text({ text: 'Corven: Break the seal and the river may flood—or bind me here so Millhaven prospers.', x: 32, y: 166, fill: PALETTE.parchment, font: '7px Georgia', maxWidth: 320 }, RenderLayer.UI, 11); renderer.text({ text: 'J — Break the seal     K — Renew the binding', x: 192, y: 192, align: 'center', fill: '#e3a85e', font: 'bold 7px Georgia' }, RenderLayer.UI, 11); } else { const target = INTERACTABLES.find((t) => t.id === state.dialogue); renderer.text({ text: target?.name ?? '', x: 32, y: 163, fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 11); renderer.text({ text: DIALOGUE[state.dialogue][state.dialogueIndex], x: 32, y: 178, fill: PALETTE.parchment, font: '7px Georgia', maxWidth: 320 }, RenderLayer.UI, 11); renderer.text({ text: 'E', x: 348, y: 197, align: 'right', fill: '#b59a67', font: 'bold 7px Georgia' }, RenderLayer.UI, 11); } }
   function renderChronicle() { renderer.rect({ x: 0, y: 0, width: 384, height: 216, fill: '#171314' }, RenderLayer.GROUND); renderer.rect({ x: 28, y: 12, width: 328, height: 192, fill: '#d7c08d', stroke: '#5b432e', radius: 7 }, RenderLayer.OBJECT); renderer.line({ x1: 192, y1: 18, x2: 192, y2: 198, stroke: '#8c714d' }, RenderLayer.ENTITY); renderer.text({ text: 'THE LIVING CHRONICLE', x: 192, y: 34, align: 'center', fill: PALETTE.ink, font: 'bold 11px Georgia' }); renderer.text({ text: 'Rumor in Millhaven', x: 44, y: 57, fill: '#684738', font: 'bold 8px Georgia' }); renderer.text({ text: state.rumor, x: 44, y: 72, fill: PALETTE.ink, font: 'italic 7px Georgia', maxWidth: 132 }); renderer.text({ text: 'What Eldric did', x: 210, y: 57, fill: '#684738', font: 'bold 8px Georgia' }); const entries = state.chronicle.slice(-7); entries.forEach((entry, i) => renderer.text({ text: `• ${entry}`, x: 210, y: 72 + i * 17, fill: PALETTE.ink, font: '6px Georgia', maxWidth: 128 })); renderer.text({ text: 'TAB to close', x: 192, y: 194, align: 'center', fill: '#684738', font: '6px Georgia' }); renderer.end(); }
   function renderInventory() { renderer.rect({ x: 0, y: 0, width: 384, height: 216, fill: '#131b1a' }, RenderLayer.GROUND); renderer.rect({ x: 42, y: 22, width: 300, height: 172, fill: '#2b2628', stroke: '#b59a67', radius: 6 }, RenderLayer.OBJECT); renderer.text({ text: 'TRAVELER’S SATCHEL', x: 192, y: 46, align: 'center', fill: PALETTE.parchment, font: 'bold 11px Georgia' }); state.inventory.forEach((item, i) => { renderer.rect({ x: 70, y: 65 + i * 36, width: 244, height: 27, fill: '#3b3434', stroke: '#6f6046', radius: 3 }, RenderLayer.UI); renderer.text({ text: item, x: 84, y: 82 + i * 36, fill: PALETTE.parchment, font: '8px Georgia' }); }); renderer.text({ text: 'I to close', x: 192, y: 181, align: 'center', fill: '#b59a67', font: '6px Georgia' }); renderer.end(); }
@@ -326,6 +333,15 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
 
   function persist() {
     platform.storage?.save?.({ schema_version: 1, openingSeen: state.mode !== 'opening', player: { x: player.x, y: player.y, health: player.health, stamina: player.stamina }, quest: state.quest, discoveries: [...state.discoveries], chronicle: state.chronicle, rumor: state.rumor, outcome: state.outcome, bossAwake: state.bossAwake, inventory: state.inventory });
+  }
+  function requestStory(beat) {
+    const context = buildStoryContext({ beat, region: state.zone, recentActions: [...state.discoveries].slice(-8), chronicle: state.chronicle, reputation: {}, npcMemories: [] });
+    storyteller.request(context).then(({ output }) => {
+      if (!output) return;
+      if (output.narration) toast(`✦ ${output.narration}`);
+      if (output.chronicle_entry && !state.chronicle.includes(output.chronicle_entry)) state.chronicle.push(output.chronicle_entry);
+      persist();
+    });
   }
 }
 
