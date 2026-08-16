@@ -984,3 +984,67 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not let a gameplay key double as a menu key without an arming guard.
   ATTACK killed the boss and answered the prompt with the same press.
 - **Lock:** `claude-eldric-stones-blocker-20260816T1910Z` reused and released this run.
+
+### Run 2026-08-16T20:30:00Z — Claude (soundtrack, sound controls, ten-chapter map)
+- **Goal:** Three user requests: play the supplied background track, give the player volume and
+  mute, and blueprint ten chapters with what each unlocks.
+- **Triggering event:** User request, in-session.
+- **Reviewer/comment reference:** none.
+- **Decision:** Normal work. The soundtrack is a **human review gate** under `CLAUDE.md` §6(3) —
+  an asset not created inside this repository — recorded rather than waved through.
+- **Completed work:** The music stack gained a real bed. `AudioMixer` now carries a master level
+  and a mute flag over the three buses (mute is a flag, not master-at-zero, so unmuting restores
+  the player's level); `MusicTrack` streams one looped file on the music bus; `MusicDirector`
+  stands the authored region chords down while a bed holds, so there is never music on music.
+  Sound controls — mute plus one slider per bus — live in the `?` panel as real DOM controls, with
+  `M` as a global mute, levels persisted to `localStorage` beside the save rather than inside it.
+  Every failure path (autoplay refusal, 404, bad codec, no `AudioContext`) falls back to the
+  chords: the bed reports it did not start and nothing blocks play.
+  `docs/world-map.md` is the ten-chapter blueprint, with `todos.md` M9 carrying the tasks.
+- **Fix implemented:** n/a — feature work.
+- **Changed files:** `packages/engine/src/audio/{mixer,music,audio}.js`, new
+  `packages/engine/src/audio/music-track.js`, `packages/engine/src/index.js`,
+  `packages/game/src/boot/{config,bootstrap}.js`, `packages/game/src/ui/{help-menu,game.css}`,
+  new `packages/game/src/ui/audio-controls.js`,
+  `wordpress/living-chronicle/includes/class-lc-shortcode.php` (new `music` attribute),
+  `wordpress/living-chronicle/{INSTALL.md,readme.txt}`, new `assets/audio/eldric-background.mp3`,
+  `assets/{README.md,LICENSES.md,manifest.json}`, `docs/audio-direction.md` (was a stub),
+  new `docs/world-map.md`, `docs/world-bible.md` (was a stub),
+  `tests/unit/engine/audio.test.js`, new `tests/unit/game/audio-config.test.js`,
+  rebuilt WordPress bundle.
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 71/71 pass (was 66; +5 mixer/track/config tests)` · `timestamp: 2026-08-16T23:44:00Z`
+  - `command: php -l wordpress/living-chronicle/includes/class-lc-shortcode.php` · `exit_code: 0` · `summary: clean` · `timestamp: 2026-08-16T23:44:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok · 0 warn · 0 fail — HEALTHY` · `timestamp: 2026-08-16T23:44:00Z`
+  - `command: Playwright/Chromium against the dev server` · `exit_code: 0` · `summary: bed loads and loops (currentTime advancing), volume 0.44 = master .8 × music .55; music slider to 30% moves element volume to 0.24 and the readout with it; mute pauses the stream, zeroes volume, disables the sliders; unmute resumes at the chosen level; levels persist and survive a reload; M mutes from the canvas; no console errors` · `timestamp: 2026-08-16T23:41:00Z`
+  - `command: ./scripts/build-wp-zip.sh` · `exit_code: 0` · `summary: 44-file zip, 7.6 MB, soundtrack included` · `timestamp: 2026-08-16T23:45:00Z`
+  - `command: grep -icE 'api_key|anthropic|openai|sk-' in built client bundle` · `exit_code: 0` · `summary: 0 matches — constraint 21 holds` · `timestamp: 2026-08-16T23:45:00Z`
+- **Response drafted/sent:** Delivered in-session with the review gate called out explicitly.
+- **Event status:** completed.
+- **Failures:** The environment's network policy blocks `assets.zillha.com` (proxy answered 403 to
+  CONNECT), so the `.wav` could not be fetched here. The user supplied the `.mp3` directly and it
+  was bundled instead. Do not treat that 403 as a broken proxy — it is the environment's policy.
+- **Decisions:** (1) The bed is a media element, not a decoded WebAudio buffer: it is ten minutes
+  long and must start before it finishes downloading, and routing a cross-origin file through an
+  `AudioContext` needs CORS headers a host site may not send. (2) Muting pauses the stream rather
+  than zeroing its gain — a silent stream still costs a mobile radio and a decode. (3) The
+  soundtrack ships inside the plugin (`assets/`, which both builds already copy) rather than
+  loading from a third-party origin: no CORS, no external dependency, no link to rot. It costs
+  4.8 MB in the zip and is duplicated in the tracked build output, which is how this repo already
+  treats built assets. (4) `musicUrl` is validated as caller input — a shortcode attribute reaches
+  it from post content and a media element would load `javascript:` or `data:` happily.
+  (5) The ten-chapter map is built in horizontal layers, not chapter by chapter, so the game is
+  playable end to end at every stage; and each chapter's reward is a traversal verb that
+  retro-opens at least two earlier chapters, which is the only thing separating one world map from
+  ten corridors.
+- **Confidence:** High for the audio stack — browser-verified end to end, not just unit-tested.
+  Medium for the ten-chapter blueprint: it is a design proposal and wants a human read before
+  Layer 0 is built against it.
+- **Next action:** **Human review gate — confirm the `assets/audio/eldric-background.mp3` license
+  line in `assets/LICENSES.md` is accurate before release.** Then read `docs/world-map.md` and
+  confirm the chapter list and the verb ladder before Layer 0 starts. Still open from earlier
+  runs: the Drowned Oath balance call, and whether chapter one wants a real epilogue screen.
+- **Do-not-retry notes:** Do not route the music bed through an `AudioContext` — cross-origin
+  hosting would need CORS headers the game cannot require of its host. Do not try to fetch
+  `assets.zillha.com` from this environment; its network policy denies it.
+- **Lock:** `claude-eldric-soundtrack-worldmap-20260816T2030Z` acquired and released this run.

@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "lock_id": "claude-eldric-stones-blocker-20260816T1910Z",
+  "lock_id": "claude-eldric-soundtrack-worldmap-20260816T2030Z",
   "owner_agent": "claude",
-  "owner_session": "eldric-stones-progression-blocker",
-  "acquired_at": "2026-08-16T19:10:00Z",
-  "expires_at": "2026-08-16T21:10:00Z",
+  "owner_session": "eldric-soundtrack-and-world-map",
+  "acquired_at": "2026-08-16T20:30:00Z",
+  "expires_at": "2026-08-16T22:30:00Z",
   "ttl_seconds": 7200,
-  "purpose": "diagnose and fix the reported three-stone river seal progression blocker",
+  "purpose": "scored music bed with player volume/mute controls, and the ten-chapter world map blueprint",
   "protected_paths": [
     "ledger.md",
     "memory.md",
@@ -19,5 +19,5 @@
     "sessions/"
   ],
   "status": "released",
-  "released_at": "2026-08-16T19:12:00Z"
+  "released_at": "2026-08-16T23:46:00Z"
 }
