@@ -621,3 +621,43 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Playwright `page.keyboard.press()` taps are shorter than one game frame;
   use ≥70ms down/up holds in future automated playtests.
 - **Lock:** `claude-eldric-e2e-20260816T100000Z` acquired and released this run.
+
+### Run 2026-08-16T11:45:00Z — Claude (supervised, user-directed: WordPress AI provider + PR #2 review fixes)
+- **Goal:** Let the storyteller use WordPress's built-in AI Client (WP 7.0+) with the provider
+  selectable in wp-admin, per explicit user request; address four bot-review findings on PR #2.
+- **Triggering event:** User message ("should use the WordPress built-in AI connector; should be
+  able to pick provider in admin") plus Copilot/Codex review events on PR #2.
+- **Decision:** The user's explicit request is the human authorization for touching the gated
+  provider/settings/REST paths. Storyteller JSON contract and validators unchanged.
+- **Completed work:**
+  - New `LC_Provider_WP_AI` using core `wp_ai_client_prompt()` (guarded by `function_exists`),
+    JSON-schema-constrained output, fence-stripping, WP_Error on every failure path so the
+    controller's authored fallback always serves. Provider resolved at `rest_api_init` time.
+  - Settings: provider select (Local / Site AI) with availability detection and honest notices;
+    sanitize allowlists providers. Shortcode config now emits `storyProvider: 'remote'` only when
+    Site AI is chosen AND available; health endpoint reports the active provider id.
+  - JS: engine now exports Transport/FetchTransport/NetworkError; new
+    `packages/game/src/story/create-provider.js` picks Remote (REST proxy + nonce) vs Local from
+    embed config; game-runtime uses it. StorySystem's validate-and-fallback path unchanged.
+  - Review fixes: `resolvePaint` radial NaN when `r1` omitted; README key-storage wording;
+    input polled per simulation tick instead of per render frame (120Hz tap-drop, Codex P1);
+    Esc control docs corrected (Codex P2).
+  - Tests: new `tests/integration/php-wp-provider.{php,test.js}` (15 assertions: selection,
+    fallback, prompt content, validator round-trip, sanitize) and
+    `tests/unit/game/story-provider-selection.test.js`; purity test now ignores module-specifier
+    strings so engine `index.js` may re-export fetch-transport.
+- **Tests run / Verification:**
+  - `command: npm test` · `exit_code: 0` · `summary: 59/59 pass` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: php -l (19 files)` · `exit_code: 0` · `summary: all clean` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: php tests/integration/php-wp-provider.php` · `exit_code: 0` · `summary: all 15 fields correct` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: shortcode WP-stub harness` · `exit_code: 0` · `summary: 15/15 incl. storyProvider stays local by default; active_provider flips to wp-ai with stubbed client` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: npm run build && ./scripts/build-wp-zip.sh` · `exit_code: 0` · `summary: 40-file zip rebuilt` · `timestamp: 2026-08-16T11:57:00Z`
+  - `command: Playwright sanity (opening→walk→Chronicle via 80ms Tab tap)` · `exit_code: 0` · `summary: no page errors; tap registered under per-tick polling` · `timestamp: 2026-08-16T11:58:00Z`
+- **Failures:** Two caught by the new harness before shipping: PHP top-level function hoisting
+  invalidated availability checks (fixed with conditional declaration); provider prompt described
+  rumors as strings while the schema requires {text,truth} objects (fixed).
+- **Confidence:** High for code paths; the live WP AI Client call is exercised only against a
+  fluent stub — a real WP 7.0 site test remains manual QA.
+- **Next action:** Manual QA on WordPress 7.0 with a configured AI provider; then desktop/Android
+  playthrough of the slice.
+- **Lock:** `claude-eldric-wpai-20260816T1145Z` acquired and released this run.

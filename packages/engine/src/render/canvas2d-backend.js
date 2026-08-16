@@ -138,7 +138,7 @@ export function resolvePaint(context, paint) {
   if (!paint || typeof paint === 'string') return paint;
   const gradient = paint.type === 'radial'
     ? context.createRadialGradient(paint.x0, paint.y0, paint.r0 ?? 0,
-      paint.x1 ?? paint.x0, paint.y1 ?? paint.y0, Math.max(0.01, paint.r1))
+      paint.x1 ?? paint.x0, paint.y1 ?? paint.y0, Math.max(0.01, paint.r1 ?? 0))
     : context.createLinearGradient(paint.x0, paint.y0, paint.x1, paint.y1);
   for (const [offset, colour] of paint.stops) gradient.addColorStop(offset, colour);
   return gradient;

@@ -1,9 +1,9 @@
 import {
-  Action, Camera, Canvas2DBackend, LocalStoryProvider, Renderer, SeededRng,
+  Action, Camera, Canvas2DBackend, Renderer, SeededRng,
   StorySystem, buildStoryContext, createNarrativeState, createWebPlatform,
 } from '@eldric/engine';
 import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, TREE_CLUMPS, WORLD, ZONES } from '../content/world/millhaven.js';
-import { LOCAL_STORY_CORPUS } from '../content/story/local-corpus.js';
+import { createStoryProvider } from '../story/create-provider.js';
 import {
   PALETTE, createArtCache, drawChronicle, drawDialogue, drawHud, drawInterior,
   drawInventory, drawOpening, drawWorld,
@@ -42,7 +42,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     state.inventory = saved.inventory ?? state.inventory;
   }
   const storyState = createNarrativeState();
-  const storyteller = new StorySystem({ provider: new LocalStoryProvider({ corpus: LOCAL_STORY_CORPUS, seed: 'millhaven-player' }), state: storyState });
+  const storyteller = new StorySystem({ provider: createStoryProvider(config), state: storyState });
   storyteller.subscribe((pending) => { state.storyPending = pending; });
   let previousTime = null;
   let accumulator = 0;
@@ -56,8 +56,11 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     if (previousTime === null) previousTime = time;
     accumulator += Math.min(100, time - previousTime);
     previousTime = time;
-    platform.input.update();
+    // Poll input per simulation tick, not per render frame: on high-refresh
+    // displays a render frame may run zero ticks, and polling there would
+    // consume tap latches before the simulation could observe them.
     while (accumulator >= 1000 / 60) {
+      platform.input.update();
       update(1 / 60);
       accumulator -= 1000 / 60;
     }

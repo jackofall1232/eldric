@@ -25,6 +25,7 @@ require_once LC_PATH . 'includes/class-lc-logger.php';
 require_once LC_PATH . 'includes/providers/class-lc-provider.php';
 require_once LC_PATH . 'includes/class-lc-story-controller.php';
 require_once LC_PATH . 'includes/providers/class-lc-provider-local.php';
+require_once LC_PATH . 'includes/providers/class-lc-provider-wp-ai.php';
 require_once LC_PATH . 'includes/class-lc-rest.php';
 require_once LC_PATH . 'includes/class-lc-settings.php';
 require_once LC_PATH . 'includes/class-lc-plugin.php';

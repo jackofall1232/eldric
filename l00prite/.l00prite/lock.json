@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "lock_id": "claude-eldric-e2e-20260816T100000Z",
+  "lock_id": "claude-eldric-wpai-20260816T1145Z",
   "owner_agent": "claude",
-  "owner_session": "eldric-e2e-verify-ship",
-  "acquired_at": "2026-08-16T10:00:00Z",
-  "expires_at": "2026-08-16T12:00:00Z",
+  "owner_session": "eldric-wp-ai-provider",
+  "acquired_at": "2026-08-16T11:45:00Z",
+  "expires_at": "2026-08-16T12:30:00Z",
   "ttl_seconds": 7200,
-  "purpose": "verify vertical slice end to end, close art/packaging gaps, produce installable build",
+  "purpose": "user-requested WordPress AI Client provider + PR review fixes",
   "protected_paths": [
     "ledger.md",
     "memory.md",
@@ -19,5 +19,5 @@
     "sessions/"
   ],
   "status": "released",
-  "released_at": "2026-08-16T10:45:00Z"
+  "released_at": "2026-08-16T12:00:00Z"
 }

@@ -21,7 +21,7 @@ final class LC_Shortcode {
         $config = array(
             'assetBase' => untrailingslashit( LC_URL . 'assets/build' ),
             'saveKey' => sprintf( 'eldric.living-chronicle.%d.%s.%s', $page_id, $profile, $slot ),
-            'storyProvider' => 'local',
+            'storyProvider' => 'wp-ai' === LC_Settings::active_provider() ? 'remote' : 'local',
             'storyEndpoint' => esc_url_raw( rest_url( 'lc/v1/story' ) ),
             'storyNonce' => wp_create_nonce( 'wp_rest' ),
         );

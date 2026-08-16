@@ -8,8 +8,9 @@ backend services; it is not the game. Nothing in `packages/engine/` may depend o
 - CSS is scoped under a single root class; the bundle exposes one global
   (`EldricLivingChronicle`) with `mount`/`mountAll`/`unmount`, and an inline loader calls
   `mountAll` once per page.
-- **The REST proxy (`lc/v1`) is the only place an AI API key may ever exist** (0.1 stores no key
-  and its runtime plays fully locally without calling the proxy). It enforces nonce and
+- **The REST proxy (`lc/v1`) is the only place an AI API key may ever exist.** No key is
+  required: the game plays fully locally without one. A key entered on the settings page is
+  stored server-side only and is never sent to the browser. It enforces nonce and
   permission checks, request validation, per-user and per-IP rate limiting, timeouts, maximum
   prompt and response sizes, response validation, and an authored fallback on every failure path.
 - Built assets land in `living-chronicle/assets/build/` — **never** a `dist/` directory, which the

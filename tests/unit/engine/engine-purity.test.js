@@ -44,7 +44,9 @@ test('engine core keeps browser globals inside declared platform seams', async (
   const offenders = [];
   for (const path of await walk(engineRoot)) {
     if (allowed.test(path)) continue;
-    const source = await readFile(path, 'utf8');
+    // Module specifier strings (e.g. re-exporting './transports/fetch-transport.js')
+    // are file names, not browser-global usage — scan identifiers only.
+    const source = (await readFile(path, 'utf8')).replace(/(from\s+|import\s*\(\s*)(['"])[^'"]*\2/g, '$1$2$2');
     if (/\b(window|document|localStorage|fetch)\b/.test(source)) {
       offenders.push(relative(engineRoot, path));
     }

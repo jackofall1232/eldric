@@ -32,8 +32,17 @@ The current release uses the local authored storyteller and needs no API key or 
 
 ## Settings (optional)
 
-**Settings → Eldric Storyteller** shows the active provider — Local (offline) — and a write-only
-key field reserved for a future server-side provider. Nothing on this page is required for play.
+**Settings → Eldric Storyteller** lets you pick the story provider. Nothing on this page is
+required for play:
+
+- **Local storyteller (default)** — authored offline storytelling; no key, no network.
+- **Site AI — WordPress AI Client** — available on WordPress 7.0+ when the site has an AI
+  provider configured for the built-in AI Client. Story beats are then narrated by your site's
+  AI through the plugin's server-side proxy (nonce check, rate limiting, request/response
+  validation, size limits). Any failure falls back to the local storyteller mid-play, invisibly.
+  If the AI Client is missing, the option is disabled and the local storyteller serves.
+
+The write-only key field is reserved for a future direct provider; Site AI does not use it.
 A stored key stays server-side and is never sent to the browser.
 
 ## Saves
@@ -79,5 +88,6 @@ saves; players can remove those through their browser's site-data controls.
 ## Controls
 
 Keyboard: WASD/arrow keys move, Shift runs, J attacks, K heavy-attacks, L blocks, Space dodges,
-E interacts, I opens inventory, Tab opens the Chronicle, and Esc opens the menu. Touch controls
+E interacts, I opens inventory, Tab opens the Chronicle, and Esc closes an open screen or
+leaves a building interior. Touch controls
 appear automatically on coarse-pointer/mobile devices.

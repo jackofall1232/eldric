@@ -33,7 +33,8 @@ Shortcode attributes (all optional):
 * `height` — embed height in pixels, 360 to 960 (default 720).
 
 Controls: WASD or arrow keys move, Shift runs, J attacks, K heavy-attacks, L blocks, Space
-dodges, E interacts, I opens the inventory, Tab opens the Chronicle, Esc opens the menu.
+dodges, E interacts, I opens the inventory, Tab opens the Chronicle, Esc closes an open
+book or screen and steps back outside from a building interior.
 
 == Installation ==
 
@@ -50,16 +51,27 @@ Manual install: unzip the file and upload the `living-chronicle` folder to
 `wp-content/plugins/`, then activate it from the Plugins screen.
 
 Optional settings live under **Settings → Eldric Storyteller**. Nothing there is required for
-play: the provider is fixed to Local (offline), and the key field is a write-only, server-side
-placeholder reserved for a future remote storyteller. It is never sent to visitors' browsers.
+play. You can pick the story provider:
+
+* **Local storyteller (default)** — authored offline storytelling, no key, no network.
+* **Site AI — WordPress AI Client** — on WordPress 7.0+ with a configured AI provider, the
+  storyteller's dramatic beats are narrated by your site's own AI connector. Requests go through
+  the plugin's server-side proxy (rate limiting, validation, size limits); if the AI is slow,
+  unavailable, or returns something invalid, the game continues seamlessly with the local
+  storyteller. No AI credential is ever sent to visitors' browsers.
+
+The key field is a write-only, server-side placeholder reserved for future direct providers; the
+Site AI option does not use it.
 
 == Frequently Asked Questions ==
 
 = Do I need an API key or any external service? =
 
-No. This release plays entirely offline in the visitor's browser using the plugin's authored
-local storyteller. The settings page's key field is reserved for a possible future provider and
-is optional and unused today.
+No. By default the game plays entirely offline in the visitor's browser using the plugin's
+authored local storyteller. Optionally, on WordPress 7.0+ you can switch the story provider to
+Site AI, which uses the AI provider your site already has configured through the built-in
+WordPress AI Client — the plugin itself still stores no AI credential, and the game always
+falls back to the local storyteller if the AI is unavailable.
 
 = Where is player progress saved? =
 

@@ -131,7 +131,10 @@ implement and verify in a single loop.
 - [ ] Android wrapper: replace the platform seams (input source, audio backend, save backend,
       network transport), package assets, ship the local provider offline-first.
 - [ ] Cloud saves through WordPress accounts, behind the existing storage adapter.
-- [ ] A remote LLM story provider behind the same proxy, with cost controls.
+- [x] A remote LLM story provider behind the same proxy (2026-08-16: `LC_Provider_WP_AI` routes
+      through the WordPress 7.0 built-in AI Client — the site's own AI connector — selectable in
+      Settings → Eldric Storyteller; proxy rate limits and validation unchanged; local fallback
+      on every failure). Cost controls beyond rate limiting remain future work.
 - [ ] CI workflow running the test suite and `node scripts/l00prite-doctor.js .` on every PR.
       (`.github/workflows/**` is on the Autonomous-Edit Denylist — needs human sign-off.)
 - [ ] Chapter two: a second region that inherits Chronicle state from the slice.
