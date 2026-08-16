@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "lock_id": "claude-eldric-pr5-review-20260816T1805Z",
+  "lock_id": "claude-eldric-stones-blocker-20260816T1910Z",
   "owner_agent": "claude",
-  "owner_session": "eldric-wordpress-ai-connector-selection",
-  "acquired_at": "2026-08-16T18:05:00Z",
-  "expires_at": "2026-08-16T20:05:00Z",
+  "owner_session": "eldric-stones-progression-blocker",
+  "acquired_at": "2026-08-16T19:10:00Z",
+  "expires_at": "2026-08-16T21:10:00Z",
   "ttl_seconds": 7200,
-  "purpose": "user-requested explicit AI connector selection for the Site AI storyteller, plus the PR #5 review response",
+  "purpose": "diagnose and fix the reported three-stone river seal progression blocker",
   "protected_paths": [
     "ledger.md",
     "memory.md",
@@ -19,5 +19,5 @@
     "sessions/"
   ],
   "status": "released",
-  "released_at": "2026-08-16T18:10:00Z"
+  "released_at": "2026-08-16T19:12:00Z"
 }

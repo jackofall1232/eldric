@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, WORLD, ZONES } from '../../../packages/game/src/content/world/millhaven.js';
+import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, RUNE_SEAL, WORLD, ZONES } from '../../../packages/game/src/content/world/millhaven.js';
 
 test('Millhaven vertical slice contains every promised destination', () => {
   assert.deepEqual(ZONES.map((zone) => zone.id), [
@@ -15,6 +15,22 @@ test('Millhaven vertical slice contains every promised destination', () => {
   assert.ok(INTERACTABLES.some((object) => object.type === 'hidden'));
   assert.ok(INTERACTABLES.some((object) => object.id === 'locked-cellar'));
   assert.ok(DIALOGUE['arguing-travelers'].length >= 2);
+});
+
+test('the river seal teaches exactly the order it accepts', () => {
+  const stones = INTERACTABLES.filter((object) => object.type === 'rune');
+  // Every stone the seal asks for must exist, and each must be asked for once:
+  // an order naming a stone that is not in the world cannot be solved.
+  assert.deepEqual([...RUNE_SEAL.order].sort(), stones.map((stone) => stone.rune).sort());
+  assert.equal(new Set(RUNE_SEAL.order).size, RUNE_SEAL.order.length);
+  // The hint is the player's only source for the order, so it has to name the
+  // stones in the sequence the seal actually accepts.
+  assert.deepEqual(
+    RUNE_SEAL.hint.match(/crown|river|root/g),
+    RUNE_SEAL.order.map((rune) => RUNE_SEAL.names[rune]),
+  );
+  // …and each of those words has to match the stone carrying that rune.
+  for (const stone of stones) assert.match(stone.name.toLowerCase(), new RegExp(RUNE_SEAL.names[stone.rune]));
 });
 
 test('Millhaven ships distinct enemy encounters and both bosses', () => {

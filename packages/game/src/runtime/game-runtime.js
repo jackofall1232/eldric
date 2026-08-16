@@ -2,7 +2,7 @@ import {
   Action, Camera, Canvas2DBackend, Renderer, SeededRng,
   StorySystem, buildStoryContext, createNarrativeState, createWebPlatform,
 } from '@eldric/engine';
-import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, TREE_CLUMPS, WORLD, ZONES } from '../content/world/millhaven.js';
+import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, RUNE_SEAL, TREE_CLUMPS, WORLD, ZONES } from '../content/world/millhaven.js';
 import { createStoryProvider } from '../story/create-provider.js';
 import {
   PALETTE, createArtCache, drawChronicle, drawDialogue, drawHud, drawInterior,
@@ -280,7 +280,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     }
     if (target.id === 'cave-door') {
       if (!state.discoveries.has('ruin-key')) { toast('An iron seal. Its key bears the Broken King’s crown.'); return; }
-      platform.audio?.play?.('door', { bus: 'sfx', volume: .3 }); state.gloamOpen = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', 'The Gloam Gate opened. Within, three stones wait: river, crown, root.'); return;
+      platform.audio?.play?.('door', { bus: 'sfx', volume: .3 }); state.gloamOpen = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', `The Gloam Gate opened. Within, three stones wait — wake them in the river’s order: ${RUNE_SEAL.hint}.`); return;
     }
     if (target.type === 'rune') { touchRune(target.rune); return; }
     if (target.type === 'hidden') { discover('hidden-glade', 'Beyond the pale mushrooms, a moonlit glade concealed the Witchglass Charm.'); if (!state.inventory.includes('Witchglass Charm')) state.inventory.push('Witchglass Charm'); return; }
@@ -312,10 +312,23 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function touchRune(rune) {
     if (!state.gloamOpen) { toast('The rune is silent beyond the sealed Gloam Gate.'); return; }
     if (state.runesSolved) { toast('The three stones hum in one river-deep chord.'); return; }
-    const order = [2, 1, 3]; const expected = order[state.runeSequence.length];
-    if (rune !== expected) { state.runeSequence = rune === order[0] ? [rune] : []; toast('The cavern rejects the sequence; the stones fall dark.'); return; }
-    state.runeSequence.push(rune); platform.audio?.play?.('magic', { bus: 'sfx', volume: .2 + state.runeSequence.length * .04 }); toast(['', 'The river stone answers.', 'The crown stone bows.', 'Roots split the final seal.'][state.runeSequence.length]);
-    if (state.runeSequence.length === order.length) { state.runesSolved = true; state.bossAwake = true; state.quest = Math.max(state.quest, 7); discover('gloam_runes_solved', 'River, crown, root: the old order woke what waited beneath Blackwater.'); }
+    const { order, names, hint } = RUNE_SEAL;
+    const expected = order[state.runeSequence.length];
+    if (rune !== expected) {
+      // Every rejection repeats the rule. The gate states the order once, in a
+      // toast gone in four seconds, and a player who touches the stones in the
+      // order they stand — crown, river, root — is turned away with no way to
+      // learn what the cavern actually wanted.
+      const restarted = rune === order[0];
+      state.runeSequence = restarted ? [rune] : [];
+      toast(restarted
+        ? `The chord breaks and begins again on the river stone. The seal wants ${hint}.`
+        : `The ${names[rune]} stone answers out of turn; the stones fall dark. The seal wants ${hint}.`);
+      return;
+    }
+    state.runeSequence.push(rune); platform.audio?.play?.('magic', { bus: 'sfx', volume: .2 + state.runeSequence.length * .04 });
+    if (state.runeSequence.length < order.length) { toast(`${['', 'The river stone answers.', 'The crown stone bows.'][state.runeSequence.length]} (${state.runeSequence.length} of ${order.length})`); return; }
+    toast('Roots split the final seal.'); state.runesSolved = true; state.bossAwake = true; state.quest = Math.max(state.quest, 7); discover('gloam_runes_solved', 'River, crown, root: the old order woke what waited beneath Blackwater.');
   }
 
   function updateZone() {
@@ -360,7 +373,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
 
   function dialogueLines(id) { const lines = [...(DIALOGUE[id] ?? [])]; if (!state.outcome) return lines; const consequence = { elara: state.outcome === 'release' ? 'You brought Corven home, Eldric. I cannot thank you for the flooded fields—but I will never forget that you kept your promise.' : 'Millhaven calls the harvest a blessing. I hear my brother singing below the bridge every night.', rowan: state.outcome === 'release' ? 'The east field is gone, and families will go hungry. Mercy has a price; now help us pay it.' : 'You chose the village over one cursed man. I would have done the same. That does not make it clean.', mara: state.outcome === 'release' ? 'A broken oath runs wild, but a living man may yet mend it.' : 'The river is quiet. Do not mistake quiet for forgiveness.' }[id]; if (consequence) lines.push(consequence); return lines; }
   function interiorDetail(interior) { return { apothecary: 'A ledger lists medicine missing before the attacks began.', smithy: 'Fresh nicks on Rowan’s spare chains match the marks beneath the bridge.', mill: 'The mill wheel turns though the river outside is still.' }[interior] ?? 'The room keeps its counsel.'; }
-  function questText() { return ['Speak with the people of Millhaven', 'Investigate Blackwater Road', 'Follow the signs toward the river', 'Search the Sunken Ruin', 'Defeat the ruin’s guardian', 'Open the Gloam Gate', 'Solve the three-stone river seal', 'Face what waits beneath Blackwater', 'Return to the campfire'][state.quest] ?? 'The Chronicle continues'; }
+  function questText() { return ['Speak with the people of Millhaven', 'Investigate Blackwater Road', 'Follow the signs toward the river', 'Search the Sunken Ruin', 'Defeat the ruin’s guardian', 'Open the Gloam Gate', 'Wake the stones: river, crown, root', 'Face what waits beneath Blackwater', 'Return to the campfire'][state.quest] ?? 'The Chronicle continues'; }
   function toast(message) { state.toast = message; state.toastTime = 4; }
   function collides(x, y) { return OBSTACLES.some((o) => x > o.x - 10 && x < o.x + o.width + 10 && y > o.y - 10 && y < o.y + o.height + 10); }
 

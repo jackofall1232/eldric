@@ -43,6 +43,15 @@ export const INTERACTABLES = Object.freeze([
   { id: 'rune-3', type: 'rune', name: 'Stone of Root', rune: 3, x: 1220, y: 720 },
 ]);
 
+// The seal's only rule is the order the stones are touched in, so the sequence
+// and the words the game teaches it with live together: a hint that drifts from
+// the sequence leaves the player with no way to reason out the answer.
+export const RUNE_SEAL = Object.freeze({
+  order: Object.freeze([2, 1, 3]),
+  names: Object.freeze({ 1: 'crown', 2: 'river', 3: 'root' }),
+  hint: 'river, then crown, then root',
+});
+
 export const TREE_CLUMPS = Array.from({ length: 74 }, (_, index) => ({
   x: 24 + ((index * 83) % 1210),
   y: 22 + ((index * 47) % 145),

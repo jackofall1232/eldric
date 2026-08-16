@@ -888,3 +888,50 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not probe connectors from `rest_api_init`; it runs for every REST
   request on the site.
 - **Lock:** `claude-eldric-pr5-review-20260816T1805Z` acquired and released this run.
+
+### Run 2026-08-16T19:10:00Z — Claude (user-reported progression blocker)
+- **Goal:** Diagnose a player report — "got to the stones, did them in order, couldn't go further"
+  — and remove whatever stops the Millhaven slice at the three-stone river seal.
+- **Triggering event:** User play report, in-session. No issue or PR.
+- **Reviewer/comment reference:** none.
+- **Decision:** Valid. The seal is solvable, but its one rule was taught only by a four-second
+  toast, so a player who touched the stones in the order they stand could not recover it.
+- **Completed work:** Drove `createGameRuntime` headlessly (fake canvas/DOM, manual rAF clock) over
+  the whole critical path — dialogue, clues, reliquary, Gloam Gate, seal, boss, decision, campfire.
+  The chain completes: the seal accepts river→crown→root, wakes the Drowned Oath, and the decision
+  and campfire close the slice. No hard stop exists in code. What does exist: the required order
+  appears exactly once, in the gate's toast, and the rejection message named neither the order nor
+  how far the player had got. The stones stand crown, river, root west-to-east, so the natural
+  left-to-right reading is rejected on the first touch, with no feedback that order is the rule.
+- **Fix implemented:** `RUNE_SEAL` (order, stone names, hint sentence) now lives with the content in
+  `millhaven.js` and is the single source for both the sequence and the words that teach it. Every
+  rejection restates the order and names the stone that answered out of turn; correct touches show
+  `(n of 3)`; the gate's line spells the order out; and the quest ribbon — permanently on screen —
+  reads "Wake the stones: river, crown, root" while the seal is open.
+- **Changed files:** `packages/game/src/content/world/millhaven.js`,
+  `packages/game/src/runtime/game-runtime.js`, `tests/unit/game/millhaven-region.test.js`,
+  `wordpress/living-chronicle/assets/build/eldric-living-chronicle.{js,js.map}` (rebuilt).
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 63/63 pass (was 62; +1 seal-order test)` · `timestamp: 2026-08-16T19:08:00Z`
+  - `command: headless game-runtime playthrough harness` · `exit_code: 0` · `summary: crown-first is rejected with the order restated; river→crown→root solves, wakes the boss, quest 7` · `timestamp: 2026-08-16T19:09:00Z`
+  - `command: npm run build:wp` · `exit_code: 0` · `summary: WordPress bundle rebuilt so the shipped plugin carries the fix` · `timestamp: 2026-08-16T19:09:30Z`
+- **Response drafted/sent:** Diagnosis and fix summary delivered to the user in-session, including
+  the two findings left unchanged (below).
+- **Event status:** completed.
+- **Failures:** A fresh container again needed `npm install` before workspace imports resolved —
+  the same catalogued failure, now hit three runs running. It belongs in a preflight step.
+- **Decisions:** The seal's order and its hint text are one exported constant, and a unit test
+  asserts the hint names the stones in the sequence the seal accepts. A puzzle whose only rule is
+  an order must not be able to drift from the sentence that teaches it.
+- **Confidence:** High that the seal is now recoverable without outside knowledge — the headless
+  harness reproduces both the failing and the passing player path. Medium that the seal was the
+  wall the player actually hit; see the boss finding below.
+- **Next action:** Confirm with the player which wall they hit. If it was the Drowned Oath rather
+  than the seal, two measured findings are waiting: the boss lands 34 damage on a 100 HP hero from
+  a 62-unit reach against the hero's 42, killing a stationary player in ~3.5s (a frame-perfect
+  harness player wins in 5s, so the fight is winnable, not broken); and death teleports the hero to
+  the village campfire 940 units away with only "the storyteller turns back a blood-darkened page"
+  — no cause, no waypoint back. Neither was changed: both are balance calls for a human.
+- **Do-not-retry notes:** Do not hardcode the rune order inside `touchRune` again; it drifted from
+  the player-facing hint once and that is what made the seal feel unsolvable.
+- **Lock:** `claude-eldric-stones-blocker-20260816T1910Z` acquired and released this run.
