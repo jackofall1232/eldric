@@ -75,3 +75,6 @@ export { StorySystem } from './story/story.js';
 export { StoryBeat } from './story/beats.js';
 export { buildStoryContext } from './story/context-builder.js';
 export { createStoryFallback } from './story/fallback.js';
+export { Transport } from './net/transport.js';
+export { FetchTransport } from './net/transports/fetch-transport.js';
+export { NetworkError } from './net/errors.js';

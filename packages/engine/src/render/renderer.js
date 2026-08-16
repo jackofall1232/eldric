@@ -23,6 +23,8 @@ export class Renderer {
   rect(props, layer, order) { this.draw('rect', props, layer, order); }
   circle(props, layer, order) { this.draw('circle', props, layer, order); }
   polygon(props, layer, order) { this.draw('polygon', props, layer, order); }
+  ellipse(props, layer, order) { this.draw('ellipse', props, layer, order); }
+  path(props, layer, order) { this.draw('path', props, layer, order); }
   line(props, layer, order) { this.draw('line', props, layer, order); }
   text(props, layer = RenderLayer.UI, order) { this.draw('text', props, layer, order); }
   sprite(props, layer, order) { this.draw('sprite', props, layer, order); }

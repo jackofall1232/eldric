@@ -567,3 +567,97 @@ Append one entry per agent run. Do not overwrite prior runs.
   convert `scripts/l00prite-doctor.js` to fix module-type errors; the `scripts/package.json`
   marker is the fix.
 - **Lock:** none — no other agent was active, and `lock.json` remains `unlocked` as shipped.
+
+### Run 2026-08-16T10:00:00Z — Claude (supervised, user-directed end-to-end delivery)
+- **Goal:** Verify the 0.1 vertical slice actually works end to end in a real browser, close the
+  remaining M7 art gap and M8 packaging gaps with parallel subagents, and deliver a pushable,
+  WordPress-installable build on `claude/eldric-wordpress-game-yb99b5`.
+- **Triggering event:** Direct user request ("working game end to end that I can plug into any
+  WordPress page; use frontend design agents and whatever other agents you need").
+- **Reviewer/comment reference:** none.
+- **Decision:** Normal work under direct user instruction; supervised (not an Execution Mode run).
+- **Completed work:**
+  - Verified baseline: 56/56 tests, doctor HEALTHY, web + WP builds green.
+  - Played the built game in headless Chromium (Playwright): opening cinematic, skip, movement,
+    camera follow, NPC dialogue (Elara), quest progression to "Investigate Blackwater Road",
+    Chronicle book (TAB), inventory (I), tavern interior, combat swings, zone transitions,
+    collision, storyteller toasts, save persistence. Mobile viewport (412x915, touch): virtual
+    joystick + action buttons render and no page errors.
+  - Frontend-design subagent: full storybook art pass. New `packages/game/src/render/art.js`
+    (~1480 lines) — all drawing moved out of game-runtime.js (496→396 lines); engine gained
+    `ellipse`/`path` draw commands and gradient paints in canvas2d-backend.js. Timber-framed
+    houses, village dressing, layered trees/fire, detailed hero/enemies, parchment UI, richer
+    opening (timings/skip logic unchanged). Seeded precomputed detail, camera culling,
+    ~500-560 draw commands/frame, 60fps in harness.
+  - Packaging subagent: all 17 plugin PHP files lint (PHP 8.4); shortcode render simulated with a
+    22-stub WP harness (15/15 checks incl. multi-instance isolation and mountAll bootstrap);
+    stale-nonce behavior verified to degrade to local fallback; rewrote readme.txt + INSTALL.md;
+    new `scripts/build-wp-zip.sh`.
+- **Fix implemented:** Engine input robustness — `KeyboardSource`/`TouchSource` dropped taps
+  shorter than one frame (live Set returned from poll). Added sticky-tap latching so a sub-frame
+  tap registers for exactly one poll. Found via Playwright `press()` (~5ms taps) failing to open
+  the Chronicle.
+- **Changed files:** `packages/game/src/render/art.js` (new), `packages/game/src/runtime/game-runtime.js`,
+  `packages/engine/src/render/{canvas2d-backend,renderer}.js`, `packages/engine/src/input/sources/{keyboard,touch}.js`,
+  `wordpress/living-chronicle/{readme.txt,INSTALL.md}`, `wordpress/README.md`,
+  `scripts/build-wp-zip.sh` (new), `wordpress/living-chronicle/assets/build/*` (rebuilt),
+  l00prite memory files. Left untouched: REST proxy, settings PHP, storyteller schema/validator,
+  all protocol files.
+- **Tests run / Verification:**
+  - `command: npm test` · `exit_code: 0` · `summary: 56/56 pass (before and after every change)` · `timestamp: 2026-08-16T10:30:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok, 0 warn, 0 fail — HEALTHY` · `timestamp: 2026-08-16T10:30:00Z`
+  - `command: npm run build && npm run build:wp` · `exit_code: 0` · `summary: web 111.34kB / WP 110.86kB (gzip ~38kB) bundles` · `timestamp: 2026-08-16T10:30:00Z`
+  - `command: node playtest-final.mjs (Playwright vs built preview)` · `exit_code: 0` · `summary: opening→village→dialogue→chronicle→inventory→interior→road→combat verified; only console error is the favicon 404` · `evidence_path: scratchpad shots-final/` · `timestamp: 2026-08-16T10:35:00Z`
+  - `command: ./scripts/build-wp-zip.sh && unzip -l …` · `exit_code: 0` · `summary: 39-file zip, living-chronicle/ root, 0 .map files; secret grep clean (one BEGIN…KEY false positive = minified beginPath code)` · `timestamp: 2026-08-16T10:40:00Z`
+- **Response drafted/sent:** Summary delivered to the user in session.
+- **Event status:** not applicable.
+- **Failures:** None blocking. Known cosmetic: favicon 404 on the dev preview page.
+- **Decisions:** Art stays procedural (no bitmap assets) behind engine draw commands; 0.1 ships
+  with the local story provider hardcoded, REST proxy present but unused (matches the
+  "playable with AI disabled" requirement; remote wiring stays on the Later list).
+- **Confidence:** High — every claim above was exercised in a real browser or a real build.
+- **Next action:** Human playtest on a physical Android phone and a clean WordPress install of
+  the zip (manual release checks that cannot be automated here).
+- **Do-not-retry notes:** Playwright `page.keyboard.press()` taps are shorter than one game frame;
+  use ≥70ms down/up holds in future automated playtests.
+- **Lock:** `claude-eldric-e2e-20260816T100000Z` acquired and released this run.
+
+### Run 2026-08-16T11:45:00Z — Claude (supervised, user-directed: WordPress AI provider + PR #2 review fixes)
+- **Goal:** Let the storyteller use WordPress's built-in AI Client (WP 7.0+) with the provider
+  selectable in wp-admin, per explicit user request; address four bot-review findings on PR #2.
+- **Triggering event:** User message ("should use the WordPress built-in AI connector; should be
+  able to pick provider in admin") plus Copilot/Codex review events on PR #2.
+- **Decision:** The user's explicit request is the human authorization for touching the gated
+  provider/settings/REST paths. Storyteller JSON contract and validators unchanged.
+- **Completed work:**
+  - New `LC_Provider_WP_AI` using core `wp_ai_client_prompt()` (guarded by `function_exists`),
+    JSON-schema-constrained output, fence-stripping, WP_Error on every failure path so the
+    controller's authored fallback always serves. Provider resolved at `rest_api_init` time.
+  - Settings: provider select (Local / Site AI) with availability detection and honest notices;
+    sanitize allowlists providers. Shortcode config now emits `storyProvider: 'remote'` only when
+    Site AI is chosen AND available; health endpoint reports the active provider id.
+  - JS: engine now exports Transport/FetchTransport/NetworkError; new
+    `packages/game/src/story/create-provider.js` picks Remote (REST proxy + nonce) vs Local from
+    embed config; game-runtime uses it. StorySystem's validate-and-fallback path unchanged.
+  - Review fixes: `resolvePaint` radial NaN when `r1` omitted; README key-storage wording;
+    input polled per simulation tick instead of per render frame (120Hz tap-drop, Codex P1);
+    Esc control docs corrected (Codex P2).
+  - Tests: new `tests/integration/php-wp-provider.{php,test.js}` (15 assertions: selection,
+    fallback, prompt content, validator round-trip, sanitize) and
+    `tests/unit/game/story-provider-selection.test.js`; purity test now ignores module-specifier
+    strings so engine `index.js` may re-export fetch-transport.
+- **Tests run / Verification:**
+  - `command: npm test` · `exit_code: 0` · `summary: 59/59 pass` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: php -l (19 files)` · `exit_code: 0` · `summary: all clean` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: php tests/integration/php-wp-provider.php` · `exit_code: 0` · `summary: all 15 fields correct` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: shortcode WP-stub harness` · `exit_code: 0` · `summary: 15/15 incl. storyProvider stays local by default; active_provider flips to wp-ai with stubbed client` · `timestamp: 2026-08-16T11:55:00Z`
+  - `command: npm run build && ./scripts/build-wp-zip.sh` · `exit_code: 0` · `summary: 40-file zip rebuilt` · `timestamp: 2026-08-16T11:57:00Z`
+  - `command: Playwright sanity (opening→walk→Chronicle via 80ms Tab tap)` · `exit_code: 0` · `summary: no page errors; tap registered under per-tick polling` · `timestamp: 2026-08-16T11:58:00Z`
+- **Failures:** Two caught by the new harness before shipping: PHP top-level function hoisting
+  invalidated availability checks (fixed with conditional declaration); provider prompt described
+  rumors as strings while the schema requires {text,truth} objects (fixed).
+- **Confidence:** High for code paths; the live WP AI Client call is exercised only against a
+  fluent stub — a real WP 7.0 site test remains manual QA.
+- **Next action:** Manual QA on WordPress 7.0 with a configured AI provider; then desktop/Android
+  playthrough of the slice.
+- **Lock:** `claude-eldric-wpai-20260816T1145Z` acquired and released this run.

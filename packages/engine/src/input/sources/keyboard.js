@@ -2,6 +2,7 @@ import { mergeBindings } from '../bindings.js';
 
 export class KeyboardSource {
   #down = new Set();
+  #tapped = new Set();
   #bindings;
   #target;
   #onKeyDown;
@@ -14,6 +15,7 @@ export class KeyboardSource {
       const action = this.#bindings[event.code];
       if (!action) return;
       this.#down.add(action);
+      this.#tapped.add(action);
       event.preventDefault();
     };
     this.#onKeyUp = (event) => {
@@ -26,7 +28,13 @@ export class KeyboardSource {
     target.addEventListener('keyup', this.#onKeyUp);
   }
 
-  poll() { return { down: this.#down }; }
+  poll() {
+    // A tap shorter than one frame must still register for one poll.
+    const down = new Set([...this.#down, ...this.#tapped]);
+    this.#tapped.clear();
+    return { down };
+  }
+
   dispose() {
     this.#target.removeEventListener('keydown', this.#onKeyDown);
     this.#target.removeEventListener('keyup', this.#onKeyUp);

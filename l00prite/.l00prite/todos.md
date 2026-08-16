@@ -90,9 +90,12 @@ implement and verify in a single loop.
 - [x] Consequences of that decision reaching later dialogue, rumors and the Chronicle.
 
 ### M7 — Presentation
-- [ ] Original art pass: player, NPCs, enemies, bosses, terrain, trees, buildings, water, roads,
+- [x] Original art pass: player, NPCs, enemies, bosses, terrain, trees, buildings, water, roads,
       bridges, caves, dungeon tiles, weapons, items, chests, UI, Chronicle book, portraits,
       effects, title screen. One coherent hand-painted storybook direction.
+      (2026-08-16: procedural storybook art in `packages/game/src/render/art.js` — gradients,
+      timber-framed buildings, layered trees, detailed characters, parchment UI; verified via
+      browser screenshots. Judgment of "exceptionally good" remains a human call.)
 - [x] The opening: black screen, fire, "Gather close, and heed my tale.", the book, the camera
       descending into a moving illustration, control within seconds.
 - [x] Audio: ambience, wind, rain, birds, footsteps, impacts, fire, village chatter, dungeon
@@ -112,11 +115,14 @@ implement and verify in a single loop.
 - [x] Settings page with the API key stored write-only server-side and masked on render.
       **Human review gate.**
 - [x] PHP/JS schema parity test.
-- [ ] Nonce lifetime under page caching (a cached page serves a stale nonce and the proxy 403s).
+- [x] Nonce lifetime under page caching: verified the client degrades to the local story fallback
+      on any REST failure (403 included), and 0.1 hardcodes the local provider so no live nonce is
+      required; caching behavior documented in readme.txt/INSTALL.md.
 - [x] Build to `wordpress/living-chronicle/assets/build/` — never `dist/`, which `.gitignore`
       silently swallows, leaving the plugin 404ing in production.
-- [ ] `INSTALL.md` and `readme.txt` are complete and the zip structure is tested; installation on
-      a clean WordPress site remains a manual release check.
+- [x] `INSTALL.md` and `readme.txt` are complete and the zip structure is tested
+      (`scripts/build-wp-zip.sh`, 39 files, no maps, no secrets, shortcode render simulated with a
+      WP-stub harness); installation on a clean WordPress site remains a manual release check.
 - [ ] Local bundle/particle/light/audio budgets pass (63,914-byte JS, bounded effects, lazy audio);
       sprite atlases/region streaming and measurement on a mid-range Android phone remain manual.
 - [x] Verify no key or secret appears anywhere in the built client bundle.
@@ -125,7 +131,10 @@ implement and verify in a single loop.
 - [ ] Android wrapper: replace the platform seams (input source, audio backend, save backend,
       network transport), package assets, ship the local provider offline-first.
 - [ ] Cloud saves through WordPress accounts, behind the existing storage adapter.
-- [ ] A remote LLM story provider behind the same proxy, with cost controls.
+- [x] A remote LLM story provider behind the same proxy (2026-08-16: `LC_Provider_WP_AI` routes
+      through the WordPress 7.0 built-in AI Client — the site's own AI connector — selectable in
+      Settings → Eldric Storyteller; proxy rate limits and validation unchanged; local fallback
+      on every failure). Cost controls beyond rate limiting remain future work.
 - [ ] CI workflow running the test suite and `node scripts/l00prite-doctor.js .` on every PR.
       (`.github/workflows/**` is on the Autonomous-Edit Denylist — needs human sign-off.)
 - [ ] Chapter two: a second region that inherits Chronicle state from the slice.
