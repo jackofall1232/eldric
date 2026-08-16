@@ -21,12 +21,16 @@ root, then copy `wordpress/living-chronicle/` into `wp-content/plugins/living-ch
 
 Publish or update the page; the game renders where the shortcode sits.
 
-Optional attributes: `[living_chronicle profile="family" slot="main" height="720"]`.
+Optional attributes: `[living_chronicle profile="family" slot="main" height="720" music="none"]`.
 
 - `profile` — save-profile name (default `default`).
 - `slot` — durable name for this instance's save. Multiple shortcodes on one page are isolated;
   give each a fixed `slot` when you want its local save to survive reordering the shortcodes later.
 - `height` — embed height in pixels, clamped to 360–960 (default 720).
+- `music` — the soundtrack. Leave it off to use the score bundled with the plugin; set
+  `music="none"` for no music bed (the game's own synthesised region themes play instead); or
+  give an `http(s)` URL to a file you host yourself. Players can set volume or mute in the
+  game's **?** panel regardless, and those levels are remembered in their browser.
 
 The current release uses the local authored storyteller and needs no API key or network request.
 

@@ -7,6 +7,16 @@
       "width": 1672,
       "height": 941,
       "provenance": "Original image generated for Eldric: The Living Chronicle with OpenAI image generation on 2026-08-16"
+    },
+    "music.background_bed": {
+      "src": "audio/eldric-background.mp3",
+      "type": "audio",
+      "bytes": 5000813,
+      "bitrate_kbps": 64,
+      "sample_rate": 48000,
+      "channels": 2,
+      "loop": true,
+      "provenance": "Soundtrack supplied by the project owner for Eldric: The Living Chronicle on 2026-08-16"
     }
   }
 }

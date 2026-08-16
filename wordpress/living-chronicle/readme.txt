@@ -32,6 +32,8 @@ Shortcode attributes (all optional):
 * `profile` — a save-profile name, e.g. `[living_chronicle profile="family"]` (default `default`).
 * `slot` — a durable name for this instance's save, useful if you reorder shortcodes on a page.
 * `height` — embed height in pixels, 360 to 960 (default 720).
+* `music` — soundtrack. Omit for the score bundled with the plugin, `none` for no music bed,
+  or an http(s) URL to your own file. Players can adjust volume and mute in the "?" panel.
 
 Controls: WASD or arrow keys move, Shift runs, J attacks, K heavy-attacks, L blocks, Space
 dodges, E interacts, I opens the inventory, Tab opens the Chronicle, Esc closes an open
@@ -126,7 +128,7 @@ controls.
 
 = 0.1.0 =
 * First playable Millhaven vertical slice.
-* `[living_chronicle]` shortcode with profile, slot, and height attributes.
+* `[living_chronicle]` shortcode with profile, slot, height, and music attributes.
 * Local authored storyteller; nonce-protected, rate-limited `lc/v1/story` REST endpoint reserved
   for future providers.
 * Top-level Eldric admin menu with an in-dashboard Setup Guide and a Storyteller settings page

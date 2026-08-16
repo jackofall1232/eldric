@@ -54,6 +54,7 @@ export { LightingModel } from './render/lighting.js';
 export { AudioSystem } from './audio/audio.js';
 export { AudioMixer } from './audio/mixer.js';
 export { MusicDirector, MusicState } from './audio/music.js';
+export { MusicTrack } from './audio/music-track.js';
 export { NullAudioBackend } from './audio/backends/null-backend.js';
 export { WebAudioBackend } from './audio/backends/webaudio-backend.js';
 export { ATTACKS, attackPhase } from './systems/combat/attack.js';

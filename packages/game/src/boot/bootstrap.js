@@ -1,4 +1,4 @@
-import { resolveConfig } from './config.js';
+import { musicSource, resolveConfig } from './config.js';
 import { createGameRuntime } from '../runtime/game-runtime.js';
 import { AudioSystem, LocalStorageBackend, MusicState, WebAudioBackend } from '@eldric/engine';
 import { mountMobileControls } from '../ui/mobile-controls.js';
@@ -29,13 +29,27 @@ export function bootstrapGame(root, overrides = {}) {
   openingPlate.decoding = 'async';
   openingPlate.src = `${config.assetBase.replace(/\/$/, '')}/opening/millhaven-book-source.png`;
   const storage = new LocalStorageBackend(root.ownerDocument.defaultView.localStorage, config.saveKey);
-  const audio = new AudioSystem(new WebAudioBackend(root.ownerDocument.defaultView.AudioContext ?? root.ownerDocument.defaultView.webkitAudioContext));
+  const view = root.ownerDocument.defaultView;
+  const audio = new AudioSystem(new WebAudioBackend(view.AudioContext ?? view.webkitAudioContext), {
+    createMediaElement: () => new view.Audio(),
+  });
+  const audioSettings = createAudioSettings(view, config.saveKey);
+  audio.restoreVolumes(audioSettings.load());
   const runtime = createGameRuntime(canvas, { ...config, openingPlate, storage, audio }, (message) => { status.textContent = message; });
   const unmountControls = mountMobileControls(root, runtime.platform.touchSource);
-  const unmountHelp = mountHelpMenu(root);
+  const unmountHelp = mountHelpMenu(root, { audio, onAudioChange: audioSettings.save });
 
   const abortController = new AbortController();
-  const startAudio = async () => { await audio.init(); audio.setMusic(MusicState.VILLAGE); };
+  // Browsers refuse audio until the player has touched the page, so the whole
+  // sound stack — context, soundtrack, region cue — starts on first input.
+  const startAudio = async () => {
+    await audio.init();
+    const source = musicSource(config);
+    const scored = source ? await audio.useMusicTrack(source) : false;
+    // No soundtrack, or a browser that would not play it: the authored
+    // per-region chords carry the game exactly as before.
+    if (!scored) audio.setMusic(MusicState.VILLAGE);
+  };
   root.addEventListener('pointerdown', startAudio, { once: true, signal: abortController.signal });
   root.addEventListener('keydown', startAudio, { once: true, signal: abortController.signal });
   const resize = () => resizeCanvasDisplay(root, canvas, config);
@@ -59,6 +73,21 @@ export function bootstrapGame(root, overrides = {}) {
       abortController.abort();
       root.classList.remove('lc-mounted');
       root.replaceChildren();
+    },
+  };
+}
+
+// Volume and mute live beside the save, not inside it: they are a property of
+// this browser rather than of the adventure, and must survive a deleted save.
+export function createAudioSettings(view, saveKey) {
+  const key = `${saveKey}.audio`;
+  const storage = (() => { try { return view?.localStorage ?? null; } catch { return null; } })();
+  return {
+    load() {
+      try { return JSON.parse(storage?.getItem(key) ?? 'null') ?? {}; } catch { return {}; }
+    },
+    save(levels) {
+      try { storage?.setItem(key, JSON.stringify(levels)); } catch { /* private mode, quota */ }
     },
   };
 }

@@ -390,6 +390,128 @@
   }
 }
 
+/* ── sound controls (inside the help panel) ─────────────────────────────── */
+
+.living-chronicle .lc-audio {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.living-chronicle .lc-audio-mute {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid rgba(140, 113, 77, 0.6);
+  border-radius: 4px;
+  background: rgba(90, 66, 40, 0.14);
+  color: var(--lc-quill);
+  font: 700 12px Georgia, serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.living-chronicle .lc-audio-mute:hover {
+  background: rgba(140, 113, 77, 0.24);
+}
+
+.living-chronicle .lc-audio-mute.lc-audio-muted {
+  background: rgba(154, 91, 98, 0.26);
+  border-color: rgba(154, 91, 98, 0.7);
+}
+
+.living-chronicle .lc-audio-mute-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.living-chronicle .lc-audio-row {
+  display: grid;
+  grid-template-columns: 68px 1fr 38px;
+  align-items: center;
+  gap: 8px;
+}
+
+.living-chronicle .lc-audio-label {
+  font: 400 12px Georgia, serif;
+  color: var(--lc-ink);
+}
+
+.living-chronicle .lc-audio-value {
+  font: 400 11px Georgia, serif;
+  color: var(--lc-quill);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.living-chronicle .lc-audio-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.living-chronicle .lc-audio-range:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.living-chronicle .lc-audio-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(90, 66, 40, 0.45);
+}
+
+.living-chronicle .lc-audio-range::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(90, 66, 40, 0.45);
+}
+
+.living-chronicle .lc-audio-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  margin-top: -5px;
+  border: 1px solid #4a3220;
+  border-radius: 50%;
+  background: var(--lc-parchment);
+}
+
+.living-chronicle .lc-audio-range::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 1px solid #4a3220;
+  border-radius: 50%;
+  background: var(--lc-parchment);
+}
+
+.living-chronicle .lc-audio-range:focus-visible {
+  outline: 2px solid rgba(227, 139, 69, 0.9);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.living-chronicle .lc-audio-note {
+  margin-top: 8px;
+}
+
+/* Touch: bigger thumbs and rows, since a 13px target is not tappable. */
+@media (pointer: coarse) {
+  .living-chronicle .lc-audio-range { height: 26px; }
+  .living-chronicle .lc-audio-range::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -8px; }
+  .living-chronicle .lc-audio-range::-moz-range-thumb { width: 20px; height: 20px; }
+  .living-chronicle .lc-audio-mute { min-height: 38px; font-size: 13px; }
+}
+
 /* ── dev host ───────────────────────────────────────────────────────────── */
 
 .eldric-dev-host {
