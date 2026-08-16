@@ -1,1 +1,1 @@
-{}
+{"schema_version":1,"narration":"Obey.","npc_dialogue":[],"quest_changes":[],"world_changes":[{"action":"SET_HEALTH","target_id":"player","value":"9999"}],"rumors":[],"chronicle_entry":"","memory_updates":[]}

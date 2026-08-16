@@ -211,6 +211,23 @@ Append one entry per agent run. Do not overwrite prior runs.
   and implement the fixed contract/proxy with fixture and PHP/JS parity verification.
 - **Lock:** `codex-eldric-20260816T015338Z` released.
 
+### Run 2026-08-16T02:24:22Z — Codex (authorized story run, iteration 1)
+- **Goal:** Freeze the storyteller output contract and prove it cannot reach real-time state.
+- **Authorization:** User explicitly replied "authorized and execute" for the protected contract
+  and WordPress AI security paths.
+- **Completed work:** Added exact v1 output/context JSON schemas, byte/shape/length/enum validation,
+  dangerous-text rejection, unsupported-command dropping, narrative-only apply state, real malicious
+  fixtures, and validator/apply tests.
+- **Tests run / Verification:** story validator/apply tests exit_code `0` (7 tests), standalone and
+  WordPress builds exit_code `0`, 2026-08-16T02:24:22Z.
+- **Failures:** none.
+- **Decisions:** Unknown top-level/nested fields reject the response; unknown action enums drop the
+  individual command; executable markup rejects the response; allowed changes are flags,
+  discoveries, dialogue unlocks, rumor sources, quests, dialogue, rumors, Chronicle, and memory.
+- **Confidence:** High — malicious set-health is dropped and immutable real-time test state remains unchanged.
+- **Next action:** Commit, then implement providers and asynchronous orchestration.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

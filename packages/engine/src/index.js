@@ -24,3 +24,5 @@ export { MemoryStorageBackend } from './save/backends/memory-backend.js';
 export { LocalStorageBackend } from './save/backends/localstorage-backend.js';
 export { SAVE_SCHEMA_VERSION, createSave } from './save/schema.js';
 export { migrateSave } from './save/migrations.js';
+export { validateStorytellerOutput, STORY_SCHEMA_VERSION, MAX_STORY_BYTES, QUEST_OBJECTIVES } from './story/validator.js';
+export { applyStorytellerOutput, createNarrativeState } from './story/apply.js';

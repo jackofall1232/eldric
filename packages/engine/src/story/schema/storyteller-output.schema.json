@@ -1,1 +1,79 @@
-{}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eldric.game/schema/storyteller-output.v1.json",
+  "title": "Eldric Storyteller Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "narration", "npc_dialogue", "quest_changes", "world_changes", "rumors", "chronicle_entry", "memory_updates"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "narration": { "type": "string", "maxLength": 2000 },
+    "npc_dialogue": {
+      "type": "array", "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["npc_id", "text"],
+        "properties": {
+          "npc_id": { "$ref": "#/$defs/id" },
+          "text": { "type": "string", "maxLength": 800 },
+          "emotion": { "enum": ["neutral", "warm", "wary", "angry", "afraid", "sorrowful", "hopeful"] }
+        }
+      }
+    },
+    "quest_changes": {
+      "type": "array", "maxItems": 6,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["action", "quest_id"],
+        "properties": {
+          "action": { "enum": ["ADD", "ADVANCE", "COMPLETE", "FAIL"] },
+          "quest_id": { "$ref": "#/$defs/id" },
+          "objective": { "enum": ["GO_TO", "TALK_TO", "FIND", "COLLECT", "DELIVER", "DEFEAT", "PROTECT", "EXPLORE", "CHOOSE"] },
+          "target_id": { "$ref": "#/$defs/id" },
+          "text": { "type": "string", "maxLength": 500 }
+        }
+      }
+    },
+    "world_changes": {
+      "type": "array", "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["action", "target_id"],
+        "properties": {
+          "action": { "enum": ["SET_FLAG", "DISCOVER_LOCATION", "UNLOCK_DIALOGUE", "ADD_RUMOR_SOURCE"] },
+          "target_id": { "$ref": "#/$defs/id" },
+          "value": { "type": ["string", "boolean"], "maxLength": 240 }
+        }
+      }
+    },
+    "rumors": {
+      "type": "array", "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["text", "truth"],
+        "properties": {
+          "text": { "type": "string", "maxLength": 400 },
+          "truth": { "enum": ["true", "exaggerated", "false"] },
+          "source_id": { "$ref": "#/$defs/id" }
+        }
+      }
+    },
+    "chronicle_entry": { "type": "string", "maxLength": 1200 },
+    "memory_updates": {
+      "type": "array", "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["npc_id", "type", "value"],
+        "properties": {
+          "npc_id": { "$ref": "#/$defs/id" },
+          "type": { "enum": ["promise", "insult", "gift", "debt", "betrayal", "rescue", "conversation"] },
+          "value": { "type": "string", "maxLength": 240 },
+          "sentiment": { "type": "integer", "minimum": -3, "maximum": 3 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" }
+  }
+}

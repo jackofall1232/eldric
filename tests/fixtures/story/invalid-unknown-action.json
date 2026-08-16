@@ -1,1 +1,1 @@
-{}
+{"schema_version":1,"narration":"A false command arrived.","npc_dialogue":[],"quest_changes":[{"action":"TELEPORT","quest_id":"bridge_oath"}],"world_changes":[{"action":"SPAWN_DRAGON","target_id":"millhaven"}],"rumors":[],"chronicle_entry":"","memory_updates":[]}

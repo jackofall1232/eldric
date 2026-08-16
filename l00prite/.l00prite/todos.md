@@ -54,13 +54,13 @@ implement and verify in a single loop.
 - [x] Save/load behind the `StorageAdapter` interface, with a versioned schema and migrations.
 
 ### M5 — Story layer
-- [ ] Storyteller output JSON schema (`narration`, `npc_dialogue`, `quest_changes`,
+- [x] Storyteller output JSON schema (`narration`, `npc_dialogue`, `quest_changes`,
       `world_changes`, `rumors`, `chronicle_entry`, `memory_updates`, `schema_version`).
       **Freeze this before writing the PHP proxy** or the validator gets written twice.
-- [ ] Validator: allowlist keys, clamp string lengths and array sizes, reject unknown fields and
+- [x] Validator: allowlist keys, enforce string lengths and array sizes, reject unknown fields and
       unsupported actions. Plus a fixture corpus of malformed, oversized and injection-bearing
       responses.
-- [ ] The single apply module — the only place validated output mutates world state, structurally
+- [x] The single apply module — the only place validated output mutates world state, structurally
       unable to reach health, damage, position, stamina or hitboxes.
 - [ ] `StoryProvider.generate(context)` interface and provider registry.
 - [ ] Local no-API-key provider driven by authored templates and seeded variation.

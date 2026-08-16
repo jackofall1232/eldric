@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "build the complete playable Eldric: The Living Chronicle vertical slice in verified commit batches; next unit requires human-reviewed storyteller contract and AI proxy edits",
+  "current_goal": "implement the local and remote StoryProvider pipeline on the frozen structured contract",
   "current_phase": "implementation",
-  "active_agent": null,
+  "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T02:20:10Z",
-  "status": "paused",
+  "last_updated": "2026-08-16T02:24:22Z",
+  "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
   "active_event_id": null,
@@ -14,7 +14,7 @@
   "pending_event_count": 0,
   "review_response_required": false,
   "ci_status": "unknown",
-  "execution_active": false,
-  "execution_stop_reason": "destructive_operation_required",
-  "next_recommended_action": "obtain explicit authorization to edit the denylisted storyteller schema/validator and WordPress AI proxy/settings/provider files, then run a fresh execute-loop preflight"
+  "execution_active": true,
+  "execution_stop_reason": null,
+  "next_recommended_action": "commit the frozen JS contract, then implement provider registry, local fallback, and async story orchestration"
 }

@@ -1,1 +1,28 @@
-{}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eldric.game/schema/storyteller-context.v1.json",
+  "title": "Eldric Storyteller Context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "beat", "region", "recent_actions", "chronicle", "reputation", "npc_memories"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "beat": { "enum": ["REGION_ENTERED", "CAMPFIRE_REST", "IMPORTANT_NPC", "DUNGEON_COMPLETE", "MAJOR_DECISION", "VILLAGE_RETURN", "ARTIFACT_OPENED", "CHAPTER_BEGIN"] },
+    "region": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" },
+    "recent_actions": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 160 } },
+    "chronicle": { "type": "array", "maxItems": 30, "items": { "type": "string", "maxLength": 160 } },
+    "reputation": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "honor": { "type": "integer", "minimum": -100, "maximum": 100 },
+        "mercy": { "type": "integer", "minimum": -100, "maximum": 100 },
+        "greed": { "type": "integer", "minimum": -100, "maximum": 100 },
+        "courage": { "type": "integer", "minimum": -100, "maximum": 100 },
+        "loyalty": { "type": "integer", "minimum": -100, "maximum": 100 },
+        "infamy": { "type": "integer", "minimum": -100, "maximum": 100 },
+        "mystery": { "type": "integer", "minimum": -100, "maximum": 100 }
+      }
+    },
+    "npc_memories": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 200 } }
+  }
+}
