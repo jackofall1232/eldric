@@ -78,16 +78,16 @@ implement and verify in a single loop.
 - [x] Async story calls with a subtle storyteller indicator — never a frame stall, never a block.
 
 ### M6 — The Millhaven region (dense, not large)
-- [ ] Village of Millhaven: buildings, interiors, several NPCs with conflicting explanations.
-- [ ] Forest with ambient life and at least three discoveries off the path.
-- [ ] The dangerous road, the river, the ruined structure.
-- [ ] The cave and the dungeon, including an environmental puzzle and a key.
-- [ ] One hidden location, unmarked, gated on remembering something an NPC said.
-- [ ] Small discoveries every few screens: suspicious rock, abandoned wagon, footprints, statue,
+- [x] Village of Millhaven: buildings, interiors, several NPCs with conflicting explanations.
+- [x] Forest with ambient life and at least three discoveries off the path.
+- [x] The dangerous road, the river, the ruined structure.
+- [x] The cave and the dungeon, including an environmental puzzle and a key.
+- [x] One hidden location, unmarked, gated on remembering something an NPC said.
+- [x] Small discoveries every few screens: suspicious rock, abandoned wagon, footprints, statue,
       locked cellar, arguing travellers, smoke beyond the trees.
-- [ ] The Blackwater Bridge story: attacks on travellers, conflicting accounts, a truth the player
+- [x] The Blackwater Bridge story: attacks on travellers, conflicting accounts, a truth the player
       uncovers, and one decision where neither option is obviously correct.
-- [ ] Consequences of that decision reaching later dialogue, rumors and the Chronicle.
+- [x] Consequences of that decision reaching later dialogue, rumors and the Chronicle.
 
 ### M7 — Presentation
 - [ ] Original art pass: player, NPCs, enemies, bosses, terrain, trees, buildings, water, roads,

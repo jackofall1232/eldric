@@ -23,12 +23,24 @@ export const INTERACTABLES = Object.freeze([
   { id: 'rowan', type: 'npc', name: 'Warden Rowan', x: 410, y: 340, color: '#526a73' },
   { id: 'mara', type: 'npc', name: 'Mara Fen', x: 225, y: 515, color: '#6b5b81' },
   { id: 'campfire', type: 'campfire', name: 'Village Campfire', x: 258, y: 390 },
+  { id: 'hearth-door', type: 'building', name: 'Enter the Hearth & Thistle', interior: 'tavern', x: 159, y: 310 },
+  { id: 'apothecary-door', type: 'building', name: 'Enter the Apothecary', interior: 'apothecary', x: 334, y: 305 },
+  { id: 'smithy-door', type: 'building', name: 'Enter the Smithy', interior: 'smithy', x: 152, y: 512 },
+  { id: 'mill-door', type: 'building', name: 'Enter the Old Mill', interior: 'mill', x: 342, y: 516 },
+  { id: 'locked-cellar', type: 'locked', name: 'Locked Cellar', x: 105, y: 315 },
   { id: 'wagon', type: 'clue', name: 'Abandoned Wagon', x: 548, y: 365 },
   { id: 'tracks', type: 'clue', name: 'River Tracks', x: 785, y: 460 },
   { id: 'bridge', type: 'clue', name: 'Blackwater Bridge', x: 920, y: 350 },
   { id: 'statue', type: 'secret', name: 'Weathered Saint', x: 70, y: 82 },
+  { id: 'suspicious-rock', type: 'secret', name: 'Stone with a Hollow Echo', x: 390, y: 105 },
+  { id: 'distant-smoke', type: 'clue', name: 'Smoke Beyond the Trees', x: 610, y: 95 },
+  { id: 'arguing-travelers', type: 'traveler', name: 'Arguing Travelers', x: 690, y: 390 },
+  { id: 'hidden-glade', type: 'hidden', name: 'Pale-Mushroom Trail', x: 535, y: 72 },
   { id: 'ruin-key', type: 'chest', name: 'Ruined Reliquary', x: 1160, y: 210 },
   { id: 'cave-door', type: 'door', name: 'Sealed Gloam Gate', x: 1100, y: 610 },
+  { id: 'rune-1', type: 'rune', name: 'Stone of Crown', rune: 1, x: 1070, y: 690 },
+  { id: 'rune-2', type: 'rune', name: 'Stone of River', rune: 2, x: 1130, y: 625 },
+  { id: 'rune-3', type: 'rune', name: 'Stone of Root', rune: 3, x: 1220, y: 720 },
 ]);
 
 export const TREE_CLUMPS = Array.from({ length: 74 }, (_, index) => ({
@@ -61,5 +73,9 @@ export const DIALOGUE = Object.freeze({
   mara: [
     'The river remembers older bargains than Rowan does. Find the saint in the north wood; face where her stone eyes look.',
     'Not every monster chose its shape. Not every man wearing a badge chose mercy.',
+  ],
+  'arguing-travelers': [
+    'Traveler: The thing had a man’s hands. I saw them on the wagon rail.',
+    'Caravanner: You saw moonlight. Rowan paid us to call it a beast and keep moving.',
   ],
 });

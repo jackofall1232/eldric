@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
   "project_name": "eldric",
-  "current_goal": "complete the remaining dense-region interactions before final release verification",
+  "current_goal": "finish final performance/package checks and stop at the manual browser/WordPress review gate",
   "current_phase": "implementation",
   "active_agent": "Codex",
   "last_agent": "Codex (Execution Mode)",
-  "last_updated": "2026-08-16T03:14:00Z",
+  "last_updated": "2026-08-16T03:21:00Z",
   "status": "in_progress",
   "blocked": false,
   "blocker_reason": null,
@@ -16,5 +16,5 @@
   "ci_status": "unknown",
   "execution_active": true,
   "execution_stop_reason": null,
-  "next_recommended_action": "commit the verified zip-source cleanup, then add enterable interiors, hidden-glade memory gating, and a cave rune puzzle"
+  "next_recommended_action": "commit dense world content, inspect performance budgets, rebuild the final zip, and run the complete release matrix"
 }

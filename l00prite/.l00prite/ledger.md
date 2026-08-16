@@ -434,6 +434,21 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then finish enterable interiors, memory-gated hidden glade, and cave puzzle.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T03:21:00Z — Codex (authorized story run, iteration 17)
+- **Goal:** Close the remaining dense-region interaction gaps from the original Millhaven brief.
+- **Completed work:** Four enterable village interiors; interior evidence/rumors; suspicious rock,
+  cold smoke camp, locked cellar and arguing travelers; Mara-memory-gated pale-mushroom glade and
+  Witchglass Charm; three-rune river/crown/root dungeon puzzle; post-choice NPC consequence lines;
+  puzzle/interior/outcome persistence.
+- **Tests run / Verification:** full `npm test`, 29 files pass; standalone and WordPress builds exit
+  `0`, 2026-08-16T03:20:30Z.
+- **Failures:** no browser harness exists to validate collision feel and interior layout visually.
+- **Decisions:** Dense authored interactions remain deterministic and hidden until their authored clue;
+  the boss cannot wake until the code-owned rune sequence succeeds.
+- **Confidence:** High for content wiring/build stability; medium-high for play feel pending device QA.
+- **Next action:** Commit, then rebuild the final archive and run the complete release matrix.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, WORLD, ZONES } from '../../../packages/game/src/content/world/millhaven.js';
+import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, WORLD, ZONES } from '../../../packages/game/src/content/world/millhaven.js';
 
 test('Millhaven vertical slice contains every promised destination', () => {
   assert.deepEqual(ZONES.map((zone) => zone.id), [
@@ -10,6 +10,11 @@ test('Millhaven vertical slice contains every promised destination', () => {
   assert.ok(OBSTACLES.some((object) => object.kind === 'ruin'));
   assert.ok(INTERACTABLES.some((object) => object.type === 'secret'));
   assert.ok(INTERACTABLES.some((object) => object.type === 'campfire'));
+  assert.equal(INTERACTABLES.filter((object) => object.type === 'building').length, 4);
+  assert.equal(INTERACTABLES.filter((object) => object.type === 'rune').length, 3);
+  assert.ok(INTERACTABLES.some((object) => object.type === 'hidden'));
+  assert.ok(INTERACTABLES.some((object) => object.id === 'locked-cellar'));
+  assert.ok(DIALOGUE['arguing-travelers'].length >= 2);
 });
 
 test('Millhaven ships distinct enemy encounters and both bosses', () => {

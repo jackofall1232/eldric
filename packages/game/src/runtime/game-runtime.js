@@ -27,6 +27,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     dialogue: null, dialogueIndex: 0, quest: 0, discoveries: new Set(), chronicle: [],
     rumor: 'Something claws at travelers beneath Blackwater Bridge.', toast: '', toastTime: 0,
     zone: 'millhaven', hour: 17.5, weather: 'leaves', outcome: null, bossAwake: false,
+    gloamOpen: false, runesSolved: false, runeSequence: [], interior: null, interiorX: 192, interiorY: 170,
     inventory: ['Millhaven Sword', 'Traveler’s Tonic'],
   };
   if (saved) {
@@ -37,6 +38,8 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     state.rumor = saved.rumor ?? state.rumor;
     state.outcome = saved.outcome ?? null;
     state.bossAwake = saved.bossAwake ?? false;
+    state.gloamOpen = saved.gloamOpen ?? state.bossAwake;
+    state.runesSolved = saved.runesSolved ?? state.bossAwake;
     state.inventory = saved.inventory ?? state.inventory;
   }
   const storyState = createNarrativeState();
@@ -70,6 +73,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       if (platform.input.pressed(Action.CHRONICLE) || platform.input.pressed(Action.INVENTORY) || platform.input.pressed(Action.MENU)) state.mode = 'world';
       return;
     }
+    if (state.mode === 'interior') return updateInterior(delta);
     if (state.dialogue) return updateDialogue();
     if (platform.input.pressed(Action.CHRONICLE)) { state.mode = 'chronicle'; return; }
     if (platform.input.pressed(Action.INVENTORY)) { state.mode = 'inventory'; return; }
@@ -91,6 +95,19 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       onStatus('You have entered Millhaven.');
       persist();
       requestStory('REGION_ENTERED');
+    }
+  }
+
+  function updateInterior(delta) {
+    const movement = platform.input.movement();
+    const speed = platform.input.down(Action.RUN) ? 105 : 72;
+    state.interiorX = clamp(state.interiorX + movement.x * speed * delta, 58, 326);
+    state.interiorY = clamp(state.interiorY + movement.y * speed * delta, 52, 184);
+    if (platform.input.pressed(Action.MENU) || (platform.input.pressed(Action.INTERACT) && state.interiorY > 158)) {
+      state.mode = 'world'; state.interior = null; toast('The village air meets you again.'); return;
+    }
+    if (platform.input.pressed(Action.INTERACT) && state.interiorY < 105) {
+      toast(state.interior === 'tavern' ? state.rumor : interiorDetail(state.interior));
     }
   }
 
@@ -216,10 +233,11 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       return;
     }
     if (platform.input.pressed(Action.INTERACT) || platform.input.pressed(Action.ATTACK)) {
-      const lines = DIALOGUE[state.dialogue];
+      const lines = dialogueLines(state.dialogue);
       state.dialogueIndex += 1;
       if (state.dialogueIndex >= lines.length) {
         if (state.dialogue === 'elara') state.quest = Math.max(state.quest, 1);
+        if (state.dialogue === 'mara') discover('mara_clue', 'Mara’s words linger: follow the saint’s gaze to the pale mushrooms.');
         state.dialogue = null; state.dialogueIndex = 0;
       }
     }
@@ -241,23 +259,29 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function interact() {
     const target = nearestInteractable();
     if (!target) return;
-    if (target.type === 'npc') { state.dialogue = target.id; state.dialogueIndex = 0; return; }
+    if (target.type === 'npc' || target.type === 'traveler') { state.dialogue = target.id; state.dialogueIndex = 0; return; }
+    if (target.type === 'building') { state.mode = 'interior'; state.interior = target.interior; state.interiorX = 192; state.interiorY = 170; toast(`Entered ${target.name.replace('Enter the ', '')}.`); return; }
     if (target.id === 'campfire') {
       platform.audio?.play?.('fire', { bus: 'ambience', volume: .2 });
       player.health = player.maxHealth; player.stamina = player.maxStamina;
       const summary = state.discoveries.size
         ? `At Millhaven’s fire, the storyteller recalled ${[...state.discoveries].length} signs Eldric had uncovered along Blackwater Road.`
         : 'At Millhaven’s fire, Eldric rested while an unfinished kingdom waited beyond the sparks.';
+      if (state.outcome) state.quest = 9;
       state.chronicle.push(summary); toast('Rested. Chronicle updated.'); persist(); requestStory('CAMPFIRE_REST'); return;
     }
     if (target.id === 'cave-door') {
       if (!state.discoveries.has('ruin-key')) { toast('An iron seal. Its key bears the Broken King’s crown.'); return; }
-      state.bossAwake = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', 'The Gloam Gate opened beneath the river’s roar.'); return;
+      state.gloamOpen = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', 'The Gloam Gate opened. Within, three stones wait: river, crown, root.'); return;
     }
+    if (target.type === 'rune') { touchRune(target.rune); return; }
+    if (target.type === 'hidden') { discover('hidden-glade', 'Beyond the pale mushrooms, a moonlit glade concealed the Witchglass Charm.'); if (!state.inventory.includes('Witchglass Charm')) state.inventory.push('Witchglass Charm'); return; }
+    if (target.type === 'locked') { if (!state.discoveries.has('ruin-key')) { toast('The cellar lock bears the same broken crown as the eastern ruin.'); return; } discover('locked-cellar', 'The River Key opened the cellar. Inside lay medicine hidden from frightened villagers.'); return; }
     if (target.type === 'chest') { discover(target.id, 'Inside: the River Key and the Broken King’s medallion.'); state.quest = Math.max(state.quest, 4); return; }
-    if (target.type === 'secret') { discover(target.id, 'The saint points southeast. A hidden trail answers in pale mushrooms.'); return; }
+    if (target.type === 'secret') { discover(target.id, target.id === 'statue' ? 'The saint points southeast. A hidden trail answers in pale mushrooms.' : 'The hollow rock concealed a traveler’s rain-stained letter: “It spoke Elara’s name.”'); return; }
     discover(target.id, target.id === 'wagon' ? 'The claw marks were carved from inside the wagon.' :
       target.id === 'tracks' ? 'Bare human footprints enter the river. Webbed tracks leave it.' :
+        target.id === 'distant-smoke' ? 'A cold camp beyond the trees held food laid out for someone who never returned.' :
         'Under the bridge, iron chains descend toward a sealed cavern.');
     state.quest = Math.max(state.quest, target.id === 'wagon' ? 2 : target.id === 'tracks' ? 3 : state.quest);
   }
@@ -270,10 +294,20 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function nearestInteractable() {
     let best = null; let bestDistance = 46;
     for (const target of INTERACTABLES) {
+      if (target.type === 'hidden' && !state.discoveries.has('mara_clue')) continue;
       const d = distance(player.x, player.y, target.x, target.y);
       if (d < bestDistance) { best = target; bestDistance = d; }
     }
     return best;
+  }
+
+  function touchRune(rune) {
+    if (!state.gloamOpen) { toast('The rune is silent beyond the sealed Gloam Gate.'); return; }
+    if (state.runesSolved) { toast('The three stones hum in one river-deep chord.'); return; }
+    const order = [2, 1, 3]; const expected = order[state.runeSequence.length];
+    if (rune !== expected) { state.runeSequence = rune === order[0] ? [rune] : []; toast('The cavern rejects the sequence; the stones fall dark.'); return; }
+    state.runeSequence.push(rune); toast(['', 'The river stone answers.', 'The crown stone bows.', 'Roots split the final seal.'][state.runeSequence.length]);
+    if (state.runeSequence.length === order.length) { state.runesSolved = true; state.bossAwake = true; state.quest = Math.max(state.quest, 7); discover('gloam_runes_solved', 'River, crown, root: the old order woke what waited beneath Blackwater.'); }
   }
 
   function updateZone() {
@@ -286,6 +320,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     if (state.mode === 'opening') return renderOpening();
     if (state.mode === 'chronicle') return renderChronicle();
     if (state.mode === 'inventory') return renderInventory();
+    if (state.mode === 'interior') return renderInterior();
     renderWorld(alpha); renderHud();
     if (state.dialogue) renderDialogue();
     renderer.end();
@@ -317,6 +352,25 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       }
       if (progress > .55) renderer.text({ text: 'Press E / J to enter the page', x: 192, y: 204, align: 'center', fill: PALETTE.parchment, font: 'bold 7px Georgia', stroke: '#171314', lineWidth: 3 });
     }
+    renderer.end();
+  }
+
+  function renderInterior() {
+    const rooms = { tavern: ['THE HEARTH & THISTLE', '#6c4633'], apothecary: ['APOTHECARY', '#526751'], smithy: ['MILLHAVEN SMITHY', '#5f4a42'], mill: ['THE OLD MILL', '#6a5940'] };
+    const [title, accent] = rooms[state.interior] ?? ['MILLHAVEN', '#5b5044'];
+    renderer.rect({ x: 30, y: 20, width: 324, height: 184, fill: '#3a3029', stroke: '#b08b5b', lineWidth: 3, radius: 8 }, RenderLayer.GROUND);
+    for (let y = 48; y < 196; y += 16) renderer.line({ x1: 38, y1: y, x2: 346, y2: y, stroke: 'rgba(196,149,92,.2)' }, RenderLayer.DETAIL);
+    renderer.rect({ x: 54, y: 45, width: 276, height: 58, fill: accent, stroke: '#271f1d', radius: 5 }, RenderLayer.OBJECT);
+    if (state.interior === 'tavern') { renderer.rect({ x: 76, y: 64, width: 232, height: 18, fill: '#7c5939', stroke: '#2d2420', radius: 3 }, RenderLayer.OBJECT, 1); for (let x = 95; x < 300; x += 42) renderer.circle({ x, y: 91, radius: 6, fill: '#b77746', stroke: '#39261f' }, RenderLayer.ENTITY); }
+    else if (state.interior === 'apothecary') { for (let x = 82; x < 310; x += 32) renderer.rect({ x, y: 63, width: 12, height: 20, fill: x % 3 ? '#8b684d' : '#556d68', stroke: '#2b2826', radius: 3 }, RenderLayer.ENTITY); }
+    else if (state.interior === 'smithy') { renderer.circle({ x: 110, y: 76, radius: 18, fill: '#b64f35', stroke: '#2c2523' }, RenderLayer.ENTITY); renderer.rect({ x: 245, y: 68, width: 42, height: 14, fill: '#737879', stroke: '#25292a', radius: 4 }, RenderLayer.ENTITY); }
+    else { renderer.circle({ x: 105, y: 76, radius: 24, stroke: '#a58a5a', lineWidth: 5 }, RenderLayer.ENTITY); renderer.rect({ x: 230, y: 65, width: 58, height: 28, fill: '#927447', stroke: '#382d24' }, RenderLayer.ENTITY); }
+    renderer.text({ text: title, x: 192, y: 36, align: 'center', fill: PALETTE.parchment, font: 'bold 9px Georgia' });
+    renderer.text({ text: 'E near the back to investigate · E at the door to leave', x: 192, y: 197, align: 'center', fill: '#d4bf91', font: '7px Georgia' });
+    renderer.circle({ x: state.interiorX, y: state.interiorY + 8, radius: 9, fill: 'rgba(12,14,13,.28)' }, RenderLayer.DETAIL);
+    renderer.polygon({ points: [{ x: state.interiorX - 9, y: state.interiorY + 11 }, { x: state.interiorX - 5, y: state.interiorY - 7 }, { x: state.interiorX + 5, y: state.interiorY - 7 }, { x: state.interiorX + 9, y: state.interiorY + 11 }], fill: '#35536a', stroke: PALETTE.ink }, RenderLayer.ENTITY);
+    renderer.circle({ x: state.interiorX, y: state.interiorY - 12, radius: 6, fill: '#d6aa7f', stroke: PALETTE.ink }, RenderLayer.ENTITY, 1);
+    renderer.rect({ x: 172, y: 184, width: 40, height: 20, fill: '#2c2422', stroke: '#8c6844' }, RenderLayer.OBJECT, 2);
     renderer.end();
   }
 
@@ -353,14 +407,18 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function drawObstacle(o) { const p = camera.worldToScreen(o.x, o.y); const fill = o.kind === 'house' ? '#a67c52' : o.kind === 'ruin' ? '#6d7068' : '#6a5036'; renderer.rect({ x: p.x, y: p.y, width: o.width, height: o.height, fill, stroke: PALETTE.ink, radius: 3 }, RenderLayer.OBJECT, o.y); if (o.kind === 'house') { renderer.polygon({ points: [{ x: p.x - 6, y: p.y + 8 }, { x: p.x + o.width / 2, y: p.y - 30 }, { x: p.x + o.width + 6, y: p.y + 8 }], fill: '#70423a', stroke: PALETTE.ink }, RenderLayer.OVERHEAD, o.y); renderer.rect({ x: p.x + o.width / 2 - 8, y: p.y + o.height - 26, width: 16, height: 26, fill: '#3a2b25' }, RenderLayer.ENTITY, o.y + o.height); } }
   function drawInteractable(t) {
     const p = camera.worldToScreen(t.x, t.y); const order = t.y;
-    if (t.type === 'npc') { renderer.circle({ x: p.x, y: p.y + 10, radius: 9, fill: 'rgba(24,27,25,.24)' }, RenderLayer.DETAIL, order); renderer.polygon({ points: [{ x: p.x - 9, y: p.y + 12 }, { x: p.x - 5, y: p.y - 5 }, { x: p.x + 5, y: p.y - 5 }, { x: p.x + 9, y: p.y + 12 }], fill: t.color, stroke: PALETTE.ink }, RenderLayer.ENTITY, order); renderer.circle({ x: p.x, y: p.y - 10, radius: 6, fill: '#d9b38c', stroke: PALETTE.ink }, RenderLayer.ENTITY, order + 1); renderer.polygon({ points: [{ x: p.x - 6, y: p.y - 13 }, { x: p.x, y: p.y - 19 }, { x: p.x + 6, y: p.y - 12 }], fill: t.id === 'mara' ? '#d3d0c4' : '#49362f' }, RenderLayer.ENTITY, order + 2); }
+    if (t.type === 'hidden' && !state.discoveries.has('mara_clue')) return;
+    if (t.type === 'npc' || t.type === 'traveler') { renderer.circle({ x: p.x, y: p.y + 10, radius: 9, fill: 'rgba(24,27,25,.24)' }, RenderLayer.DETAIL, order); renderer.polygon({ points: [{ x: p.x - 9, y: p.y + 12 }, { x: p.x - 5, y: p.y - 5 }, { x: p.x + 5, y: p.y - 5 }, { x: p.x + 9, y: p.y + 12 }], fill: t.color ?? '#7a6348', stroke: PALETTE.ink }, RenderLayer.ENTITY, order); renderer.circle({ x: p.x, y: p.y - 10, radius: 6, fill: '#d9b38c', stroke: PALETTE.ink }, RenderLayer.ENTITY, order + 1); renderer.polygon({ points: [{ x: p.x - 6, y: p.y - 13 }, { x: p.x, y: p.y - 19 }, { x: p.x + 6, y: p.y - 12 }], fill: t.id === 'mara' ? '#d3d0c4' : '#49362f' }, RenderLayer.ENTITY, order + 2); }
     else if (t.type === 'campfire') { renderer.line({ x1: p.x - 9, y1: p.y + 7, x2: p.x + 9, y2: p.y + 11, stroke: '#4c3022', lineWidth: 4 }, RenderLayer.ENTITY, order); renderer.line({ x1: p.x + 9, y1: p.y + 7, x2: p.x - 9, y2: p.y + 11, stroke: '#4c3022', lineWidth: 4 }, RenderLayer.ENTITY, order); renderer.polygon({ points: [{ x: p.x, y: p.y - 17 }, { x: p.x - 8, y: p.y + 7 }, { x: p.x, y: p.y + 3 }, { x: p.x + 8, y: p.y + 7 }], fill: PALETTE.ember, stroke: '#6d3629' }, RenderLayer.ENTITY, order + 1); renderer.polygon({ points: [{ x: p.x, y: p.y - 8 }, { x: p.x - 3, y: p.y + 4 }, { x: p.x + 4, y: p.y + 2 }], fill: '#f4cf65' }, RenderLayer.ENTITY, order + 2); }
     else if (t.type === 'chest') { renderer.rect({ x: p.x - 11, y: p.y - 3, width: 22, height: 14, fill: '#6d452b', stroke: PALETTE.ink, radius: 2 }, RenderLayer.ENTITY, order); renderer.rect({ x: p.x - 10, y: p.y - 8, width: 20, height: 8, fill: '#8a5c35', stroke: PALETTE.ink, radius: 4 }, RenderLayer.ENTITY, order + 1); renderer.rect({ x: p.x - 2, y: p.y - 1, width: 4, height: 6, fill: '#d0a44e' }, RenderLayer.ENTITY, order + 2); }
     else if (t.type === 'door') { renderer.rect({ x: p.x - 11, y: p.y - 18, width: 22, height: 30, fill: '#333d3a', stroke: '#1e2524', radius: 8 }, RenderLayer.ENTITY, order); renderer.line({ x1: p.x - 8, y1: p.y - 3, x2: p.x + 8, y2: p.y - 3, stroke: '#74827c', lineWidth: 2 }, RenderLayer.ENTITY, order + 1); }
+    else if (t.type === 'building' || t.type === 'locked') { renderer.rect({ x: p.x - 8, y: p.y - 13, width: 16, height: 25, fill: t.type === 'locked' ? '#3d342d' : '#59402e', stroke: '#241f1d', radius: 4 }, RenderLayer.ENTITY, order); renderer.circle({ x: p.x + 4, y: p.y, radius: 2, fill: '#d0a44e' }, RenderLayer.ENTITY, order + 1); }
+    else if (t.type === 'rune') { renderer.polygon({ points: [{ x: p.x - 9, y: p.y + 9 }, { x: p.x - 6, y: p.y - 12 }, { x: p.x + 7, y: p.y - 9 }, { x: p.x + 9, y: p.y + 10 }], fill: state.runeSequence.includes(t.rune) ? '#6d8f8d' : '#59605c', stroke: '#252c2b' }, RenderLayer.ENTITY, order); renderer.text({ text: ['','♔','≈','⌁'][t.rune], x: p.x, y: p.y + 2, align: 'center', fill: '#c7d6c3', font: 'bold 9px Georgia' }, RenderLayer.ENTITY, order + 1); }
+    else if (t.type === 'hidden') { renderer.circle({ x: p.x - 5, y: p.y + 2, radius: 5, fill: '#d8d2ae', stroke: '#59645a' }, RenderLayer.ENTITY, order); renderer.circle({ x: p.x + 5, y: p.y - 3, radius: 4, fill: '#d1c7e0', stroke: '#59645a' }, RenderLayer.ENTITY, order + 1); }
     else if (t.id === 'tracks') { renderer.circle({ x: p.x - 4, y: p.y - 4, radius: 3, fill: '#433d32' }, RenderLayer.ENTITY, order); renderer.circle({ x: p.x + 4, y: p.y + 4, radius: 3, fill: '#433d32' }, RenderLayer.ENTITY, order); }
     else if (t.id === 'statue') { renderer.rect({ x: p.x - 7, y: p.y - 10, width: 14, height: 22, fill: '#858a7e', stroke: '#41483f', radius: 3 }, RenderLayer.ENTITY, order); renderer.circle({ x: p.x, y: p.y - 15, radius: 6, fill: '#9da093', stroke: '#41483f' }, RenderLayer.ENTITY, order + 1); }
     else renderer.circle({ x: p.x, y: p.y, radius: 6, fill: state.discoveries.has(t.id) ? '#70766d' : PALETTE.moon, stroke: PALETTE.ink }, RenderLayer.ENTITY, order);
-    if (!state.discoveries.has(t.id) && distance(player.x, player.y, t.x, t.y) < 52) renderer.polygon({ points: [{ x: p.x, y: p.y - 30 }, { x: p.x - 4, y: p.y - 24 }, { x: p.x, y: p.y - 18 }, { x: p.x + 4, y: p.y - 24 }], fill: '#f1d27d', stroke: '#6d5133' }, RenderLayer.OVERHEAD, order + 3);
+    if (t.type !== 'hidden' && !state.discoveries.has(t.id) && distance(player.x, player.y, t.x, t.y) < 52) renderer.polygon({ points: [{ x: p.x, y: p.y - 30 }, { x: p.x - 4, y: p.y - 24 }, { x: p.x, y: p.y - 18 }, { x: p.x + 4, y: p.y - 24 }], fill: '#f1d27d', stroke: '#6d5133' }, RenderLayer.OVERHEAD, order + 3);
   }
   function drawPlayer(x, y) { const p = camera.worldToScreen(x, y); const hurt = player.state === 'hurt' && Math.floor(player.timer * 30) % 2; const bob = player.state === 'walk' || player.state === 'run' ? Math.sin(state.hour * 90) * 1.5 : 0; renderer.circle({ x: p.x, y: p.y + 11, radius: 10, fill: 'rgba(18,24,22,.3)' }, RenderLayer.DETAIL, y); renderer.polygon({ points: [{ x: p.x - 10, y: p.y + 13 }, { x: p.x - 6, y: p.y - 5 + bob }, { x: p.x + 5, y: p.y - 5 + bob }, { x: p.x + 11, y: p.y + 13 }], fill: '#35536a', stroke: PALETTE.ink }, RenderLayer.ENTITY, y); renderer.polygon({ points: [{ x: p.x - 8, y: p.y + 11 }, { x: p.x - 11, y: p.y - 1 }, { x: p.x - 5, y: p.y - 4 }], fill: '#7b333a', stroke: PALETTE.ink }, RenderLayer.ENTITY, y + 1); renderer.circle({ x: p.x, y: p.y - 11 + bob, radius: 6, fill: hurt ? '#fff' : '#d6aa7f', stroke: PALETTE.ink }, RenderLayer.ENTITY, y + 2); renderer.polygon({ points: [{ x: p.x - 6, y: p.y - 13 + bob }, { x: p.x, y: p.y - 19 + bob }, { x: p.x + 6, y: p.y - 13 + bob }], fill: '#4b352c' }, RenderLayer.ENTITY, y + 3); renderer.line({ x1: p.x + player.facingX * 5, y1: p.y + player.facingY * 4, x2: p.x + player.facingX * 19, y2: p.y + player.facingY * 19, stroke: '#e1dcc8', lineWidth: 3 }, RenderLayer.ENTITY, y + 4); renderer.line({ x1: p.x + player.facingX * 4 - player.facingY * 4, y1: p.y + player.facingY * 4 + player.facingX * 4, x2: p.x + player.facingX * 4 + player.facingY * 4, y2: p.y + player.facingY * 4 - player.facingX * 4, stroke: '#9a6b3b', lineWidth: 2 }, RenderLayer.ENTITY, y + 5); if (player.state === 'attack' || player.state === 'heavy') renderer.circle({ x: p.x + player.facingX * 20, y: p.y + player.facingY * 20, radius: player.state === 'heavy' ? 20 : 15, stroke: '#f0d68a', alpha: .65 }, RenderLayer.ENTITY, y + 6); }
   function drawEnemy(e) { const p = camera.worldToScreen(e.x, e.y); const color = e.flash ? '#fff' : { wolf: '#655f59', bandit: '#75434a', skeleton: '#b8b09b', forest_creature: '#31563c', armored_knight: '#737881', dungeon_creature: '#665089', miniboss: '#3b684d', boss: '#315e68' }[e.kind]; const radius = e.kind === 'boss' ? 18 : e.kind === 'miniboss' ? 14 : e.kind === 'armored_knight' ? 11 : 9; renderer.circle({ x: p.x, y: p.y + radius * .65, radius: radius, fill: 'rgba(18,24,22,.28)' }, RenderLayer.DETAIL, e.y); if (e.kind === 'wolf') { renderer.circle({ x: p.x - 3, y: p.y, radius: 8, fill: color, stroke: PALETTE.ink }, RenderLayer.ENTITY, e.y); renderer.circle({ x: p.x + 7, y: p.y - 4, radius: 6, fill: color, stroke: PALETTE.ink }, RenderLayer.ENTITY, e.y + 1); renderer.polygon({ points: [{ x: p.x + 4, y: p.y - 9 }, { x: p.x + 6, y: p.y - 16 }, { x: p.x + 9, y: p.y - 9 }], fill: color }, RenderLayer.ENTITY, e.y + 2); renderer.line({ x1: p.x - 9, y1: p.y - 2, x2: p.x - 15, y2: p.y - 8, stroke: color, lineWidth: 3 }, RenderLayer.ENTITY, e.y + 2); }
@@ -376,7 +434,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function drawGlow(x, y, radius, rgb) { if (x < -radius || y < -radius || x > canvas.width + radius || y > canvas.height + radius) return; for (let ring = 4; ring > 0; ring -= 1) renderer.circle({ x, y, radius: radius * ring / 4, fill: `rgba(${rgb},${.025 * (5 - ring)})` }, RenderLayer.LIGHTING, ring); }
 
   function renderHud() { renderer.rect({ x: 8, y: 8, width: 102, height: 22, fill: 'rgba(30,26,29,.82)', stroke: '#8d7853', radius: 3 }, RenderLayer.UI); renderer.rect({ x: 14, y: 14, width: 88 * player.health / player.maxHealth, height: 5, fill: PALETTE.blood }, RenderLayer.UI, 1); renderer.rect({ x: 14, y: 22, width: 88 * player.stamina / player.maxStamina, height: 3, fill: '#c0a65b' }, RenderLayer.UI, 1); renderer.text({ text: questText(), x: 192, y: 14, align: 'center', fill: PALETTE.parchment, font: '7px Georgia' }); const target = nearestInteractable(); if (target) renderer.text({ text: `E  ${target.name}`, x: 192, y: 196, align: 'center', fill: PALETTE.parchment, font: 'bold 8px Georgia' }); if (state.toastTime > 0) { renderer.rect({ x: 55, y: 164, width: 274, height: 30, fill: 'rgba(25,22,24,.9)', stroke: '#8d7853', radius: 4 }, RenderLayer.UI); renderer.text({ text: state.toast, x: 192, y: 177, align: 'center', fill: PALETTE.parchment, font: '7px Georgia', wrapWidth: 250, lineHeight: 8, maxLines: 2 }); } if (state.storyPending) renderer.text({ text: '✦ The storyteller is turning a page…', x: 192, y: 207, align: 'center', fill: '#e3a85e', font: 'italic 7px Georgia' }); renderer.text({ text: 'TAB Chronicle', x: 376, y: 210, align: 'right', fill: '#d2bf92', font: '7px Georgia' }); }
-  function renderDialogue() { renderer.rect({ x: 20, y: 142, width: 344, height: 66, fill: '#2b2628', stroke: '#b59a67', radius: 5 }, RenderLayer.UI, 10); if (state.dialogue === 'decision') { renderer.text({ text: 'Corven: Break the seal and the river may flood—or bind me here so Millhaven prospers.', x: 32, y: 158, fill: PALETTE.parchment, font: '7px Georgia', wrapWidth: 318, lineHeight: 9, maxLines: 3 }, RenderLayer.UI, 11); renderer.text({ text: 'J — Break the seal     K — Renew the binding', x: 192, y: 199, align: 'center', fill: '#e3a85e', font: 'bold 7px Georgia' }, RenderLayer.UI, 11); } else { const target = INTERACTABLES.find((t) => t.id === state.dialogue); renderer.text({ text: target?.name ?? '', x: 32, y: 156, fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 11); renderer.text({ text: DIALOGUE[state.dialogue][state.dialogueIndex], x: 32, y: 169, fill: PALETTE.parchment, font: '7px Georgia', wrapWidth: 304, lineHeight: 9, maxLines: 4 }, RenderLayer.UI, 11); renderer.text({ text: 'E', x: 348, y: 201, align: 'right', fill: '#b59a67', font: 'bold 7px Georgia' }, RenderLayer.UI, 11); } }
+  function renderDialogue() { renderer.rect({ x: 20, y: 142, width: 344, height: 66, fill: '#2b2628', stroke: '#b59a67', radius: 5 }, RenderLayer.UI, 10); if (state.dialogue === 'decision') { renderer.text({ text: 'Corven: Break the seal and the river may flood—or bind me here so Millhaven prospers.', x: 32, y: 158, fill: PALETTE.parchment, font: '7px Georgia', wrapWidth: 318, lineHeight: 9, maxLines: 3 }, RenderLayer.UI, 11); renderer.text({ text: 'J — Break the seal     K — Renew the binding', x: 192, y: 199, align: 'center', fill: '#e3a85e', font: 'bold 7px Georgia' }, RenderLayer.UI, 11); } else { const target = INTERACTABLES.find((t) => t.id === state.dialogue); renderer.text({ text: target?.name ?? '', x: 32, y: 156, fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 11); renderer.text({ text: dialogueLines(state.dialogue)[state.dialogueIndex], x: 32, y: 169, fill: PALETTE.parchment, font: '7px Georgia', wrapWidth: 304, lineHeight: 9, maxLines: 4 }, RenderLayer.UI, 11); renderer.text({ text: 'E', x: 348, y: 201, align: 'right', fill: '#b59a67', font: 'bold 7px Georgia' }, RenderLayer.UI, 11); } }
   function renderChronicle() {
     renderer.rect({ x: 0, y: 0, width: 384, height: 216, fill: '#171314' }, RenderLayer.GROUND);
     renderer.rect({ x: 28, y: 12, width: 328, height: 192, fill: '#d7c08d', stroke: '#5b432e', radius: 7 }, RenderLayer.OBJECT);
@@ -390,7 +448,9 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   }
   function renderInventory() { renderer.rect({ x: 0, y: 0, width: 384, height: 216, fill: '#131b1a' }, RenderLayer.GROUND); renderer.rect({ x: 42, y: 22, width: 300, height: 172, fill: '#2b2628', stroke: '#b59a67', radius: 6 }, RenderLayer.OBJECT); renderer.text({ text: 'TRAVELER’S SATCHEL', x: 192, y: 46, align: 'center', fill: PALETTE.parchment, font: 'bold 11px Georgia' }); state.inventory.forEach((item, i) => { renderer.rect({ x: 70, y: 65 + i * 36, width: 244, height: 27, fill: '#3b3434', stroke: '#6f6046', radius: 3 }, RenderLayer.UI); renderer.text({ text: item, x: 84, y: 82 + i * 36, fill: PALETTE.parchment, font: '8px Georgia' }); }); renderer.text({ text: 'I to close', x: 192, y: 181, align: 'center', fill: '#b59a67', font: '6px Georgia' }); renderer.end(); }
 
-  function questText() { return ['Speak with the people of Millhaven', 'Investigate Blackwater Road', 'Follow the signs toward the river', 'Search the Sunken Ruin', 'Defeat the ruin’s guardian', 'Open the Gloam Gate', 'Face what waits beneath Blackwater', 'Decide the river oath', 'Return to the campfire'][state.quest] ?? 'The Chronicle continues'; }
+  function dialogueLines(id) { const lines = [...(DIALOGUE[id] ?? [])]; if (!state.outcome) return lines; const consequence = { elara: state.outcome === 'release' ? 'You brought Corven home, Eldric. I cannot thank you for the flooded fields—but I will never forget that you kept your promise.' : 'Millhaven calls the harvest a blessing. I hear my brother singing below the bridge every night.', rowan: state.outcome === 'release' ? 'The east field is gone, and families will go hungry. Mercy has a price; now help us pay it.' : 'You chose the village over one cursed man. I would have done the same. That does not make it clean.', mara: state.outcome === 'release' ? 'A broken oath runs wild, but a living man may yet mend it.' : 'The river is quiet. Do not mistake quiet for forgiveness.' }[id]; if (consequence) lines.push(consequence); return lines; }
+  function interiorDetail(interior) { return { apothecary: 'A ledger lists medicine missing before the attacks began.', smithy: 'Fresh nicks on Rowan’s spare chains match the marks beneath the bridge.', mill: 'The mill wheel turns though the river outside is still.' }[interior] ?? 'The room keeps its counsel.'; }
+  function questText() { return ['Speak with the people of Millhaven', 'Investigate Blackwater Road', 'Follow the signs toward the river', 'Search the Sunken Ruin', 'Defeat the ruin’s guardian', 'Open the Gloam Gate', 'Solve the three-stone river seal', 'Face what waits beneath Blackwater', 'Return to the campfire'][state.quest] ?? 'The Chronicle continues'; }
   function toast(message) { state.toast = message; state.toastTime = 4; }
   function collides(x, y) { return OBSTACLES.some((o) => x > o.x - 10 && x < o.x + o.width + 10 && y > o.y - 10 && y < o.y + o.height + 10); }
 
@@ -401,7 +461,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   };
 
   function persist() {
-    platform.storage?.save?.({ schema_version: 1, openingSeen: state.mode !== 'opening', player: { x: player.x, y: player.y, health: player.health, stamina: player.stamina }, quest: state.quest, discoveries: [...state.discoveries], chronicle: state.chronicle, rumor: state.rumor, outcome: state.outcome, bossAwake: state.bossAwake, inventory: state.inventory });
+    platform.storage?.save?.({ schema_version: 1, openingSeen: state.mode !== 'opening', player: { x: player.x, y: player.y, health: player.health, stamina: player.stamina }, quest: state.quest, discoveries: [...state.discoveries], chronicle: state.chronicle, rumor: state.rumor, outcome: state.outcome, bossAwake: state.bossAwake, gloamOpen: state.gloamOpen, runesSolved: state.runesSolved, inventory: state.inventory });
   }
   function requestStory(beat) {
     const context = buildStoryContext({ beat, region: state.zone, recentActions: [...state.discoveries].slice(-8), chronicle: state.chronicle, reputation: {}, npcMemories: [] });
