@@ -51,3 +51,18 @@ test('the AI connector is chosen explicitly rather than left to plugin load orde
   // An unknown id never reaches the builder.
   assert.equal(result.unknown_provider_ignored, true);
 });
+
+test('a front-end request learns from a failed attempt instead of staying optimistic', async () => {
+  const script = new URL('./php-wp-provider.php', import.meta.url);
+  const { stdout } = await exec('php', [script.pathname]);
+  const result = JSON.parse(stdout);
+  // Front-end requests never probe, so they start by assuming the client serves.
+  assert.equal(result.frontend_optimistic_before, true);
+  assert.equal(result.frontend_active_before, 'wp-ai');
+  // One real failure corrects that, without an administrator ever opening a screen.
+  assert.equal(result.frontend_failure_is_error, true);
+  assert.equal(result.frontend_configured_after_failure, false);
+  assert.equal(result.frontend_active_after_failure, 'local');
+  // But a single named connector failing says nothing about the others.
+  assert.equal(result.named_failure_keeps_site_configured, true);
+});

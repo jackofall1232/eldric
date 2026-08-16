@@ -856,3 +856,35 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not call `AiClient::defaultRegistry()` from this plugin; core ships no
   stable enumeration API and `connectors.php` contains zero `apply_filters()` calls.
 - **Lock:** `claude-eldric-connector-select-20260816T1820Z` acquired and released this run.
+
+### Run 2026-08-16T18:05:00Z — Claude (supervised, PR #5 review response)
+- **Goal:** Address the one Copilot review finding on PR #5.
+- **Triggering event:** `pull_request_review.submitted` — Copilot, PR #5.
+- **Reviewer/comment reference:** https://github.com/jackofall1232/eldric/pull/5#discussion_r3792451251
+- **Finding (accepted):** `probe()` never wrote a cached result on non-admin requests, so
+  `configured()` returned the optimistic `true` forever on a site whose administrator never opened
+  a plugin screen — the admin screens were the cache's only writer. Front-end code kept treating
+  Site AI as configured on a site with zero working connectors, costing a wasted `lc/v1/story`
+  round trip per beat and misreporting `lc/v1/health`.
+- **Fix implemented:** `LC_Provider_WP_AI::remember_unconfigured()` writes the negative result to
+  the same transient when a generation attempt against the **site default** reports no usable
+  model. Guarded on `'' === $this->ai_provider`: a named connector failing proves nothing about
+  the connectors beside it, and recording it would falsely condemn a working site default. The
+  existing TTL lets a repaired connector recover after one attempt.
+- **Changed files:** `wordpress/living-chronicle/includes/providers/class-lc-provider-wp-ai.php`,
+  `tests/integration/php-wp-provider.{php,test.js}`, `docs/wordpress-integration.md`.
+- **Tests run / Verification:**
+  - `command: php -l` · `exit_code: 0` · `summary: clean` · `timestamp: 2026-08-16T18:06:00Z`
+  - `command: php tests/integration/php-wp-provider.php` · `exit_code: 0` · `summary: 37 fields correct; front end starts optimistic, flips to local after one real failure, named-connector failure does not condemn the site` · `timestamp: 2026-08-16T18:07:00Z`
+  - `command: npm test` · `exit_code: 0` · `summary: 62/62 pass` · `timestamp: 2026-08-16T18:07:00Z`
+- **Event status:** handled — fix pushed and replied on the thread.
+- **Decisions:** Learning from real outcomes was chosen over probing during REST requests
+  (`rest_api_init` fires for every REST route on the site, not just this plugin's) and over a
+  scheduled probe (a cron event for a five-minute cache is disproportionate). The optimistic
+  first request is kept deliberately: a page render must not wait on connector metadata, and a
+  wrong guess costs one round trip that already falls back to authored storytelling.
+- **Confidence:** High — the harness now exercises both the front-end and admin paths.
+- **Next action:** Unchanged; the live WP 7.0 manual QA in todos.md is still the open item.
+- **Do-not-retry notes:** Do not probe connectors from `rest_api_init`; it runs for every REST
+  request on the site.
+- **Lock:** `claude-eldric-pr5-review-20260816T1805Z` acquired and released this run.

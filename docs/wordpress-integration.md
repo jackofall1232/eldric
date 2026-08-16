@@ -37,6 +37,13 @@ This plugin reads none of them. Availability is discovered by probing
 transient for five minutes and never gathered during a front-end request, so a page render never
 waits on connector metadata.
 
+A front-end request with a cold cache therefore assumes the client can serve. That assumption is
+self-correcting: when a generation attempt against the *site default* reports no usable model, the
+provider writes the negative result to the same transient, so the site stops routing story beats
+at a connector that cannot answer even if no administrator ever opens a plugin screen. A named
+connector failing is not recorded — it says nothing about the connectors beside it. The TTL means
+a repaired connector recovers on its own after one attempt.
+
 Full-page caching must be bypassed for game pages before a remote provider is enabled, otherwise
 a cached nonce can expire. Health responses use `no-store`. Uninstall removes settings and rate
 transients but cannot erase browser local storage.

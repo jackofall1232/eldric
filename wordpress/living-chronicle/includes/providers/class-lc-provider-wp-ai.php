@@ -56,6 +56,18 @@ final class LC_Provider_WP_AI extends LC_Provider {
     }
 
     /**
+     * Record what a real generation attempt proved, so the optimistic
+     * front-end path corrects itself. Admin screens are otherwise the only
+     * thing that ever writes this cache, and a site whose administrator never
+     * opens them would keep routing story beats at a connector that cannot
+     * answer. Expires with the same TTL, so a fixed connector recovers on its
+     * own after one attempt.
+     */
+    private static function remember_unconfigured(): void {
+        set_transient( self::PROBE_TRANSIENT, array( 'providers' => array(), 'any' => false, 'probed' => false ), self::PROBE_TTL );
+    }
+
+    /**
      * Support probes ask the client for model metadata, which a provider may
      * answer over the network, so results are cached and never gathered during
      * a front-end request — a page render must not wait on a connector.
@@ -115,6 +127,9 @@ final class LC_Provider_WP_AI extends LC_Provider {
                 $prompt = $prompt->as_json_response( $schema );
             }
             if ( method_exists( $prompt, 'is_supported_for_text_generation' ) && ! $prompt->is_supported_for_text_generation() ) {
+                // Only the site default failing proves the site as a whole has
+                // nothing to serve; one named connector says nothing about the rest.
+                if ( '' === $this->ai_provider ) { self::remember_unconfigured(); }
                 return new WP_Error( 'lc_wp_ai_no_model', __( 'No configured AI provider supports text generation.', 'living-chronicle' ) );
             }
             $text = $prompt->generate_text();

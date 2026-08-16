@@ -19,8 +19,10 @@ function esc_url_raw( $url ) { return $url; }
 function get_transient( $name ) { return $GLOBALS['lc_transients'][ $name ] ?? false; }
 function set_transient( $name, $value, $ttl = 0 ) { $GLOBALS['lc_transients'][ $name ] = $value; return true; }
 function delete_transient( $name ) { unset( $GLOBALS['lc_transients'][ $name ] ); return true; }
-// Admin context, so availability probes actually run rather than assuming.
-function is_admin() { return true; }
+// Admin context by default, so availability probes actually run rather than
+// assuming; flipped to false to exercise the front-end path.
+$GLOBALS['lc_is_admin'] = true;
+function is_admin() { return (bool) ( $GLOBALS['lc_is_admin'] ?? true ); }
 
 class WP_Error {
     public function __construct( public string $code = '', public string $message = '', public mixed $data = null ) {}
@@ -165,5 +167,25 @@ $results['generate_default_names_no_provider'] = null === LC_Test_Prompt::$last_
 LC_Test_Prompt::$last_provider = null;
 ( new LC_Provider_WP_AI( 'evil"><script>' ) )->generate( $context );
 $results['unknown_provider_ignored'] = null === LC_Test_Prompt::$last_provider;
+
+// 9. Front-end requests never probe, so they start optimistic — but a real
+//    failed attempt teaches them, otherwise a site whose administrator never
+//    opens a plugin screen would route story beats at a dead connector forever.
+$GLOBALS['lc_is_admin'] = false;
+$GLOBALS['lc_options'][ LC_Settings::OPTION ] = array( 'provider' => 'wp-ai', 'ai_provider' => '', 'api_key' => '' );
+LC_Test_Prompt::$configured = array();
+LC_Provider_WP_AI::flush_probe_cache();
+$results['frontend_optimistic_before'] = LC_Provider_WP_AI::configured();
+$results['frontend_active_before'] = LC_Settings::active_provider();
+$results['frontend_failure_is_error'] = is_wp_error( ( new LC_Provider_WP_AI() )->generate( $context ) );
+$results['frontend_configured_after_failure'] = LC_Provider_WP_AI::configured();
+$results['frontend_active_after_failure'] = LC_Settings::active_provider();
+
+// One named connector failing must not condemn the connectors beside it.
+LC_Provider_WP_AI::flush_probe_cache();
+LC_Test_Prompt::$configured = array( 'anthropic' );
+( new LC_Provider_WP_AI( 'openai' ) )->generate( $context );
+$results['named_failure_keeps_site_configured'] = LC_Provider_WP_AI::configured();
+$GLOBALS['lc_is_admin'] = true;
 
 echo json_encode( $results );
