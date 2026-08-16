@@ -20,11 +20,11 @@ implement and verify in a single loop.
 - [x] `packages/engine/src/render/renderer.js` + `canvas2d-backend.js` — the only files allowed to
       touch a 2D context.
 - [x] `packages/engine/src/render/camera.js`, `sprite.js`, `spritesheet.js` and the asset loader.
-- [ ] `packages/engine/src/input/input.js` — abstract action map, with `keyboard.js`, `pointer.js`,
+- [x] `packages/engine/src/input/input.js` — abstract action map, with `keyboard.js`, `pointer.js`,
       `touch.js` sources behind it. Gameplay reads actions, never key codes.
-- [ ] `packages/engine/src/platform/platform.js` — the seam object bundling input sources, audio
+- [x] `packages/engine/src/platform/platform.js` — the seam object bundling input sources, audio
       backend, save backend and transport. Nothing else in the codebase branches on platform.
-- [ ] Purity test asserting no engine file outside the declared seams references `window`,
+- [x] Purity test asserting no engine file outside the declared seams references `window`,
       `document`, `localStorage` or `fetch`. Land this while it passes trivially.
 
 ### M2 — Player and world

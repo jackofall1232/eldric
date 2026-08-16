@@ -118,6 +118,21 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not draw directly from game scenes via a 2D context.
 - **Lock:** `codex-eldric-20260816T015338Z` active.
 
+### Run 2026-08-16T02:09:20Z — Codex (Execution Mode, iteration 5)
+- **Goal:** Add platform-neutral action input and the browser platform adapter.
+- **Decision:** Normal work; input sources and platform composition form one seam unit.
+- **Completed work:** Implemented action constants/bindings, edge-aware normalized input manager,
+  keyboard/pointer/touch/gamepad sources, browser scheduler, capability budgets, and platform root.
+- **Tests run / Verification:** input and purity tests plus standalone build exited `0` at
+  2026-08-16T02:09:02Z.
+- **Failures:** none.
+- **Decisions:** Touch UI writes into `TouchSource`; Android/gamepads attach through identical
+  action state; gameplay never reads key codes.
+- **Confidence:** High — normalized diagonal movement and pressed/released edges are tested.
+- **Next action:** Commit, then make the Millhaven world immediately playable.
+- **Do-not-retry notes:** Do not route touch buttons directly into player code.
+- **Lock:** `codex-eldric-20260816T015338Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
