@@ -1,1 +1,2 @@
-// The illustrated Chronicle book. Opening it pauses the game.
+import { assembleChapters } from '../systems/chronicle/chapters.js';
+export class ChronicleBook { constructor(chronicle, { pause = () => {}, resume = () => {} } = {}) { this.chronicle = chronicle; this.pauseGame = pause; this.resumeGame = resume; this.opened = false; this.page = 0; } open() { if (this.opened) return false; this.opened = true; this.pauseGame(); return true; } close() { if (!this.opened) return false; this.opened = false; this.resumeGame(); return true; } pages() { return assembleChapters(this.chronicle.entries); } turn(direction) { this.page = Math.max(0, Math.min(this.pages().length - 1, this.page + Math.sign(direction))); return this.page; } }

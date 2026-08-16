@@ -66,7 +66,7 @@ implement and verify in a single loop.
 - [x] Local no-API-key provider driven by authored templates and seeded variation.
 - [x] Context builder: compact structured facts about what the player did, plus relevant Chronicle
       entries.
-- [ ] Chronicle: event-key log, generated chapters, the illustrated in-game book that pauses play.
+- [x] Chronicle: event-key log, generated chapters, the illustrated in-game book that pauses play.
 - [x] Reputation: seven traits (Honor, Mercy, Greed, Courage, Loyalty, Infamy, Mystery), read
       differently by different NPCs and factions.
 - [x] NPC memory: promises, insults, gifts, debts, betrayals, rescues, prior conversations —
@@ -74,7 +74,7 @@ implement and verify in a single loop.
 - [x] Rumor system generating true, exaggerated and false variants from real world state.
 - [x] Story beat triggers: new region, campfire rest, important NPC, dungeon cleared, major
       decision, returning to a village, unusual artifact, new chapter.
-- [ ] Campfire rest: fade, legend summary, Chronicle entry.
+- [x] Campfire rest: fade, legend summary, Chronicle entry.
 - [x] Async story calls with a subtle storyteller indicator — never a frame stall, never a block.
 
 ### M6 — The Millhaven region (dense, not large)

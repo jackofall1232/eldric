@@ -310,6 +310,18 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, then implement Chronicle model.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T02:46:08Z — Codex (authorized story run, iteration 8)
+- **Goal:** Back the illustrated Chronicle UI with a durable, non-duplicating domain model.
+- **Completed work:** Compact event-key set, categorized story entries, chapter assembly, book
+  pause/turn lifecycle, and authored Millhaven arrival/clue/guardian/decision entries.
+- **Tests run / Verification:** Chronicle tests and standalone build exit `0`, 2026-08-16T02:45:52Z.
+- **Failures:** none.
+- **Decisions:** Important events record once; prose is categorized separately from compact event keys;
+  book lifecycle owns pause/resume rather than the simulation clock guessing UI state.
+- **Confidence:** High — deduplication, chapters, categories, and pause lifecycle are tested.
+- **Next action:** Commit, then implement time/weather/audio.
+- **Lock:** `codex-eldric-story-20260816T022113Z` active.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
