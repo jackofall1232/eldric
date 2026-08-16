@@ -1048,3 +1048,46 @@ Append one entry per agent run. Do not overwrite prior runs.
   hosting would need CORS headers the game cannot require of its host. Do not try to fetch
   `assets.zillha.com` from this environment; its network policy denies it.
 - **Lock:** `claude-eldric-soundtrack-worldmap-20260816T2030Z` acquired and released this run.
+
+### Run 2026-08-16T23:52:00Z — Claude (PR #6 review response)
+- **Goal:** Address the two Copilot review findings on PR #6.
+- **Triggering event:** `pull_request_review.submitted` — Copilot, PR #6.
+- **Reviewer/comment reference:** https://github.com/jackofall1232/eldric/pull/6#discussion_r3793123433
+  and #discussion_r3793123457.
+- **Decision:** Both valid, both accepted. The first is a real defect that contradicted a design
+  decision written in the same module's own header comment.
+- **Finding 1 (accepted).** `MusicTrack.play()` awaited `element.play()` unconditionally.
+  `#follow()` pauses the element while muted, but it runs *before* that call, so the pause was
+  immediately undone: a bed started under a restored `muted: true` setting streamed and decoded at
+  volume zero until the player toggled mute. Reachable on every reload by anyone who plays muted —
+  precisely the mobile-radio-and-decode cost the pause-on-mute exists to avoid.
+- **Finding 2 (accepted).** The comment above `resolveMusicUrl()` claimed an http(s) and
+  protocol-relative allowlist; the regex has always also allowed root-relative and relative paths,
+  which is what the bundled score resolves to. A future reader tightening the regex to match the
+  comment would have broken the default soundtrack.
+- **Fix implemented:** The bed marks itself active *before* following the mixer — so it still owns
+  the music bus and still keeps the authored chords from starting underneath it — and calls
+  `play()` only when the mixer is unmuted; `#follow()` already started it on unmute. The comment
+  now names the full allowlist and keeps the reason the check exists.
+- **Changed files:** `packages/engine/src/audio/music-track.js`, `packages/game/src/boot/config.js`,
+  `tests/unit/engine/audio.test.js`, rebuilt WordPress bundle.
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 72/72 pass (was 71; +1 muted-start test)` · `timestamp: 2026-08-16T23:54:00Z`
+  - `command: node --test tests/unit/engine/audio.test.js against the pre-fix implementation` · `exit_code: 1` · `summary: the new test fails without the fix — it is a real regression guard, not a restatement` · `timestamp: 2026-08-16T23:54:00Z`
+  - `command: Playwright/Chromium — mute, reload, first input` · `exit_code: 0` · `summary: element stays { paused: true, currentTime: 0, volume: 0 } with no media request; unmuting starts it at the saved level` · `timestamp: 2026-08-16T23:54:30Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok · 0 warn · 0 fail — HEALTHY` · `timestamp: 2026-08-16T23:54:00Z`
+- **Response drafted/sent:** Replied on both review threads with the diagnosis, the fix and the
+  evidence.
+- **Event status:** handled — fix pushed (3ba5640) and both threads answered.
+- **Failures:** none this run.
+- **Decisions:** A new regression test is only worth the line if it fails against the code it
+  replaces; this one was checked against the pre-fix implementation before being kept.
+- **Confidence:** High — unit-tested, negatively controlled, and browser-verified.
+- **Next action:** Unchanged and all still human calls: the soundtrack license line, a read of
+  `docs/world-map.md` before Layer 0, the Drowned Oath balance, and whether chapter one wants a
+  real epilogue screen. Note also that no CI runs on this repository — the workflow is still an
+  unchecked todo behind the `.github/workflows/**` denylist, so nothing on the PR is verifying the
+  suite except these local runs.
+- **Do-not-retry notes:** Do not start a media element before consulting the mixer's mute state;
+  the follow-the-mixer subscription cannot undo a `play()` that comes after it.
+- **Lock:** `claude-eldric-pr6-review-20260816T2352Z` acquired and released this run.
