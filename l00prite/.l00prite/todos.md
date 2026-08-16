@@ -117,8 +117,8 @@ implement and verify in a single loop.
       silently swallows, leaving the plugin 404ing in production.
 - [ ] `INSTALL.md` and `readme.txt` are complete and the zip structure is tested; installation on
       a clean WordPress site remains a manual release check.
-- [ ] Performance pass: sprite atlases, lazy-loaded regions and audio, bounded particles;
-      measured on a mid-range Android phone browser.
+- [ ] Local bundle/particle/light/audio budgets pass (63,914-byte JS, bounded effects, lazy audio);
+      sprite atlases/region streaming and measurement on a mid-range Android phone remain manual.
 - [x] Verify no key or secret appears anywhere in the built client bundle.
 
 ## Later

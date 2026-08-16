@@ -463,6 +463,23 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Next action:** Commit, rebuild final zip, run full release matrix, release lock at manual QA gate.
 - **Lock:** `codex-eldric-story-20260816T022113Z` active.
 
+### Run 2026-08-16T03:29:00Z — Codex (authorized story run, iteration 19, final release gate)
+- **Goal:** Rebuild the final game/archive and execute every locally available release check.
+- **Completed work:** Rebuilt both production targets and the source-map-free upload zip after all
+  world/audio changes; inspected archive paths and sizes; performed credential scan; released the
+  execution lock and disarmed the loop at the mandatory manual QA boundary.
+- **Tests run / Verification:** full `npm test` 29/29 files pass; both Vite builds exit `0`; every
+  plugin PHP file passes `php -l`; doctor 24 OK/0 warn/0 fail; `unzip -t` clean; no map/credential
+  match; clean `git status`; final zip SHA-256
+  `17e8340c260824348c3d0ae75edd1d285fcc42414e5ca96ee38abb3a821349f5`, size 2,901,039 bytes,
+  client JS 63,914 bytes, 2026-08-16T03:28:30Z.
+- **Failures:** `agent-browser`, Chromium, Firefox and a WordPress runtime are unavailable; visual,
+  physical-device and clean-site installation checks were not run and are not claimed.
+- **Decisions:** Stop at `human_review_gate`; do not publish or push without a separate explicit action.
+- **Confidence:** High for source/build/archive/security correctness; manual QA remains required for feel.
+- **Next action:** Upload the zip to clean WordPress and play desktop/Android; report any feel/layout issue.
+- **Lock:** `codex-eldric-story-20260816T022113Z` released; Execution Mode disarmed.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
