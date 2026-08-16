@@ -935,3 +935,52 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not hardcode the rune order inside `touchRune` again; it drifted from
   the player-facing hint once and that is what made the seal feel unsolvable.
 - **Lock:** `claude-eldric-stones-blocker-20260816T1910Z` acquired and released this run.
+
+### Run 2026-08-16T19:45:00Z — Claude (user-reported progression blocker, part two)
+- **Goal:** The player clarified: they beat the Drowned Oath, and the slice appeared to simply
+  stop. Find why the ending does not read as an ending.
+- **Triggering event:** User play report, in-session, following the seal fix.
+- **Reviewer/comment reference:** none.
+- **Decision:** Valid, and two distinct defects — one of them takes the slice's only irreversible
+  choice away from the player entirely.
+- **Completed work:** Reproduced both against the real runtime in the headless harness.
+  (1) The killing blow is an ATTACK press, and `updateDialogue` accepted ATTACK as "release" with
+  no guard, so a player mashing attack through the kill had Corven's fate decided for them
+  **0.03 s** after the boss fell — measured: the choice was on screen for two frames. Every
+  mashing player got `release`, unseen, and the blueprint's "decision where neither option is
+  obviously correct" never happened. (2) There is no ending beat. The first campfire rest after
+  the decision passed as an ordinary rest, `quest` stepped to 9, and `questText()` had only nine
+  entries — so the ribbon fell off the end of its own list to the generic "The Chronicle
+  continues" and the finished chapter read as an abandoned world.
+- **Fix implemented:** The decision now holds for 1.5 s (options fade in over that beat so the
+  deaf prompt reads as deliberate, not frozen) and then arms only after both attack keys have been
+  quiet for 0.25 s — a mashing player's inter-press gap no longer counts as an answer. Verified
+  unanswered through 63 s of continuous mashing. The first rest after the decision is now an
+  explicit close: an outcome-specific "Chapter one closes" Chronicle entry, ribbon text
+  "Chapter one ends — read your Chronicle", and quest 8 redirected from "Return to the campfire"
+  to "Carry the truth home to Millhaven", which is where the authored consequence dialogue and the
+  flipped tavern rumor were already waiting, unsignposted.
+- **Changed files:** `packages/game/src/runtime/game-runtime.js`, `packages/game/src/render/art.js`,
+  `tests/helpers/fake-canvas.js` (was an empty stub; now a real canvas/window double),
+  `tests/integration/millhaven-runtime.test.js` (new),
+  `wordpress/living-chronicle/assets/build/eldric-living-chronicle.{js,js.map}` (rebuilt).
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 66/66 pass (was 63; +3 runtime playthrough tests)` · `timestamp: 2026-08-16T19:42:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok · 0 warn · 0 fail — HEALTHY` · `timestamp: 2026-08-16T19:43:00Z`
+  - `command: npm run build:wp` · `exit_code: 0` · `summary: WordPress bundle rebuilt` · `timestamp: 2026-08-16T19:43:30Z`
+- **Response drafted/sent:** Delivered in-session, including the plain answer that chapter one is
+  the whole built slice and chapter two remains unbuilt.
+- **Event status:** completed.
+- **Failures:** none this run.
+- **Decisions:** `tests/helpers/fake-canvas.js` is now a working headless host (canvas, window,
+  rAF clock, save slot) and the runtime's own frame loop is under test. Playthrough regressions of
+  this kind — a stolen choice, a missing ending — are invisible to content-only unit tests, and
+  every one found so far has lived in the runtime rather than in the data.
+- **Confidence:** High. Both defects were measured before and after against the real runtime, and
+  all three failure paths are now regression-tested.
+- **Next action:** Ask the human whether chapter one should end on a dedicated epilogue screen
+  rather than a toast and a Chronicle entry — that is a presentation feature, not a defect fix.
+  The Drowned Oath balance finding from the previous run is still open and still a human call.
+- **Do-not-retry notes:** Do not let a gameplay key double as a menu key without an arming guard.
+  ATTACK killed the boss and answered the prompt with the same press.
+- **Lock:** `claude-eldric-stones-blocker-20260816T1910Z` reused and released this run.
