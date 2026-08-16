@@ -1,0 +1,11 @@
+{
+  "name": "@eldric/game",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Eldric content and rule wiring. Imports @eldric/engine; the engine never imports this.",
+  "main": "src/main.js",
+  "dependencies": {
+    "@eldric/engine": "*"
+  }
+}

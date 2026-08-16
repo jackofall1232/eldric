@@ -1,0 +1,21 @@
+{
+  "name": "eldric",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vibe Code: The Living Chronicle — a top-down medieval fantasy action-adventure for the browser and WordPress.",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:wp": "vite build --config vite.config.wp.js",
+    "test": "node --test tests/unit tests/integration",
+    "doctor": "node scripts/l00prite-doctor.js ."
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  }
+}
