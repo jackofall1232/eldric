@@ -4,20 +4,100 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 /**
  * Storyteller provider backed by the WordPress AI Client (WordPress 7.0+).
  *
- * Uses the site's own AI connector configuration — whichever provider the
- * administrator wired up site-wide — through the core `wp_ai_client_prompt()`
- * abstraction. No credential is stored or read by this plugin for it, and the
- * response passes through LC_Validator before anything reaches the game.
- * Every failure path returns WP_Error so LC_Story_Controller serves its
- * authored fallback and play continues.
+ * Credentials stay in core: connectors are keyed at Settings → Connectors and
+ * this plugin stores nothing for them. Left alone, the AI Client resolves the
+ * first configured provider it discovers, which on a site with several
+ * connectors is decided by plugin load order rather than by the administrator.
+ * So the chosen connector id is passed through `using_provider()` when one is
+ * set, and the Storyteller screen offers only connectors that answer a live
+ * support probe. Every failure path returns WP_Error so LC_Story_Controller
+ * serves its authored fallback and play continues.
  */
 final class LC_Provider_WP_AI extends LC_Provider {
     public const MAX_OUTPUT_TOKENS = 800;
 
+    /** Connector ids shipped as official WordPress AI provider plugins. */
+    public const KNOWN_PROVIDERS = array( 'anthropic', 'openai', 'google' );
+
+    private const PROBE_TRANSIENT = 'lc_wp_ai_probe';
+    private const PROBE_TTL       = 300;
+
+    /** Empty means "let the site decide" — the AI Client picks for itself. */
+    public function __construct( private string $ai_provider = '' ) {
+        if ( ! in_array( $this->ai_provider, self::KNOWN_PROVIDERS, true ) ) { $this->ai_provider = ''; }
+    }
+
     public function id(): string { return 'wp-ai'; }
 
+    /** Whether the AI Client exists at all and AI is permitted on this site. */
     public static function available(): bool {
-        return function_exists( 'wp_ai_client_prompt' );
+        if ( ! function_exists( 'wp_ai_client_prompt' ) ) { return false; }
+        if ( function_exists( 'wp_supports_ai' ) && ! wp_supports_ai() ) { return false; }
+        return true;
+    }
+
+    /** Connector ids that can serve text right now. Empty on a front-end cache miss. */
+    public static function configured_providers(): array {
+        return self::probe()['providers'];
+    }
+
+    /** Whether any connector can serve text — the honest form of available(). */
+    public static function configured(): bool {
+        return self::probe()['any'];
+    }
+
+    /** False when the answer is an optimistic assumption rather than a real probe. */
+    public static function probe_is_live(): bool {
+        return self::probe()['probed'];
+    }
+
+    public static function flush_probe_cache(): void {
+        delete_transient( self::PROBE_TRANSIENT );
+    }
+
+    /**
+     * Support probes ask the client for model metadata, which a provider may
+     * answer over the network, so results are cached and never gathered during
+     * a front-end request — a page render must not wait on a connector.
+     */
+    private static function probe(): array {
+        if ( ! self::available() ) { return array( 'providers' => array(), 'any' => false, 'probed' => true ); }
+        $cached = get_transient( self::PROBE_TRANSIENT );
+        if ( is_array( $cached ) && isset( $cached['providers'], $cached['any'], $cached['probed'] ) && is_array( $cached['providers'] ) ) {
+            return $cached;
+        }
+        if ( ! is_admin() ) {
+            // Assume the client can serve; a real failure still falls back mid-play.
+            return array( 'providers' => array(), 'any' => true, 'probed' => false );
+        }
+        $providers = array();
+        foreach ( self::KNOWN_PROVIDERS as $provider ) {
+            if ( self::supports_text( $provider ) ) { $providers[] = $provider; }
+        }
+        // A site may serve through a connector this plugin does not know by
+        // name, so an unnamed probe still counts as configured.
+        $results = array(
+            'providers' => $providers,
+            'any'       => ! empty( $providers ) || self::supports_text( '' ),
+            'probed'    => true,
+        );
+        set_transient( self::PROBE_TRANSIENT, $results, self::PROBE_TTL );
+        return $results;
+    }
+
+    /** An empty id probes whatever the site would choose on its own. */
+    private static function supports_text( string $provider ): bool {
+        try {
+            $prompt = wp_ai_client_prompt( 'ping' );
+            if ( '' !== $provider ) {
+                if ( ! method_exists( $prompt, 'using_provider' ) ) { return false; }
+                $prompt = $prompt->using_provider( $provider );
+            }
+            if ( ! method_exists( $prompt, 'is_supported_for_text_generation' ) ) { return false; }
+            return (bool) $prompt->is_supported_for_text_generation();
+        } catch ( \Throwable $error ) {
+            return false;
+        }
     }
 
     public function generate( array $context ): array|WP_Error {
@@ -25,9 +105,11 @@ final class LC_Provider_WP_AI extends LC_Provider {
             return new WP_Error( 'lc_wp_ai_unavailable', __( 'The WordPress AI Client is not available on this site.', 'living-chronicle' ) );
         }
         try {
-            $prompt = wp_ai_client_prompt( self::build_prompt( $context ) )
-                ->using_temperature( 0.8 )
-                ->using_max_tokens( self::MAX_OUTPUT_TOKENS );
+            $prompt = wp_ai_client_prompt( self::build_prompt( $context ) );
+            if ( '' !== $this->ai_provider && method_exists( $prompt, 'using_provider' ) ) {
+                $prompt = $prompt->using_provider( $this->ai_provider );
+            }
+            $prompt = $prompt->using_temperature( 0.8 )->using_max_tokens( self::MAX_OUTPUT_TOKENS );
             $schema = self::output_schema();
             if ( null !== $schema && method_exists( $prompt, 'as_json_response' ) ) {
                 $prompt = $prompt->as_json_response( $schema );
@@ -46,6 +128,16 @@ final class LC_Provider_WP_AI extends LC_Provider {
         }
         $decoded['schema_version'] = 1;
         return $decoded;
+    }
+
+    /** Human-readable connector name for the admin screens. */
+    public static function provider_label( string $provider ): string {
+        return match ( $provider ) {
+            'anthropic' => __( 'Anthropic (Claude)', 'living-chronicle' ),
+            'openai'    => __( 'OpenAI', 'living-chronicle' ),
+            'google'    => __( 'Google (Gemini)', 'living-chronicle' ),
+            default     => __( 'Site default — whichever connector WordPress picks', 'living-chronicle' ),
+        };
     }
 
     private static function build_prompt( array $context ): string {

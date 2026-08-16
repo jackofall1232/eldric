@@ -48,10 +48,27 @@ required for play:
 
 - **Local storyteller (default)** — authored offline storytelling; no key, no network.
 - **Site AI — WordPress AI Client** — available on WordPress 7.0+ when the site has an AI
-  provider configured for the built-in AI Client. Story beats are then narrated by your site's
+  connector configured for the built-in AI Client. Story beats are then narrated by your site's
   AI through the plugin's server-side proxy (nonce check, rate limiting, request/response
   validation, size limits). Any failure falls back to the local storyteller mid-play, invisibly.
   If the AI Client is missing, the option is disabled and the local storyteller serves.
+
+### Which AI answers
+
+With Site AI selected, a second dropdown picks the connector: **Anthropic (Claude)**, **OpenAI**,
+**Google (Gemini)**, or **Site default**. Choose explicitly if you have more than one connector
+keyed — on "Site default" WordPress uses the first provider it loads, and that order comes from
+plugin load order, not from any preference you have expressed.
+
+Connectors that cannot currently generate text are labelled "not connected". If the connector you
+picked stops answering, the storyteller quietly uses the site default instead of failing. Keys are
+entered in WordPress itself under **Settings → Connectors** — this plugin never stores or reads
+them. `GET /wp-json/lc/v1/health` reports both the active story provider and the connector in use.
+
+If **Eldric → Setup Guide** shows Site AI as "No connector", the AI Client is present but nothing
+on the site can generate text yet; add a key under Settings → Connectors. WordPress validates a
+key when you save it and silently blanks the field if it is rejected, so a field that comes back
+empty means the key was refused.
 
 The write-only key field is reserved for a future direct provider; Site AI does not use it.
 A stored key stays server-side and is never sent to the browser.

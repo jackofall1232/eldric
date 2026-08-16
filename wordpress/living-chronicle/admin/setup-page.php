@@ -3,10 +3,12 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 /**
  * Setup Guide screen. Provided by LC_Admin::render_setup():
  *
- * @var string $chosen_provider  Provider the administrator selected.
- * @var string $active_provider  Provider actually serving right now.
- * @var bool   $wp_ai_available  Whether the WordPress AI Client can serve.
- * @var string $settings_url     URL of the Storyteller settings screen.
+ * @var string $chosen_provider    Provider the administrator selected.
+ * @var string $active_provider    Provider actually serving right now.
+ * @var bool   $wp_ai_available    Whether the WordPress AI Client exists here.
+ * @var bool   $wp_ai_configured   Whether any AI connector can actually serve.
+ * @var string $active_ai_provider Connector actually answering; empty means site default.
+ * @var string $settings_url       URL of the Storyteller settings screen.
  */
 ?>
 <div class="wrap lc-admin">
@@ -19,10 +21,18 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
             <li class="lc-chip"><span class="lc-chip-label"><?php esc_html_e( 'Storyteller', 'living-chronicle' ); ?></span>
                 <?php echo 'wp-ai' === $active_provider ? esc_html__( 'Site AI', 'living-chronicle' ) : esc_html__( 'Local (offline)', 'living-chronicle' ); ?></li>
             <li class="lc-chip"><span class="lc-chip-label"><?php esc_html_e( 'Site AI', 'living-chronicle' ); ?></span>
-                <?php echo $wp_ai_available ? esc_html__( 'Available', 'living-chronicle' ) : esc_html__( 'Not available', 'living-chronicle' ); ?></li>
+                <?php if ( ! $wp_ai_available ) : ?>
+                    <?php esc_html_e( 'Not available', 'living-chronicle' ); ?>
+                <?php elseif ( ! $wp_ai_configured ) : ?>
+                    <?php esc_html_e( 'No connector', 'living-chronicle' ); ?>
+                <?php else : ?>
+                    <?php echo esc_html( LC_Provider_WP_AI::provider_label( $active_ai_provider ) ); ?>
+                <?php endif; ?></li>
         </ul>
         <?php if ( 'wp-ai' === $chosen_provider && ! $wp_ai_available ) : ?>
             <p class="lc-notice-soft"><?php esc_html_e( 'Site AI is selected but unavailable right now, so the local storyteller is telling the tale instead. Nothing is broken — the game always keeps playing.', 'living-chronicle' ); ?></p>
+        <?php elseif ( 'wp-ai' === $chosen_provider && ! $wp_ai_configured ) : ?>
+            <p class="lc-notice-soft"><?php esc_html_e( 'Site AI is selected, but no AI connector on this site can generate text yet, so the local storyteller is telling the tale. Add a connector key under Settings → Connectors.', 'living-chronicle' ); ?></p>
         <?php endif; ?>
     </header>
     <hr class="wp-header-end">
