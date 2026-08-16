@@ -3,10 +3,10 @@
   "project_name": "eldric",
   "current_goal": "build the complete playable Eldric: The Living Chronicle vertical slice in verified commit batches; next unit requires human-reviewed storyteller contract and AI proxy edits",
   "current_phase": "implementation",
-  "active_agent": "Codex",
-  "last_agent": "Claude Code (Planning Mode scaffold)",
+  "active_agent": null,
+  "last_agent": "Codex (Execution Mode)",
   "last_updated": "2026-08-16T02:20:10Z",
-  "status": "in_progress",
+  "status": "paused",
   "blocked": false,
   "blocker_reason": null,
   "active_event_id": null,
@@ -14,7 +14,7 @@
   "pending_event_count": 0,
   "review_response_required": false,
   "ci_status": "unknown",
-  "execution_active": true,
-  "execution_stop_reason": null,
-  "next_recommended_action": "commit the installable shortcode host, then stop at the denylisted storyteller/AI-proxy human-review boundary"
+  "execution_active": false,
+  "execution_stop_reason": "destructive_operation_required",
+  "next_recommended_action": "obtain explicit authorization to edit the denylisted storyteller schema/validator and WordPress AI proxy/settings/provider files, then run a fresh execute-loop preflight"
 }

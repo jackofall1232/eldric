@@ -193,6 +193,24 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not edit proxy/security contract files without the required gate.
 - **Lock:** `codex-eldric-20260816T015338Z` active.
 
+### Run summary 2026-08-16T02:20:48Z — Codex
+- **Iterations completed:** 8/25.
+- **Units finished:** web/WordPress boot; deterministic engine core; entity/scene lifecycle;
+  Canvas2D renderer; action/platform input; playable Millhaven slice; mobile controls/persistence;
+  installable WordPress shortcode host.
+- **Verification:** standalone and WordPress builds pass; full discovered Node test set passes;
+  focused deterministic/content/storage tests pass; all PHP lints; bundle secret scan clear;
+  l00prite doctor HEALTHY. Automated browser visual inspection remains unavailable because the
+  required CLI is absent.
+- **Boundary:** `destructive_operation_required` — the next planned unit would edit paths protected
+  by the Autonomous-Edit Denylist: storyteller schema/validators and WordPress AI proxy,
+  controller, rate limiter, settings, and providers. These require explicit per-action human
+  authorization.
+- **Status:** Paused, not complete. No push, PR, merge, deploy, or credential change occurred.
+- **Next action:** Human authorizes the named protected paths; begin a new confirmed execution run
+  and implement the fixed contract/proxy with fixture and PHP/JS parity verification.
+- **Lock:** `codex-eldric-20260816T015338Z` released.
+
 ### Run 2026-08-16T00:00:00Z — Claude Code (Planning Mode scaffold)
 - **Goal:** Turn the `eldric` repo — which was created by copying the entire l00prite protocol
   source repo — into a properly scaffolded l00prite target for the game "Vibe Code: The Living
