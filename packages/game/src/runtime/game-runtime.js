@@ -2,7 +2,7 @@ import {
   Action, Camera, Canvas2DBackend, Renderer, SeededRng,
   StorySystem, buildStoryContext, createNarrativeState, createWebPlatform,
 } from '@eldric/engine';
-import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, TREE_CLUMPS, WORLD, ZONES } from '../content/world/millhaven.js';
+import { DIALOGUE, ENEMY_SPAWNS, INTERACTABLES, OBSTACLES, RUNE_SEAL, TREE_CLUMPS, WORLD, ZONES } from '../content/world/millhaven.js';
 import { createStoryProvider } from '../story/create-provider.js';
 import {
   PALETTE, createArtCache, drawChronicle, drawDialogue, drawHud, drawInterior,
@@ -29,7 +29,8 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     dialogue: null, dialogueIndex: 0, quest: 0, discoveries: new Set(), chronicle: [],
     rumor: 'Something claws at travelers beneath Blackwater Bridge.', toast: '', toastTime: 0,
     zone: 'millhaven', hour: 17.5, weather: 'leaves', outcome: null, bossAwake: false,
-    gloamOpen: false, runesSolved: false, runeSequence: [], interior: null, interiorX: 192, interiorY: 170,
+    gloamOpen: false, runesSolved: false, runeSequence: [], decisionLock: 0, decisionArmed: 0,
+    interior: null, interiorX: 192, interiorY: 170,
     inventory: ['Millhaven Sword', 'Traveler’s Tonic'], clock: 0,
   };
   if (saved) {
@@ -80,7 +81,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
       return;
     }
     if (state.mode === 'interior') return updateInterior(delta);
-    if (state.dialogue) return updateDialogue();
+    if (state.dialogue) return updateDialogue(delta);
     if (platform.input.pressed(Action.CHRONICLE)) { state.mode = 'chronicle'; return; }
     if (platform.input.pressed(Action.INVENTORY)) { state.mode = 'inventory'; return; }
     updatePlayer(delta);
@@ -231,13 +232,28 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     if (enemy.kind === 'miniboss') { discover('thornhart_defeated', 'The Thornhart fell guarding a rusted river key.'); state.quest = Math.max(state.quest, 5); }
     if (enemy.kind === 'boss') {
       state.mode = 'decision'; state.dialogue = 'decision'; state.dialogueIndex = 0;
+      state.decisionLock = 1.5; state.decisionArmed = 0;
     }
   }
 
-  function updateDialogue() {
+  function updateDialogue(delta) {
     if (state.dialogue === 'decision') {
-      if (platform.input.pressed(Action.ATTACK)) chooseOutcome('release');
-      if (platform.input.pressed(Action.HEAVY)) chooseOutcome('bind');
+      // The blow that kills the boss is an attack press, and a player finishing
+      // a boss fight is mashing that key. Unguarded, the choice resolved on the
+      // very next frame — the slice's one real decision made for the player,
+      // off-screen. So the prompt holds for a beat, and then still waits for a
+      // press that started after the boss fell.
+      state.decisionLock = Math.max(0, state.decisionLock - delta);
+      if (state.decisionLock > 0) return;
+      // Arm only once both attack keys have been quiet for a moment. A player
+      // still mashing releases for a frame between presses, and that gap is not
+      // a decision — it would answer Corven the instant the hold expired.
+      if (state.decisionArmed >= 0.25) {
+        if (platform.input.pressed(Action.ATTACK)) return chooseOutcome('release');
+        if (platform.input.pressed(Action.HEAVY)) return chooseOutcome('bind');
+      }
+      state.decisionArmed = platform.input.down(Action.ATTACK) || platform.input.down(Action.HEAVY)
+        ? 0 : state.decisionArmed + delta;
       return;
     }
     if (platform.input.pressed(Action.INTERACT) || platform.input.pressed(Action.ATTACK)) {
@@ -259,7 +275,7 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     state.chronicle.push(entry); state.rumor = outcome === 'release'
       ? 'They say Eldric loosed a river demon—and called it mercy.'
       : 'They say Eldric chained a man beneath the bridge so Millhaven might sleep.';
-    toast('A new chapter has been written.'); onStatus(entry);
+    toast('A new chapter has been written. Millhaven has not heard it yet.'); onStatus(entry);
     persist();
     requestStory('MAJOR_DECISION');
   }
@@ -272,15 +288,25 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
     if (target.id === 'campfire') {
       platform.audio?.play?.('fire', { bus: 'ambience', volume: .2 });
       player.health = player.maxHealth; player.stamina = player.maxStamina;
+      // The first rest after the decision is the slice's ending. It used to pass
+      // as an ordinary rest, and the quest ribbon fell off the end of its own
+      // list — so a player who had finished the whole chapter was told nothing,
+      // and read the quiet world as a game that had broken.
+      if (state.outcome && state.quest < 9) {
+        state.quest = 9;
+        discover('chapter_one_closed', state.outcome === 'release'
+          ? 'Chapter one closes. Corven Vale walks under his own name again, the eastern fields lie drowned, and Millhaven will argue about Eldric for a generation.'
+          : 'Chapter one closes. The harvest stands, the river runs quiet, and every night Millhaven pretends not to hear singing beneath the bridge.');
+        requestStory('CAMPFIRE_REST'); return;
+      }
       const summary = state.discoveries.size
         ? `At Millhaven’s fire, the storyteller recalled ${[...state.discoveries].length} signs Eldric had uncovered along Blackwater Road.`
         : 'At Millhaven’s fire, Eldric rested while an unfinished kingdom waited beyond the sparks.';
-      if (state.outcome) state.quest = 9;
       state.chronicle.push(summary); toast('Rested. Chronicle updated.'); persist(); requestStory('CAMPFIRE_REST'); return;
     }
     if (target.id === 'cave-door') {
       if (!state.discoveries.has('ruin-key')) { toast('An iron seal. Its key bears the Broken King’s crown.'); return; }
-      platform.audio?.play?.('door', { bus: 'sfx', volume: .3 }); state.gloamOpen = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', 'The Gloam Gate opened. Within, three stones wait: river, crown, root.'); return;
+      platform.audio?.play?.('door', { bus: 'sfx', volume: .3 }); state.gloamOpen = true; state.quest = Math.max(state.quest, 6); discover('gloam_opened', `The Gloam Gate opened. Within, three stones wait — wake them in the river’s order: ${RUNE_SEAL.hint}.`); return;
     }
     if (target.type === 'rune') { touchRune(target.rune); return; }
     if (target.type === 'hidden') { discover('hidden-glade', 'Beyond the pale mushrooms, a moonlit glade concealed the Witchglass Charm.'); if (!state.inventory.includes('Witchglass Charm')) state.inventory.push('Witchglass Charm'); return; }
@@ -312,10 +338,23 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
   function touchRune(rune) {
     if (!state.gloamOpen) { toast('The rune is silent beyond the sealed Gloam Gate.'); return; }
     if (state.runesSolved) { toast('The three stones hum in one river-deep chord.'); return; }
-    const order = [2, 1, 3]; const expected = order[state.runeSequence.length];
-    if (rune !== expected) { state.runeSequence = rune === order[0] ? [rune] : []; toast('The cavern rejects the sequence; the stones fall dark.'); return; }
-    state.runeSequence.push(rune); platform.audio?.play?.('magic', { bus: 'sfx', volume: .2 + state.runeSequence.length * .04 }); toast(['', 'The river stone answers.', 'The crown stone bows.', 'Roots split the final seal.'][state.runeSequence.length]);
-    if (state.runeSequence.length === order.length) { state.runesSolved = true; state.bossAwake = true; state.quest = Math.max(state.quest, 7); discover('gloam_runes_solved', 'River, crown, root: the old order woke what waited beneath Blackwater.'); }
+    const { order, names, hint } = RUNE_SEAL;
+    const expected = order[state.runeSequence.length];
+    if (rune !== expected) {
+      // Every rejection repeats the rule. The gate states the order once, in a
+      // toast gone in four seconds, and a player who touches the stones in the
+      // order they stand — crown, river, root — is turned away with no way to
+      // learn what the cavern actually wanted.
+      const restarted = rune === order[0];
+      state.runeSequence = restarted ? [rune] : [];
+      toast(restarted
+        ? `The chord breaks and begins again on the river stone. The seal wants ${hint}.`
+        : `The ${names[rune]} stone answers out of turn; the stones fall dark. The seal wants ${hint}.`);
+      return;
+    }
+    state.runeSequence.push(rune); platform.audio?.play?.('magic', { bus: 'sfx', volume: .2 + state.runeSequence.length * .04 });
+    if (state.runeSequence.length < order.length) { toast(`${['', 'The river stone answers.', 'The crown stone bows.'][state.runeSequence.length]} (${state.runeSequence.length} of ${order.length})`); return; }
+    toast('Roots split the final seal.'); state.runesSolved = true; state.bossAwake = true; state.quest = Math.max(state.quest, 7); discover('gloam_runes_solved', 'River, crown, root: the old order woke what waited beneath Blackwater.');
   }
 
   function updateZone() {
@@ -360,7 +399,8 @@ export function createGameRuntime(canvas, config, onStatus = () => {}) {
 
   function dialogueLines(id) { const lines = [...(DIALOGUE[id] ?? [])]; if (!state.outcome) return lines; const consequence = { elara: state.outcome === 'release' ? 'You brought Corven home, Eldric. I cannot thank you for the flooded fields—but I will never forget that you kept your promise.' : 'Millhaven calls the harvest a blessing. I hear my brother singing below the bridge every night.', rowan: state.outcome === 'release' ? 'The east field is gone, and families will go hungry. Mercy has a price; now help us pay it.' : 'You chose the village over one cursed man. I would have done the same. That does not make it clean.', mara: state.outcome === 'release' ? 'A broken oath runs wild, but a living man may yet mend it.' : 'The river is quiet. Do not mistake quiet for forgiveness.' }[id]; if (consequence) lines.push(consequence); return lines; }
   function interiorDetail(interior) { return { apothecary: 'A ledger lists medicine missing before the attacks began.', smithy: 'Fresh nicks on Rowan’s spare chains match the marks beneath the bridge.', mill: 'The mill wheel turns though the river outside is still.' }[interior] ?? 'The room keeps its counsel.'; }
-  function questText() { return ['Speak with the people of Millhaven', 'Investigate Blackwater Road', 'Follow the signs toward the river', 'Search the Sunken Ruin', 'Defeat the ruin’s guardian', 'Open the Gloam Gate', 'Solve the three-stone river seal', 'Face what waits beneath Blackwater', 'Return to the campfire'][state.quest] ?? 'The Chronicle continues'; }
+  function questText() { return ['Speak with the people of Millhaven', 'Investigate Blackwater Road', 'Follow the signs toward the river', 'Search the Sunken Ruin', 'Defeat the ruin’s guardian', 'Open the Gloam Gate', 'Wake the stones: river, crown, root', 'Face what waits beneath Blackwater', 'Carry the truth home to Millhaven',
+    'Chapter one ends — read your Chronicle'][state.quest] ?? 'The Chronicle continues'; }
   function toast(message) { state.toast = message; state.toastTime = 4; }
   function collides(x, y) { return OBSTACLES.some((o) => x > o.x - 10 && x < o.x + o.width + 10 && y > o.y - 10 && y < o.y + o.height + 10); }
 

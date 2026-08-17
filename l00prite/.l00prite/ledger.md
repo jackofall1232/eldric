@@ -888,3 +888,206 @@ Append one entry per agent run. Do not overwrite prior runs.
 - **Do-not-retry notes:** Do not probe connectors from `rest_api_init`; it runs for every REST
   request on the site.
 - **Lock:** `claude-eldric-pr5-review-20260816T1805Z` acquired and released this run.
+
+### Run 2026-08-16T19:10:00Z — Claude (user-reported progression blocker)
+- **Goal:** Diagnose a player report — "got to the stones, did them in order, couldn't go further"
+  — and remove whatever stops the Millhaven slice at the three-stone river seal.
+- **Triggering event:** User play report, in-session. No issue or PR.
+- **Reviewer/comment reference:** none.
+- **Decision:** Valid. The seal is solvable, but its one rule was taught only by a four-second
+  toast, so a player who touched the stones in the order they stand could not recover it.
+- **Completed work:** Drove `createGameRuntime` headlessly (fake canvas/DOM, manual rAF clock) over
+  the whole critical path — dialogue, clues, reliquary, Gloam Gate, seal, boss, decision, campfire.
+  The chain completes: the seal accepts river→crown→root, wakes the Drowned Oath, and the decision
+  and campfire close the slice. No hard stop exists in code. What does exist: the required order
+  appears exactly once, in the gate's toast, and the rejection message named neither the order nor
+  how far the player had got. The stones stand crown, river, root west-to-east, so the natural
+  left-to-right reading is rejected on the first touch, with no feedback that order is the rule.
+- **Fix implemented:** `RUNE_SEAL` (order, stone names, hint sentence) now lives with the content in
+  `millhaven.js` and is the single source for both the sequence and the words that teach it. Every
+  rejection restates the order and names the stone that answered out of turn; correct touches show
+  `(n of 3)`; the gate's line spells the order out; and the quest ribbon — permanently on screen —
+  reads "Wake the stones: river, crown, root" while the seal is open.
+- **Changed files:** `packages/game/src/content/world/millhaven.js`,
+  `packages/game/src/runtime/game-runtime.js`, `tests/unit/game/millhaven-region.test.js`,
+  `wordpress/living-chronicle/assets/build/eldric-living-chronicle.{js,js.map}` (rebuilt).
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 63/63 pass (was 62; +1 seal-order test)` · `timestamp: 2026-08-16T19:08:00Z`
+  - `command: headless game-runtime playthrough harness` · `exit_code: 0` · `summary: crown-first is rejected with the order restated; river→crown→root solves, wakes the boss, quest 7` · `timestamp: 2026-08-16T19:09:00Z`
+  - `command: npm run build:wp` · `exit_code: 0` · `summary: WordPress bundle rebuilt so the shipped plugin carries the fix` · `timestamp: 2026-08-16T19:09:30Z`
+- **Response drafted/sent:** Diagnosis and fix summary delivered to the user in-session, including
+  the two findings left unchanged (below).
+- **Event status:** completed.
+- **Failures:** A fresh container again needed `npm install` before workspace imports resolved —
+  the same catalogued failure, now hit three runs running. It belongs in a preflight step.
+- **Decisions:** The seal's order and its hint text are one exported constant, and a unit test
+  asserts the hint names the stones in the sequence the seal accepts. A puzzle whose only rule is
+  an order must not be able to drift from the sentence that teaches it.
+- **Confidence:** High that the seal is now recoverable without outside knowledge — the headless
+  harness reproduces both the failing and the passing player path. Medium that the seal was the
+  wall the player actually hit; see the boss finding below.
+- **Next action:** Confirm with the player which wall they hit. If it was the Drowned Oath rather
+  than the seal, two measured findings are waiting: the boss lands 34 damage on a 100 HP hero from
+  a 62-unit reach against the hero's 42, killing a stationary player in ~3.5s (a frame-perfect
+  harness player wins in 5s, so the fight is winnable, not broken); and death teleports the hero to
+  the village campfire 940 units away with only "the storyteller turns back a blood-darkened page"
+  — no cause, no waypoint back. Neither was changed: both are balance calls for a human.
+- **Do-not-retry notes:** Do not hardcode the rune order inside `touchRune` again; it drifted from
+  the player-facing hint once and that is what made the seal feel unsolvable.
+- **Lock:** `claude-eldric-stones-blocker-20260816T1910Z` acquired and released this run.
+
+### Run 2026-08-16T19:45:00Z — Claude (user-reported progression blocker, part two)
+- **Goal:** The player clarified: they beat the Drowned Oath, and the slice appeared to simply
+  stop. Find why the ending does not read as an ending.
+- **Triggering event:** User play report, in-session, following the seal fix.
+- **Reviewer/comment reference:** none.
+- **Decision:** Valid, and two distinct defects — one of them takes the slice's only irreversible
+  choice away from the player entirely.
+- **Completed work:** Reproduced both against the real runtime in the headless harness.
+  (1) The killing blow is an ATTACK press, and `updateDialogue` accepted ATTACK as "release" with
+  no guard, so a player mashing attack through the kill had Corven's fate decided for them
+  **0.03 s** after the boss fell — measured: the choice was on screen for two frames. Every
+  mashing player got `release`, unseen, and the blueprint's "decision where neither option is
+  obviously correct" never happened. (2) There is no ending beat. The first campfire rest after
+  the decision passed as an ordinary rest, `quest` stepped to 9, and `questText()` had only nine
+  entries — so the ribbon fell off the end of its own list to the generic "The Chronicle
+  continues" and the finished chapter read as an abandoned world.
+- **Fix implemented:** The decision now holds for 1.5 s (options fade in over that beat so the
+  deaf prompt reads as deliberate, not frozen) and then arms only after both attack keys have been
+  quiet for 0.25 s — a mashing player's inter-press gap no longer counts as an answer. Verified
+  unanswered through 63 s of continuous mashing. The first rest after the decision is now an
+  explicit close: an outcome-specific "Chapter one closes" Chronicle entry, ribbon text
+  "Chapter one ends — read your Chronicle", and quest 8 redirected from "Return to the campfire"
+  to "Carry the truth home to Millhaven", which is where the authored consequence dialogue and the
+  flipped tavern rumor were already waiting, unsignposted.
+- **Changed files:** `packages/game/src/runtime/game-runtime.js`, `packages/game/src/render/art.js`,
+  `tests/helpers/fake-canvas.js` (was an empty stub; now a real canvas/window double),
+  `tests/integration/millhaven-runtime.test.js` (new),
+  `wordpress/living-chronicle/assets/build/eldric-living-chronicle.{js,js.map}` (rebuilt).
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 66/66 pass (was 63; +3 runtime playthrough tests)` · `timestamp: 2026-08-16T19:42:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok · 0 warn · 0 fail — HEALTHY` · `timestamp: 2026-08-16T19:43:00Z`
+  - `command: npm run build:wp` · `exit_code: 0` · `summary: WordPress bundle rebuilt` · `timestamp: 2026-08-16T19:43:30Z`
+- **Response drafted/sent:** Delivered in-session, including the plain answer that chapter one is
+  the whole built slice and chapter two remains unbuilt.
+- **Event status:** completed.
+- **Failures:** none this run.
+- **Decisions:** `tests/helpers/fake-canvas.js` is now a working headless host (canvas, window,
+  rAF clock, save slot) and the runtime's own frame loop is under test. Playthrough regressions of
+  this kind — a stolen choice, a missing ending — are invisible to content-only unit tests, and
+  every one found so far has lived in the runtime rather than in the data.
+- **Confidence:** High. Both defects were measured before and after against the real runtime, and
+  all three failure paths are now regression-tested.
+- **Next action:** Ask the human whether chapter one should end on a dedicated epilogue screen
+  rather than a toast and a Chronicle entry — that is a presentation feature, not a defect fix.
+  The Drowned Oath balance finding from the previous run is still open and still a human call.
+- **Do-not-retry notes:** Do not let a gameplay key double as a menu key without an arming guard.
+  ATTACK killed the boss and answered the prompt with the same press.
+- **Lock:** `claude-eldric-stones-blocker-20260816T1910Z` reused and released this run.
+
+### Run 2026-08-16T20:30:00Z — Claude (soundtrack, sound controls, ten-chapter map)
+- **Goal:** Three user requests: play the supplied background track, give the player volume and
+  mute, and blueprint ten chapters with what each unlocks.
+- **Triggering event:** User request, in-session.
+- **Reviewer/comment reference:** none.
+- **Decision:** Normal work. The soundtrack is a **human review gate** under `CLAUDE.md` §6(3) —
+  an asset not created inside this repository — recorded rather than waved through.
+- **Completed work:** The music stack gained a real bed. `AudioMixer` now carries a master level
+  and a mute flag over the three buses (mute is a flag, not master-at-zero, so unmuting restores
+  the player's level); `MusicTrack` streams one looped file on the music bus; `MusicDirector`
+  stands the authored region chords down while a bed holds, so there is never music on music.
+  Sound controls — mute plus one slider per bus — live in the `?` panel as real DOM controls, with
+  `M` as a global mute, levels persisted to `localStorage` beside the save rather than inside it.
+  Every failure path (autoplay refusal, 404, bad codec, no `AudioContext`) falls back to the
+  chords: the bed reports it did not start and nothing blocks play.
+  `docs/world-map.md` is the ten-chapter blueprint, with `todos.md` M9 carrying the tasks.
+- **Fix implemented:** n/a — feature work.
+- **Changed files:** `packages/engine/src/audio/{mixer,music,audio}.js`, new
+  `packages/engine/src/audio/music-track.js`, `packages/engine/src/index.js`,
+  `packages/game/src/boot/{config,bootstrap}.js`, `packages/game/src/ui/{help-menu,game.css}`,
+  new `packages/game/src/ui/audio-controls.js`,
+  `wordpress/living-chronicle/includes/class-lc-shortcode.php` (new `music` attribute),
+  `wordpress/living-chronicle/{INSTALL.md,readme.txt}`, new `assets/audio/eldric-background.mp3`,
+  `assets/{README.md,LICENSES.md,manifest.json}`, `docs/audio-direction.md` (was a stub),
+  new `docs/world-map.md`, `docs/world-bible.md` (was a stub),
+  `tests/unit/engine/audio.test.js`, new `tests/unit/game/audio-config.test.js`,
+  rebuilt WordPress bundle.
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 71/71 pass (was 66; +5 mixer/track/config tests)` · `timestamp: 2026-08-16T23:44:00Z`
+  - `command: php -l wordpress/living-chronicle/includes/class-lc-shortcode.php` · `exit_code: 0` · `summary: clean` · `timestamp: 2026-08-16T23:44:00Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok · 0 warn · 0 fail — HEALTHY` · `timestamp: 2026-08-16T23:44:00Z`
+  - `command: Playwright/Chromium against the dev server` · `exit_code: 0` · `summary: bed loads and loops (currentTime advancing), volume 0.44 = master .8 × music .55; music slider to 30% moves element volume to 0.24 and the readout with it; mute pauses the stream, zeroes volume, disables the sliders; unmute resumes at the chosen level; levels persist and survive a reload; M mutes from the canvas; no console errors` · `timestamp: 2026-08-16T23:41:00Z`
+  - `command: ./scripts/build-wp-zip.sh` · `exit_code: 0` · `summary: 44-file zip, 7.6 MB, soundtrack included` · `timestamp: 2026-08-16T23:45:00Z`
+  - `command: grep -icE 'api_key|anthropic|openai|sk-' in built client bundle` · `exit_code: 0` · `summary: 0 matches — constraint 21 holds` · `timestamp: 2026-08-16T23:45:00Z`
+- **Response drafted/sent:** Delivered in-session with the review gate called out explicitly.
+- **Event status:** completed.
+- **Failures:** The environment's network policy blocks `assets.zillha.com` (proxy answered 403 to
+  CONNECT), so the `.wav` could not be fetched here. The user supplied the `.mp3` directly and it
+  was bundled instead. Do not treat that 403 as a broken proxy — it is the environment's policy.
+- **Decisions:** (1) The bed is a media element, not a decoded WebAudio buffer: it is ten minutes
+  long and must start before it finishes downloading, and routing a cross-origin file through an
+  `AudioContext` needs CORS headers a host site may not send. (2) Muting pauses the stream rather
+  than zeroing its gain — a silent stream still costs a mobile radio and a decode. (3) The
+  soundtrack ships inside the plugin (`assets/`, which both builds already copy) rather than
+  loading from a third-party origin: no CORS, no external dependency, no link to rot. It costs
+  4.8 MB in the zip and is duplicated in the tracked build output, which is how this repo already
+  treats built assets. (4) `musicUrl` is validated as caller input — a shortcode attribute reaches
+  it from post content and a media element would load `javascript:` or `data:` happily.
+  (5) The ten-chapter map is built in horizontal layers, not chapter by chapter, so the game is
+  playable end to end at every stage; and each chapter's reward is a traversal verb that
+  retro-opens at least two earlier chapters, which is the only thing separating one world map from
+  ten corridors.
+- **Confidence:** High for the audio stack — browser-verified end to end, not just unit-tested.
+  Medium for the ten-chapter blueprint: it is a design proposal and wants a human read before
+  Layer 0 is built against it.
+- **Next action:** **Human review gate — confirm the `assets/audio/eldric-background.mp3` license
+  line in `assets/LICENSES.md` is accurate before release.** Then read `docs/world-map.md` and
+  confirm the chapter list and the verb ladder before Layer 0 starts. Still open from earlier
+  runs: the Drowned Oath balance call, and whether chapter one wants a real epilogue screen.
+- **Do-not-retry notes:** Do not route the music bed through an `AudioContext` — cross-origin
+  hosting would need CORS headers the game cannot require of its host. Do not try to fetch
+  `assets.zillha.com` from this environment; its network policy denies it.
+- **Lock:** `claude-eldric-soundtrack-worldmap-20260816T2030Z` acquired and released this run.
+
+### Run 2026-08-16T23:52:00Z — Claude (PR #6 review response)
+- **Goal:** Address the two Copilot review findings on PR #6.
+- **Triggering event:** `pull_request_review.submitted` — Copilot, PR #6.
+- **Reviewer/comment reference:** https://github.com/jackofall1232/eldric/pull/6#discussion_r3793123433
+  and #discussion_r3793123457.
+- **Decision:** Both valid, both accepted. The first is a real defect that contradicted a design
+  decision written in the same module's own header comment.
+- **Finding 1 (accepted).** `MusicTrack.play()` awaited `element.play()` unconditionally.
+  `#follow()` pauses the element while muted, but it runs *before* that call, so the pause was
+  immediately undone: a bed started under a restored `muted: true` setting streamed and decoded at
+  volume zero until the player toggled mute. Reachable on every reload by anyone who plays muted —
+  precisely the mobile-radio-and-decode cost the pause-on-mute exists to avoid.
+- **Finding 2 (accepted).** The comment above `resolveMusicUrl()` claimed an http(s) and
+  protocol-relative allowlist; the regex has always also allowed root-relative and relative paths,
+  which is what the bundled score resolves to. A future reader tightening the regex to match the
+  comment would have broken the default soundtrack.
+- **Fix implemented:** The bed marks itself active *before* following the mixer — so it still owns
+  the music bus and still keeps the authored chords from starting underneath it — and calls
+  `play()` only when the mixer is unmuted; `#follow()` already started it on unmute. The comment
+  now names the full allowlist and keeps the reason the check exists.
+- **Changed files:** `packages/engine/src/audio/music-track.js`, `packages/game/src/boot/config.js`,
+  `tests/unit/engine/audio.test.js`, rebuilt WordPress bundle.
+- **Tests run / Verification:**
+  - `command: node --test` · `exit_code: 0` · `summary: 72/72 pass (was 71; +1 muted-start test)` · `timestamp: 2026-08-16T23:54:00Z`
+  - `command: node --test tests/unit/engine/audio.test.js against the pre-fix implementation` · `exit_code: 1` · `summary: the new test fails without the fix — it is a real regression guard, not a restatement` · `timestamp: 2026-08-16T23:54:00Z`
+  - `command: Playwright/Chromium — mute, reload, first input` · `exit_code: 0` · `summary: element stays { paused: true, currentTime: 0, volume: 0 } with no media request; unmuting starts it at the saved level` · `timestamp: 2026-08-16T23:54:30Z`
+  - `command: node scripts/l00prite-doctor.js .` · `exit_code: 0` · `summary: 24 ok · 0 warn · 0 fail — HEALTHY` · `timestamp: 2026-08-16T23:54:00Z`
+- **Response drafted/sent:** Replied on both review threads with the diagnosis, the fix and the
+  evidence.
+- **Event status:** handled — fix pushed (3ba5640) and both threads answered.
+- **Failures:** none this run.
+- **Decisions:** A new regression test is only worth the line if it fails against the code it
+  replaces; this one was checked against the pre-fix implementation before being kept.
+- **Confidence:** High — unit-tested, negatively controlled, and browser-verified.
+- **Next action:** Unchanged and all still human calls: the soundtrack license line, a read of
+  `docs/world-map.md` before Layer 0, the Drowned Oath balance, and whether chapter one wants a
+  real epilogue screen. Note also that no CI runs on this repository — the workflow is still an
+  unchecked todo behind the `.github/workflows/**` denylist, so nothing on the PR is verifying the
+  suite except these local runs.
+- **Do-not-retry notes:** Do not start a media element before consulting the mixer's mute state;
+  the follow-the-mixer subscription cannot undo a `play()` that comes after it.
+- **Lock:** `claude-eldric-pr6-review-20260816T2352Z` acquired and released this run.

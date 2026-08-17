@@ -10,7 +10,7 @@ final class LC_Shortcode {
 
     public function render( array $attributes = array() ): string {
         $this->instance += 1;
-        $attributes = shortcode_atts( array( 'profile' => 'default', 'slot' => '', 'height' => '720' ), $attributes, 'living_chronicle' );
+        $attributes = shortcode_atts( array( 'profile' => 'default', 'slot' => '', 'height' => '720', 'music' => '' ), $attributes, 'living_chronicle' );
         $profile = sanitize_key( (string) $attributes['profile'] ) ?: 'default';
         $slot = sanitize_key( (string) $attributes['slot'] );
         if ( '' === $slot ) { $slot = 'instance-' . $this->instance; }
@@ -24,10 +24,26 @@ final class LC_Shortcode {
             'storyProvider' => 'wp-ai' === LC_Settings::active_provider() ? 'remote' : 'local',
             'storyEndpoint' => esc_url_raw( rest_url( 'lc/v1/story' ) ),
             'storyNonce' => wp_create_nonce( 'wp_rest' ),
+            'musicUrl' => $this->music_url( (string) $attributes['music'] ),
         );
         $this->assets->enqueue();
+
         ob_start();
         include LC_PATH . 'templates/shortcode-container.php';
         return (string) ob_get_clean();
+    }
+
+    /**
+     * Resolve the music="" attribute. Empty keeps the soundtrack bundled with
+     * the plugin; "none" plays the authored chords instead; anything else must
+     * be an http(s) URL — a media element would otherwise accept a javascript:
+     * or data: URL straight from post content.
+     */
+    private function music_url( string $music ): string {
+        $music = trim( $music );
+        if ( '' === $music ) { return ''; }
+        if ( 0 === strcasecmp( $music, 'none' ) ) { return 'none'; }
+        $url = esc_url_raw( $music, array( 'http', 'https' ) );
+        return $url ? $url : '';
     }
 }

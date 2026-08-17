@@ -1408,8 +1408,12 @@ export function drawDialogue(ctx) {
     renderer.text({ text: 'Corven: Break the seal and the river may flood—or bind me here so Millhaven prospers.',
       x: 32, y: 156, fill: PALETTE.parchment, font: '8px Georgia', wrapWidth: 318, lineHeight: 10, maxLines: 3 }, RenderLayer.UI, 14);
     renderer.line({ x1: 32, y1: 190, x2: 352, y2: 190, stroke: 'rgba(199,166,104,.28)' }, RenderLayer.UI, 14);
-    renderer.text({ text: 'J — Break the seal', x: 112, y: 200, align: 'center', fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 14);
-    renderer.text({ text: 'K — Renew the binding', x: 272, y: 200, align: 'center', fill: '#e3a85e', font: 'bold 8px Georgia' }, RenderLayer.UI, 14);
+    // The choice is deliberately deaf for a beat after the boss falls, so that a
+    // mashed attack cannot answer it. Fade the options in over that beat: a
+    // prompt that ignores the key without showing why reads as a frozen game.
+    const ready = Math.max(0, Math.min(1, 1 - state.decisionLock / 1.5));
+    renderer.text({ text: 'J — Break the seal', x: 112, y: 200, align: 'center', fill: '#e3a85e', font: 'bold 8px Georgia', alpha: .25 + ready * .75 }, RenderLayer.UI, 14);
+    renderer.text({ text: 'K — Renew the binding', x: 272, y: 200, align: 'center', fill: '#e3a85e', font: 'bold 8px Georgia', alpha: .25 + ready * .75 }, RenderLayer.UI, 14);
     return;
   }
   renderer.circle({ x: 40, y: 153, radius: 9, fill: '#3a3230', stroke: PALETTE.gold }, RenderLayer.UI, 14);

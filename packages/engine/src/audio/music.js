@@ -1,2 +1,23 @@
 export const MusicState = Object.freeze({ EXPLORATION: 'exploration', DANGER: 'danger', COMBAT: 'combat', VILLAGE: 'village', DUNGEON: 'dungeon', STORY: 'story' });
-export class MusicDirector { constructor(audio) { this.audio = audio; this.current = null; this.handle = null; } set(state) { if (!Object.values(MusicState).includes(state) || state === this.current) return false; this.stop(); this.current = state; this.handle = this.audio.play(`music_${state}`, { bus: 'music', volume: .18 }); return true; } stop() { if (this.handle) this.audio.backend.stop?.(this.handle); this.handle = null; this.current = null; } }
+
+export class MusicDirector {
+  constructor(audio) { this.audio = audio; this.current = null; this.handle = null; }
+
+  set(state) {
+    if (!Object.values(MusicState).includes(state) || state === this.current) return false;
+    // A scored bed owns the music bus outright. Region changes still record the
+    // state — a later cross-fade layer will want it — but must not start a
+    // second piece of music on top of the soundtrack.
+    if (this.audio.track?.playing) { this.current = state; return false; }
+    this.stop();
+    this.current = state;
+    this.handle = this.audio.play(`music_${state}`, { bus: 'music', volume: .18 });
+    return true;
+  }
+
+  stop() {
+    if (this.handle) this.audio.backend.stop?.(this.handle);
+    this.handle = null;
+    this.current = null;
+  }
+}

@@ -145,8 +145,72 @@ implement and verify in a single loop.
       removing a key flips the connector to "not connected".
 - [ ] CI workflow running the test suite and `node scripts/l00prite-doctor.js .` on every PR.
       (`.github/workflows/**` is on the Autonomous-Edit Denylist — needs human sign-off.)
-- [ ] Chapter two: a second region that inherits Chronicle state from the slice.
 - [ ] Accessibility: remappable controls, colour-blind-safe UI, text scaling, subtitle options.
+
+## M9 — The ten-chapter world map
+
+Full design in `docs/world-map.md`. Chapter one ships; the nine below each measure roughly the
+whole of it (see the per-chapter budget in §3 of that doc). **The map is built in horizontal
+layers, not chapter by chapter** — the game stays playable end to end at every stage.
+
+The rule that makes it one world rather than ten corridors: **each chapter unlocks one traversal
+verb, and every verb retro-opens content in at least two earlier chapters.** No verb may ever be
+required to finish an earlier chapter, and the player never loses one.
+
+### Layer 0 — systems the map needs before any chapter of it
+- [ ] Region streaming and a world graph: regions load/unload; the map is bigger than memory.
+- [ ] The verb/gate system in the engine (a verb is a flag; gates query it; content is authored
+      behind one). Engine-side — it must not learn what a "Ferryman's Token" is.
+- [ ] Retro-content authoring: a region declares what it exposes at each verb, so a later
+      chapter's author adds to chapter one without editing chapter one.
+- [ ] Chapter-boundary save and Chronicle carry-over, plus a chapter-select for testing.
+- [ ] Region-scoped music beds and cross-fade, now that a scored bed exists.
+
+### Layer 1 — the skeleton
+- [ ] All ten regions blocked out at final size with real geometry, zone names, gates and
+      connections, and nothing else. Walkable end to end in an hour. The map's shape is proved or
+      thrown away here, before art or writing is spent on it.
+
+### Layer 2 — the spine (per chapter: critical path, mini-boss, boss, decision, verb)
+| # | Chapter | Unlocks | Retro-opens |
+|---|---|---|---|
+| 1 | Millhaven & Blackwater ✅ | The River Key | oath-iron locks |
+| 2 | Fenmarch, the drowned road | **The Ferryman's Token** — deep water | ch.1 far bank, river cave, drowned fields; every river on the map becomes a road |
+| 3 | Ashfoot Wood | **The Warden's Brand** — carried flame | ch.1 lower ruin and deep Gloam Cave, ch.2 barrows; night becomes playable everywhere |
+| 4 | The Broken King's Watch | **The Oathglass** — see oath-marks | marks and hidden truths in *every* region so far; ch.1 NPCs become re-readable |
+| 5 | Greyhollow | **The Writ of Passage** — faction roads | ch.2 toll road, ch.3 guildhall; the road network becomes the map's spine |
+| 6 | The Drowned Chapel & Saltmarsh | **The Litany** — undo a minor oath | every oath-sealed door the Oathglass revealed in ch.1–5 — a chapter's worth in one moment |
+| 7 | Coldreach Pass | **The Stormcloak** — survive killing weather | ch.2 storm marsh, ch.3 night-frost, ch.6 high tide |
+| 8 | The Iron Assize | **The King's Seal** — authority | royal doors in ch.1/4/5/6; a second dialogue pass for every named NPC |
+| 9 | The Undercourt | **The Unmaking Key** — undo a *major* oath | every major decision in ch.1–8 becomes reversible, at a cost. Author last. |
+| 10 | The Broken King | **The New Chronicle** (post-game) | all ten regions reflect all ten decisions |
+
+- [ ] Ch.2 Fenmarch — opens in two skins depending on the chapter-one decision (flooded / drought).
+- [ ] Ch.3 Ashfoot Wood — first coordinated group enemies; a boss fought in total darkness.
+- [ ] Ch.4 The Broken King's Watch — the ch.1 ruin opened into a full region; the oath ledger.
+- [ ] Ch.5 Greyhollow — the reputation chapter; Infamy finally has teeth. Boss reads the Chronicle.
+- [ ] Ch.6 The Drowned Chapel — tide changes the walkable map. Pairs with ch.4: **author 4 and 6
+      as one arc** (4 sees the sealed doors, 6 opens them).
+- [ ] Ch.7 Coldreach Pass — vertical region; visibility is the boss mechanic.
+- [ ] Ch.8 The Iron Assize — the Chronicle payoff: every prior decision quoted back as evidence.
+      Nothing generated; this is the reward for the Chronicle having been honest all along.
+- [ ] Ch.9 The Undercourt — the oath-engine is bound people. Deepest content; author last.
+- [ ] Ch.10 The Broken King — three unranked endings: restore, unmake, inherit.
+
+### Layer 3 — the depth pass
+- [ ] Retro-content for every verb, region by region, oldest first. This is what makes it a world
+      and it is the first thing scope pressure will try to cut. Protect it.
+
+### Layer 4 — art and audio, per region, in ship order
+- [ ] Per-region scored beds, painted plates, and enemy art for chapters 2–10.
+
+### Layer 5 — the Chronicle payoff (only once every decision above is final)
+- [ ] Ch.8's evidence scene and ch.10's New Chronicle.
+
+### Standing rules for every chapter
+- [ ] Completable with the AI provider disabled — the storyteller decorates, never carries.
+- [ ] Shippable on its own, and a satisfying stopping point, not just chapter ten.
+- [ ] The engine never learns Eldric content; regions are data, the verb/gate system is engine.
 
 ## Done
 - Scaffolded by l00prite Planning Mode: repo trimmed of the imported l00prite protocol source,

@@ -1,6 +1,9 @@
 // The "?" help dropdown: a DOM overlay listing every control, grouped by
-// purpose, with both keyboard and touch bindings. DOM (not canvas) so the
-// text is crisp at any size and reachable by screen readers.
+// purpose, with both keyboard and touch bindings, plus the sound controls.
+// DOM (not canvas) so the text is crisp at any size and reachable by screen
+// readers.
+
+import { audioSectionMarkup, bindAudioSection } from './audio-controls.js';
 
 const CONTROL_GROUPS = [
   {
@@ -36,6 +39,11 @@ const CONTROL_GROUPS = [
   },
 ];
 
+function isTypingTarget(target) {
+  const tag = target?.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable === true;
+}
+
 function bindingsMarkup(row) {
   const keys = row.keys.map((key) => `<span class="lc-help-key">${key}</span>`).join('');
   const alt = row.alt ? `<span class="lc-help-alt">${row.alt}</span>` : '';
@@ -44,7 +52,7 @@ function bindingsMarkup(row) {
   return `${keys}${alt}${chip}${touch}`;
 }
 
-export function mountHelpMenu(root) {
+export function mountHelpMenu(root, { audio = null, onAudioChange = () => {} } = {}) {
   const document = root.ownerDocument;
   const wrap = document.createElement('div');
   wrap.className = 'lc-help';
@@ -62,6 +70,7 @@ export function mountHelpMenu(root) {
             <span class="lc-help-name">${row.name}</span>
             <span class="lc-help-keys">${bindingsMarkup(row)}</span>
           </div>`).join('')}`).join('')}
+      ${audio ? audioSectionMarkup() : ''}
       <p class="lc-help-footnote">The Chronicle remembers what you do. Rest at the campfire to heal and write your page.</p>
     </section>`;
   root.append(wrap);
@@ -86,8 +95,16 @@ export function mountHelpMenu(root) {
   for (const element of [button, panel, backdrop]) {
     element.addEventListener('pointerdown', (event) => event.stopPropagation(), { signal: abort.signal });
   }
+  const sound = audio ? bindAudioSection(panel, audio, { signal: abort.signal, onChange: onAudioChange }) : null;
+  // Refresh on open: mute may have been toggled with M while the panel was shut.
+  button.addEventListener('click', () => sound?.refresh?.(), { signal: abort.signal });
+
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && isOpen()) { event.stopPropagation(); setOpen(false); }
+    // M mutes from anywhere. Ignored while a text field has focus so it never
+    // eats a letter someone is typing into the page around the game.
+    if ((event.key === 'm' || event.key === 'M') && !event.metaKey && !event.ctrlKey && !event.altKey
+      && !isTypingTarget(event.target)) sound?.toggleMute?.();
   }, { capture: true, signal: abort.signal });
 
   return () => { abort.abort(); wrap.remove(); };
