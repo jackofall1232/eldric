@@ -45,8 +45,8 @@ wordpress/living-chronicle/ the installable WordPress plugin (shortcode + server
 assets/                   original art and audio
 docs/                     game design and architecture documentation
 tests/                    unit, integration and contract tests
-l00prite/                 the project blueprint and durable agent memory (see below)
-scripts/                  l00prite-doctor.js, the read-only project health check
+scripts/                  build-wp-zip.sh, which produces the installable plugin zip
+release/                  the current installable plugin zip
 ```
 
 Vanilla JavaScript ES modules, Canvas2D, Vite. No game framework.
@@ -61,12 +61,19 @@ npm run dev        # standalone game at http://localhost:4173
 npm run build      # production browser build -> build/web/
 npm run build:wp   # plugin bundle -> wordpress/living-chronicle/assets/build/
 npm test           # deterministic unit, integration, security and playthrough tests
-npm run doctor     # project health check
+./scripts/build-wp-zip.sh   # installable plugin zip -> release/
 ```
 
-For WordPress, upload the release zip or copy `wordpress/living-chronicle/` into
-`wp-content/plugins/`, activate **Eldric: The Living Chronicle**, and put `[living_chronicle]` on
-a page. See [INSTALL.md](wordpress/living-chronicle/INSTALL.md).
+## Install in WordPress
+
+Download [`release/eldric-living-chronicle-0.1.0.zip`](release/eldric-living-chronicle-0.1.0.zip),
+then in the WordPress dashboard go to **Plugins → Add New Plugin → Upload Plugin**, choose the zip,
+install it, and activate **Eldric: The Living Chronicle**. Put `[living_chronicle]` on any page.
+Full instructions, shortcode attributes and settings are in
+[INSTALL.md](wordpress/living-chronicle/INSTALL.md).
+
+From a source checkout you can instead copy `wordpress/living-chronicle/` into
+`wp-content/plugins/` after running `npm run build:wp`.
 
 Keyboard controls: WASD/arrows move, Shift runs, J attacks, K performs a heavy attack, L blocks,
 Space dodges, E interacts, I opens inventory, and Tab opens the Chronicle. Touch controls appear
@@ -89,23 +96,13 @@ automatically on mobile/coarse-pointer devices.
   limiting, validation, timeouts and size caps. If the AI fails, gameplay continues on authored
   content.
 
-## How this repo is built
+## Releasing
 
-This project uses the [l00prite](https://github.com/jackofall1232/l00prite) protocol: durable,
-file-based project memory so that AI agents — Claude, Codex, Gemini, Cursor, Copilot, and the rest
-— can hand work off to each other across sessions without losing context.
-
-- **[`l00prite/CLAUDE.md`](l00prite/CLAUDE.md)** — the blueprint: mission, architecture,
-  requirements, definition of done.
-- **[`l00prite/AGENTS.md`](l00prite/AGENTS.md)** — the operating rules for any agent working here.
-- **`l00prite/.l00prite/`** — the memory: ledger, todos, constraints, failures, state.
-
-The files at the repo root (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `QWEN.md`, `CONVENTIONS.md`,
-`.github/copilot-instructions.md`, `.cursor/`, `.windsurf/`, `.grok/`) are thin pointers that route
-each tool into `l00prite/`. Run `npm run doctor` to check the protocol state.
-
-Execution Mode ships disarmed. An autonomous run requires the pre-flight display in
-`l00prite/.l00prite/prompts/execute-loop.md` plus explicit human confirmation, every time.
+`./scripts/build-wp-zip.sh` rebuilds the browser bundle from source and writes the installable
+plugin zip to `release/`. The zip's root folder is `living-chronicle/`, so WordPress installs it as
+`wp-content/plugins/living-chronicle/`. Source maps and `node_modules` are never included. The
+`CI` workflow runs the test suite and the packaging script on every push and attaches the zip as a
+workflow artifact.
 
 ## License
 

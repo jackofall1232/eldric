@@ -16,9 +16,9 @@ backend services; it is not the game. Nothing in `packages/engine/` may depend o
 - Built assets land in `living-chronicle/assets/build/` — **never** a `dist/` directory, which the
   repo `.gitignore` silently swallows.
 
-Files here that touch the proxy, providers, settings or the response validator are on the
-Autonomous-Edit Denylist in `l00prite/.l00prite/constraints.md` and need human review.
+Files here that touch the proxy, providers, settings or the response validator are
+security-sensitive and should always get a human review.
 
 The 0.1 plugin is implemented and installable. Build the bundle with `npm run build:wp`, or run
-`scripts/build-wp-zip.sh` to produce the installable `build/eldric-living-chronicle-0.1.0.zip`;
+`scripts/build-wp-zip.sh` to produce the installable `release/eldric-living-chronicle-0.1.0.zip`;
 installation and page-cache guidance live in `living-chronicle/INSTALL.md`.

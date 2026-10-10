@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 # Build the installable WordPress plugin zip for Eldric: The Living Chronicle.
 #
-# Produces build/eldric-living-chronicle-<version>.zip whose root folder is
+# Produces release/eldric-living-chronicle-<version>.zip whose root folder is
 # living-chronicle/ (so WordPress installs it as wp-content/plugins/living-chronicle/).
-# Includes assets/build; excludes source maps and node_modules.
+# Includes assets/build; excludes source maps and node_modules. The release/ folder is
+# tracked in git so the current zip is always downloadable from the repository.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VERSION="0.1.0"
 ZIP_NAME="eldric-living-chronicle-${VERSION}.zip"
-OUT_DIR="${REPO_ROOT}/build"
+OUT_DIR="${REPO_ROOT}/release"
 OUT_ZIP="${OUT_DIR}/${ZIP_NAME}"
 PLUGIN_DIR="${REPO_ROOT}/wordpress/living-chronicle"
 
@@ -24,7 +25,7 @@ fi
 
 echo "==> Creating ${OUT_ZIP}"
 mkdir -p "${OUT_DIR}"
-rm -f "${OUT_ZIP}"
+rm -f "${OUT_DIR}"/eldric-living-chronicle-*.zip
 cd "${REPO_ROOT}/wordpress"
 zip -r -q "${OUT_ZIP}" living-chronicle \
     -x 'living-chronicle/**/*.map' \

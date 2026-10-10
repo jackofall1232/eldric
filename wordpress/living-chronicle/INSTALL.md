@@ -4,8 +4,9 @@ Requirements: WordPress 6.4+, PHP 8.0+, and a browser with JavaScript and Canvas
 
 ## Install from the zip (recommended)
 
-1. Get `eldric-living-chronicle-0.1.0.zip` (or build it yourself: run
-   `npm install && ./scripts/build-wp-zip.sh` at the repository root; the zip lands in `build/`).
+1. Download `release/eldric-living-chronicle-0.1.0.zip` from the repository (or build it yourself:
+   run `npm install && ./scripts/build-wp-zip.sh` at the repository root; the zip lands in
+   `release/`).
 2. In the WordPress dashboard, go to **Plugins → Add New Plugin → Upload Plugin**, choose the
    zip, and click **Install Now**.
 3. Click **Activate Plugin** (the plugin is named **Eldric: The Living Chronicle**).

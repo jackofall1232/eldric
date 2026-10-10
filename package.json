@@ -12,8 +12,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:wp": "vite build --config vite.config.wp.js",
-    "test": "node --test",
-    "doctor": "node scripts/l00prite-doctor.js ."
+    "test": "node --test"
   },
   "devDependencies": {
     "vite": "^7.0.0"

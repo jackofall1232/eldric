@@ -1,9 +1,27 @@
-# CI workflow stub — filled in by the build loop, not by l00prite
 name: CI
 on:
+  push:
+    branches: [Production, main]
+  pull_request:
   workflow_dispatch:
+
 jobs:
-  placeholder:
+  test-and-package:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "CI not yet configured — filled in by the build loop"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Build the WordPress plugin zip
+        run: ./scripts/build-wp-zip.sh
+      - name: Verify the tracked plugin bundle matches the source
+        run: git diff --exit-code -- wordpress/living-chronicle/assets/build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eldric-living-chronicle-plugin
+          path: release/eldric-living-chronicle-*.zip
+          if-no-files-found: error

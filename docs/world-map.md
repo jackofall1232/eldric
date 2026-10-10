@@ -5,7 +5,7 @@ continuous world map, revealed in layers, where each chapter is roughly the size
 current game and each one hands the player a verb that reaches backwards into every region they
 have already walked.
 
-**This is a design document, not a backlog.** The tasks live in `l00prite/.l00prite/todos.md`.
+**This is a design document, not a backlog.** Chapter work is tracked in the repository's issues.
 
 ---
 
@@ -297,7 +297,7 @@ can only be written once every decision above them is final.
 
 ## 6. Non-negotiables carried forward
 
-Everything in `l00prite/CLAUDE.md` still holds for every chapter. Three are worth restating because
+Everything in `architecture.md` and `ai-safety-and-limits.md` still holds for every chapter. Three are worth restating because
 they are the ones a ten-chapter scope will strain:
 
 1. **Playable with AI disabled.** Ten chapters of authored content, not ten chapters of prompts.
